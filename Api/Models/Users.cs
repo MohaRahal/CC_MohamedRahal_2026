@@ -6,6 +6,7 @@ public class Users
     public string Name { get; set; } = string.Empty;
     public string SenhaHash { get; set; } = string.Empty;
     public int RoleId { get; set; }
+    public bool Ativo { get; set; }
     public DateTime CriadoEm { get; set; }
     public DateTime AtualizadoEm { get; set; }
 

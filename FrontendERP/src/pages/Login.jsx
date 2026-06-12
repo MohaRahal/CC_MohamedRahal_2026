@@ -5,11 +5,42 @@ import AnimatedPage from './AnimatedPage';
 export default function Login() {
   const [name, setName] = useState('');
   const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+    setLoading(true);
+    setError('');
+
+    try {
+      const API_URL = import.meta.env.VITE_API_URL;
+
+      const response = await fetch(`${API_URL}/api/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, senha }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.mensagem || "Usuário ou senha inválidos.");
+      }
+
+      const data = await response.json();
+
+      // Salva o token JWT e as informações do usuário (id, name, roleid)
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.usuario));
+
+      // Redireciona para o dashboard com sucesso
+      navigate('/dashboard');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -29,6 +60,7 @@ export default function Login() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="bg-transparent border-b border-ash text-ink-black text-[18px] leading-[1.36] focus:outline-none focus:border-ink-black transition-all duration-500 ease-out pb-2 px-0 rounded-none placeholder:text-smoke"
+                required
               />
             </div>
 
@@ -39,16 +71,23 @@ export default function Login() {
                 value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 className="bg-transparent border-b border-ash text-ink-black text-[18px] leading-[1.36] focus:outline-none focus:border-ink-black transition-all duration-500 ease-out pb-2 px-0 rounded-none placeholder:text-smoke"
+                required
               />
             </div>
+
+            {/* Mensagem de Erro */}
+            {error && (
+              <p className="text-red-500 text-sm mt-1">{error}</p>
+            )}
 
             <div className="mt-[28px] flex justify-start">
               {/* Pill Button CTA */}
               <button
                 type="submit"
-                className="bg-ink-black text-paper-white rounded-[75px] px-[24px] py-[8px] text-[12px] font-[400] uppercase tracking-wider hover:bg-carbon hover:scale-105 transition-all duration-500 ease-out cursor-pointer"
+                disabled={loading}
+                className={`bg-ink-black text-paper-white rounded-[75px] px-[24px] py-[8px] text-[12px] font-[400] uppercase tracking-wider transition-all duration-500 ease-out cursor-pointer ${loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-carbon hover:scale-105'}`}
               >
-                Enter Workspace
+                {loading ? 'Authenticating...' : 'Enter Workspace'}
               </button>
             </div>
           </form>

@@ -1,9 +1,15 @@
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Estoque from './pages/Estoque';
 import Movimentacoes from './pages/Movimentacoes';
+import Logs from './pages/Logs';
+import Usuarios from './pages/Usuarios';
+import Fornecedores from './pages/Fornecedores';
+import Vendas from './pages/Vendas';
+import Financeiro from './pages/Financeiro';
+import NotFound from './pages/NotFound';
 import Layout from './Layout';
 
 function AnimatedRoutes() {
@@ -18,9 +24,14 @@ function AnimatedRoutes() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/Estoque" element={<Estoque />} />
           <Route path="/Movimentacoes" element={<Movimentacoes />} />
+          <Route path="/Logs" element={<Logs />} />
+          <Route path="/Usuarios" element={<Usuarios />} />
+          <Route path="/Fornecedores" element={<Fornecedores />} />
+          <Route path="/Vendas" element={<Vendas />} />
+          <Route path="/Financeiro" element={<Financeiro />} />
         </Route>
         
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
   );

@@ -27,6 +27,7 @@ public class UsersController : ControllerBase
                 id AS Id,
                 name AS Name,
                 roleid AS RoleId,
+                ativo AS Ativo,
                 created_at AS CriadoEm,
                 updated_at AS AtualizadoEm
             FROM users
@@ -50,6 +51,7 @@ public class UsersController : ControllerBase
                 id AS Id,
                 name AS Name,
                 roleid AS RoleId,
+                ativo AS Ativo,
                 created_at AS CriadoEm,
                 updated_at AS AtualizadoEm
             FROM users
@@ -75,12 +77,20 @@ public class UsersController : ControllerBase
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO users (name, senha, roleid)
-            VALUES (@name, @senha, @roleid);
+            INSERT INTO users (name, senha, roleid, ativo)
+            VALUES (@name, @senha, @roleid, @ativo);
+            INSERT INTO logs (idUser, acao, tabela, tipo)
+            VALUES (@idUser, 'Criou um novo usuario', 'users', 'Insert')
             """;
+       
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var idUserLogado = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
+
         command.Parameters.AddWithValue("@name", userDto.Name);
         command.Parameters.AddWithValue("@senha", userDto.Senha);
         command.Parameters.AddWithValue("@roleid", userDto.RoleId);
+        command.Parameters.AddWithValue("@ativo", userDto.Ativo);
+        command.Parameters.AddWithValue("@idUser", idUserLogado);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -102,6 +112,7 @@ public class UsersController : ControllerBase
         if (userDto.Name != null) updates.Add("name = @name");
         if (userDto.Senha != null) updates.Add("senha = @senha");
         if (userDto.RoleId.HasValue) updates.Add("roleid = @roleid");
+        if (userDto.Ativo.HasValue) updates.Add("ativo = @ativo");
 
         if (updates.Count == 0)
         {
@@ -117,6 +128,7 @@ public class UsersController : ControllerBase
         if (userDto.Name != null) command.Parameters.AddWithValue("@name", userDto.Name);
         if (userDto.Senha != null) command.Parameters.AddWithValue("@senha", userDto.Senha);
         if (userDto.RoleId.HasValue) command.Parameters.AddWithValue("@roleid", userDto.RoleId.Value);
+        if (userDto.Ativo.HasValue) command.Parameters.AddWithValue("@ativo", userDto.Ativo.Value);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -156,6 +168,7 @@ public class UsersController : ControllerBase
             Id = reader.GetInt32("Id"),
             Name = reader.GetString("Name"),
             RoleId = reader.GetInt32("RoleId"),
+            Ativo = reader.GetBoolean("Ativo"),
             CriadoEm = reader.GetDateTime("CriadoEm"),
             AtualizadoEm = reader.GetDateTime("AtualizadoEm")
         };
