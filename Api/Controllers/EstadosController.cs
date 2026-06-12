@@ -25,13 +25,21 @@ public class EstadosController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codEstado AS CodEstado,
-                estado AS Nome,
-                Uf AS Sigla,
-                codPais AS CodPais,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM estados
+                e.codEstado AS CodEstado,
+                e.estado AS Nome,
+                e.Uf AS Sigla,
+                e.codPais AS CodPais,
+                e.created_at AS CriadoEm,
+                e.updated_at AS AtualizadoEm,
+                p.codPais AS Pais_CodPais,
+                p.pais AS Pais_Nome,
+                p.sigla AS Pais_Sigla,
+                p.DDI AS Pais_Ddi,
+                p.moeda AS Pais_Moeda,
+                p.created_at AS Pais_CriadoEm,
+                p.updated_at AS Pais_AtualizadoEm
+            FROM estados e
+            LEFT JOIN paises p ON e.codPais = p.codPais
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -49,14 +57,22 @@ public class EstadosController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codEstado AS CodEstado,
-                estado AS Nome,
-                Uf AS Sigla,
-                codPais AS CodPais,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM estados
-            WHERE codEstado = @codEstado
+                e.codEstado AS CodEstado,
+                e.estado AS Nome,
+                e.Uf AS Sigla,
+                e.codPais AS CodPais,
+                e.created_at AS CriadoEm,
+                e.updated_at AS AtualizadoEm,
+                p.codPais AS Pais_CodPais,
+                p.nome AS Pais_Nome,
+                p.sigla AS Pais_Sigla,
+                p.ddi AS Pais_Ddi,
+                p.moeda AS Pais_Moeda,
+                p.created_at AS Pais_CriadoEm,
+                p.updated_at AS Pais_AtualizadoEm
+            FROM estados e
+            LEFT JOIN paises p ON e.codPais = p.codPais
+            WHERE e.codEstado = @codEstado
             """;
         command.Parameters.AddWithValue("@codEstado", codEstado);
 
@@ -155,14 +171,30 @@ public class EstadosController : ControllerBase
 
     private static EstadosReadDto MapearEstado(MySqlDataReader reader)
     {
-        return new EstadosReadDto
+        var estado = new EstadosReadDto
         {
             CodEstado = reader.GetInt32("CodEstado"),
             Estado = reader.GetString("Nome"),
             Uf = reader.GetString("Sigla"),
-            CodPais = reader.GetInt32("CodPais"),
+            CodPais = reader.IsDBNull(reader.GetOrdinal("CodPais")) ? null : reader.GetInt32("CodPais"),
             CriadoEm = reader.GetDateTime("CriadoEm"),
             AtualizadoEm = reader.GetDateTime("AtualizadoEm")
         };
+
+        if (!reader.IsDBNull(reader.GetOrdinal("Pais_CodPais")))
+        {
+            estado.Pais = new PaisesReadDto
+            {
+                CodPais = reader.GetInt32("Pais_CodPais"),
+                Nome = reader.GetString("Pais_Nome"),
+                Sigla = reader.GetString("Pais_Sigla"),
+                Ddi = reader.GetString("Pais_Ddi"),
+                Moeda = reader.GetString("Pais_Moeda"),
+                CriadoEm = reader.GetDateTime("Pais_CriadoEm"),
+                AtualizadoEm = reader.GetDateTime("Pais_AtualizadoEm")
+            };
+        }
+
+        return estado;
     }
 }

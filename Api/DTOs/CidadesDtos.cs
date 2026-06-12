@@ -5,6 +5,7 @@ public class CidadesReadDto
     public int CodCidade { get; set; }
     public string Cidade { get; set; } = string.Empty;
     public int? CodEstado { get; set; }
+    public EstadosReadDto? Estado { get; set; }
     public DateTime CriadoEm { get; set; }
     public DateTime AtualizadoEm { get; set; }
 }

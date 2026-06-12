@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import AnimatedPage from './AnimatedPage';
 import { usersService } from '../services/usersService';
 
@@ -38,10 +39,10 @@ export default function Usuarios() {
               <h1 className="text-3xl font-light text-gray-900 tracking-tight">Usuários</h1>
               <p className="text-sm text-gray-500 mt-1">Gerencie os acessos, senhas e permissões da equipe</p>
             </div>
-            <button className="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
+            <Link to="/Usuarios/AddUser" className="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
               <Plus size={16} />
               Novo Usuário
-            </button>
+            </Link>
           </div>
 
           <div className="mb-6 relative">

@@ -6,6 +6,7 @@ import Estoque from './pages/Estoque';
 import Movimentacoes from './pages/Movimentacoes';
 import Logs from './pages/Logs';
 import Usuarios from './pages/Usuarios';
+import AddUser from './pages/subpages/AddUser';
 import Fornecedores from './pages/Fornecedores';
 import Vendas from './pages/Vendas';
 import Financeiro from './pages/Financeiro';
@@ -26,6 +27,7 @@ function AnimatedRoutes() {
           <Route path="/Movimentacoes" element={<Movimentacoes />} />
           <Route path="/Logs" element={<Logs />} />
           <Route path="/Usuarios" element={<Usuarios />} />
+          <Route path="/Usuarios/AddUser" element={<AddUser />} />
           <Route path="/Fornecedores" element={<Fornecedores />} />
           <Route path="/Vendas" element={<Vendas />} />
           <Route path="/Financeiro" element={<Financeiro />} />

@@ -24,12 +24,27 @@ public class CidadesController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codCidade AS CodCidade,
-                cidade AS Cidade,
-                codEstado AS CodEstado,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM cidades
+                c.codCidade AS CodCidade,
+                c.cidade AS Cidade,
+                c.codEstado AS CodEstado,
+                c.created_at AS CriadoEm,
+                c.updated_at AS AtualizadoEm,
+                e.codEstado AS Estado_CodEstado,
+                e.estado AS Estado_Nome,
+                e.Uf AS Estado_Sigla,
+                e.codPais AS Estado_CodPais,
+                e.created_at AS Estado_CriadoEm,
+                e.updated_at AS Estado_AtualizadoEm,
+                p.codPais AS Pais_CodPais,
+                p.pais AS Pais_Nome,
+                p.sigla AS Pais_Sigla,
+                p.DDI AS Pais_Ddi,
+                p.moeda AS Pais_Moeda,
+                p.created_at AS Pais_CriadoEm,
+                p.updated_at AS Pais_AtualizadoEm
+            FROM cidades c
+            LEFT JOIN estados e ON c.codEstado = e.codEstado
+            LEFT JOIN paises p ON e.codPais = p.codPais
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -47,13 +62,28 @@ public class CidadesController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codCidade AS CodCidade,
-                cidade AS Cidade,
-                codEstado AS CodEstado,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM cidades
-            WHERE codCidade = @codCidade
+                c.codCidade AS CodCidade,
+                c.cidade AS Cidade,
+                c.codEstado AS CodEstado,
+                c.created_at AS CriadoEm,
+                c.updated_at AS AtualizadoEm,
+                e.codEstado AS Estado_CodEstado,
+                e.estado AS Estado_Nome,
+                e.Uf AS Estado_Sigla,
+                e.codPais AS Estado_CodPais,
+                e.created_at AS Estado_CriadoEm,
+                e.updated_at AS Estado_AtualizadoEm,
+                p.codPais AS Pais_CodPais,
+                p.nome AS Pais_Nome,
+                p.sigla AS Pais_Sigla,
+                p.ddi AS Pais_Ddi,
+                p.moeda AS Pais_Moeda,
+                p.created_at AS Pais_CriadoEm,
+                p.updated_at AS Pais_AtualizadoEm
+            FROM cidades c
+            LEFT JOIN estados e ON c.codEstado = e.codEstado
+            LEFT JOIN paises p ON e.codPais = p.codPais
+            WHERE c.codCidade = @codCidade
             """;
         command.Parameters.AddWithValue("@codCidade", codCidade);
 
@@ -148,7 +178,7 @@ public class CidadesController : ControllerBase
 
     private static CidadesReadDto MapearCidade(MySqlDataReader reader)
     {
-        return new CidadesReadDto
+        var cidade = new CidadesReadDto
         {
             CodCidade = reader.GetInt32("CodCidade"),
             Cidade = reader.GetString("Cidade"),
@@ -156,5 +186,36 @@ public class CidadesController : ControllerBase
             CriadoEm = reader.GetDateTime("CriadoEm"),
             AtualizadoEm = reader.GetDateTime("AtualizadoEm")
         };
+
+        if (!reader.IsDBNull(reader.GetOrdinal("Estado_CodEstado")))
+        {
+            var estado = new EstadosReadDto
+            {
+                CodEstado = reader.GetInt32("Estado_CodEstado"),
+                Estado = reader.GetString("Estado_Nome"),
+                Uf = reader.GetString("Estado_Sigla"),
+                CodPais = reader.IsDBNull(reader.GetOrdinal("Estado_CodPais")) ? null : reader.GetInt32("Estado_CodPais"),
+                CriadoEm = reader.GetDateTime("Estado_CriadoEm"),
+                AtualizadoEm = reader.GetDateTime("Estado_AtualizadoEm")
+            };
+
+            if (!reader.IsDBNull(reader.GetOrdinal("Pais_CodPais")))
+            {
+                estado.Pais = new PaisesReadDto
+                {
+                    CodPais = reader.GetInt32("Pais_CodPais"),
+                    Nome = reader.GetString("Pais_Nome"),
+                    Sigla = reader.GetString("Pais_Sigla"),
+                    Ddi = reader.GetString("Pais_Ddi"),
+                    Moeda = reader.GetString("Pais_Moeda"),
+                    CriadoEm = reader.GetDateTime("Pais_CriadoEm"),
+                    AtualizadoEm = reader.GetDateTime("Pais_AtualizadoEm")
+                };
+            }
+
+            cidade.Estado = estado;
+        }
+
+        return cidade;
     }
 }
