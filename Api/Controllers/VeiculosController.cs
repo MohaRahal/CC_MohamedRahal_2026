@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -91,7 +91,7 @@ public class VeiculosController : ControllerBase
         }
         else
         {
-            return StatusCode(500, "Ocorreu um erro ao criar o veículo.");
+            return StatusCode(500, "Ocorreu um erro ao criar o veÃ­culo.");
         }
     }
      [Authorize]
@@ -164,3 +164,4 @@ public class VeiculosController : ControllerBase
         };
     }
 }
+

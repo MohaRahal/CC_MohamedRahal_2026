@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class CondicaoPagamentoParcelas
 {
@@ -12,3 +12,4 @@ public class CondicaoPagamentoParcelas
 
     public CondicoesPagamento? CondicaoPagamento { get; set; }
 }
+

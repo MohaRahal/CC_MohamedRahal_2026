@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class Produtos
 {
@@ -15,3 +15,4 @@ public class Produtos
 
     public Ncmsh? Ncmsh { get; set; }
 }
+

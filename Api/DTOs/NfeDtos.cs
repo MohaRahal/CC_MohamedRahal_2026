@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class NfeReadDto
 {
@@ -89,5 +89,5 @@ public class NfeUpdateDto
     public decimal? ValorIcms { get; set; }
     public decimal? ValorFreteNfe { get; set; }
     public decimal? PesoBrutoVol { get; set; }
-    // Podem ser adicionados outros campos para update parcial
+    
 }

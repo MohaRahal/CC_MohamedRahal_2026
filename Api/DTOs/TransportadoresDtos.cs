@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class TransportadoresReadDto
 {
@@ -29,3 +29,4 @@ public class TransportadoresUpdateDto
     public string? RazaoSocTransp { get; set; }
     public string? InscEstTransp { get; set; }
 }
+

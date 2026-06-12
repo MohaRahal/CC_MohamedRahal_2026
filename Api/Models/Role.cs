@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class Role
 {
@@ -7,3 +7,4 @@ public class Role
     public DateTime CriadoEm { get; set; }
     public DateTime AtualizadoEm { get; set; }
 }
+

@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.IdentityModel.Tokens;
@@ -28,7 +28,7 @@ public class AuthController : ControllerBase
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            SELECT id, name, roleid
+            SELECT id, name, roleid, ativo
             FROM users
             WHERE name = @name AND senha = @senha
             """;
@@ -38,7 +38,13 @@ public class AuthController : ControllerBase
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (!await reader.ReadAsync(cancellationToken))
         {
-            return Unauthorized(new { mensagem = "Usuário ou senha inválidos." });
+            return Unauthorized(new { mensagem = "UsuÃ¡rio ou senha invÃ¡lidos." });
+        }
+
+        var ativo = reader.GetBoolean("ativo");
+        if (!ativo)
+        {
+            return Unauthorized(new { mensagem = "UsuÃ¡rio inativo. O acesso estÃ¡ bloqueado." });
         }
 
         var userId = reader.GetInt32("id");
@@ -76,3 +82,4 @@ public class AuthController : ControllerBase
         });
     }
 }
+

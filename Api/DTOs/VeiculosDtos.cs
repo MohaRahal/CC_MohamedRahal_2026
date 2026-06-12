@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class VeiculosReadDto
 {
@@ -23,3 +23,4 @@ public class VeiculosUpdateDto
     public int? CodEstado { get; set; }
     public string? CodAntt { get; set; }
 }
+

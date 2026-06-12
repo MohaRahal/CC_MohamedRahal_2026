@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class Nfe
 {
@@ -42,3 +42,4 @@ public class Nfe
     public FormasPagamento? FormaPagamento { get; set; }
     public CondicoesPagamento? CondicaoPagamento { get; set; }
 }
+

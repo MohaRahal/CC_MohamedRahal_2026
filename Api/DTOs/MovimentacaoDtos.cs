@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class MovimentacaoReadDto
 {
@@ -21,9 +21,10 @@ public class MovimentacaoReadDto
 public class MovimentacaoCreateDto
 {
     public int CodProduto { get; set; }
-    public string Tipo { get; set; } = string.Empty; // Deve ser 'Entrada' ou 'Saida'
+    public string Tipo { get; set; } = string.Empty; 
     public decimal Quantidade { get; set; }
     public string Motivo { get; set; } = string.Empty;
-    // Repare que o Frontend NÃO envia o saldo anterior, atual nem o idUser. 
-    // Isso é calculado pela API por segurança.
+    
+    
 }
+

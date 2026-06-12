@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
@@ -7,7 +7,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] // Protegido para apenas usuários logados (como admins) poderem ver os logs
+[Authorize] 
 public class LogsController : ControllerBase
 {
     private readonly MySqlConnection _connection;
@@ -17,7 +17,7 @@ public class LogsController : ControllerBase
         _connection = connection;
     }
 
-    // GET: api/logs
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<LogReadDto>>> GetLogs(CancellationToken cancellationToken)
     {
@@ -54,7 +54,7 @@ public class LogsController : ControllerBase
         return Ok(logs);
     }
 
-    // GET: api/logs/{id}
+    
     [HttpGet("{id}")]
     public async Task<ActionResult<LogReadDto>> GetLogById(int id, CancellationToken cancellationToken)
     {
@@ -89,6 +89,7 @@ public class LogsController : ControllerBase
             return Ok(log);
         }
 
-        return NotFound(new { mensagem = "Log não encontrado." });
+        return NotFound(new { mensagem = "Log nÃ£o encontrado." });
     }
 }
+

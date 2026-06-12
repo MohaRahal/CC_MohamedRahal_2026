@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class FormasPagamentoReadDto
 {
@@ -20,3 +20,4 @@ public class FormasPagamentoUpdateDto
     public string? Descricao { get; set; }
     public bool? Ativo { get; set; }
 }
+

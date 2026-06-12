@@ -1,4 +1,4 @@
-using MySqlConnector;
+﻿using MySqlConnector;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -99,3 +99,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

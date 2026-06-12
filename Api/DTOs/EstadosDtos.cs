@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class EstadosReadDto
 {
@@ -24,3 +24,4 @@ public class EstadosUpdateDto
     public string? Estado { get; set; }
     public int? CodPais { get; set; }
 }
+

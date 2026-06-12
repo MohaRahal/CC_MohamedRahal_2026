@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class Cidades
 {
@@ -10,3 +10,4 @@ public class Cidades
 
     public Estados? Estado { get; set; }
 }
+

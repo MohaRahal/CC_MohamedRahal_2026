@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class ProdNfe
 {
@@ -22,3 +22,4 @@ public class ProdNfe
     public Nfe? Nfe { get; set; }
     public Produtos? Produto { get; set; }
 }
+

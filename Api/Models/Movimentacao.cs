@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class Movimentacao
 {
@@ -18,3 +18,4 @@ public class Movimentacao
     public Produtos? Produto { get; set; }
     public Users? User { get; set; }
 }
+

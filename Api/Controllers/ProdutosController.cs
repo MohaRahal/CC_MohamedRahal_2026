@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -86,10 +86,10 @@ public class ProdutosController : ControllerBase
         await using var command = _connection.CreateCommand();
         
         command.CommandText = """
-            INSERT INTO produtos (codProd, descProd, NCMSHPROD, undProd, pesoBruto, pesoLiq, saldoProd, custoMedioProd)
-            VALUES (@codProd, @descProd, @NCMSHPROD, @undProd, @pesoBruto, @pesoLiq, @saldoProd, @custoMedioProd);
+            INSERT INTO produtos ( descProd, NCMSHPROD, undProd, pesoBruto, pesoLiq, saldoProd, custoMedioProd)
+            VALUES ( @descProd, @NCMSHPROD, @undProd, @pesoBruto, @pesoLiq, @saldoProd, @custoMedioProd);
             """;
-        command.Parameters.AddWithValue("@codProd", produtoDto.CodProduto);
+
         command.Parameters.AddWithValue("@descProd", produtoDto.DescProd);
         command.Parameters.AddWithValue("@NCMSHPROD", produtoDto.NcmshProd);
         command.Parameters.AddWithValue("@undProd", produtoDto.UndProd.HasValue ? produtoDto.UndProd.Value : DBNull.Value);
@@ -101,7 +101,7 @@ public class ProdutosController : ControllerBase
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
         {
-            return CreatedAtAction(nameof(BuscarPorCodigo), new { codProduto = produtoDto.CodProduto }, null);
+            return Ok("Produto criado com sucesso");
         }
         else
         {
@@ -190,3 +190,4 @@ public class ProdutosController : ControllerBase
         };
     }
 }
+

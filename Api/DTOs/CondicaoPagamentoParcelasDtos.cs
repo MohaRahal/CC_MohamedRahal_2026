@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class CondicaoPagamentoParcelasReadDto
 {
@@ -26,3 +26,4 @@ public class CondicaoPagamentoParcelasUpdateDto
     public int? DiasVencimento { get; set; }
     public decimal? Percentual { get; set; }
 }
+

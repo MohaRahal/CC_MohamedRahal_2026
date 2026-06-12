@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -194,3 +194,4 @@ public class PaisesController : ControllerBase
         return valor == DBNull.Value ? string.Empty : Convert.ToString(valor) ?? string.Empty;
     }
 }
+

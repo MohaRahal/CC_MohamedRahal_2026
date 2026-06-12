@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class UsersReadDto
 {
@@ -25,3 +25,4 @@ public class UsersUpdateDto
     public int? RoleId { get; set; }
     public bool? Ativo { get; set; }
 }
+

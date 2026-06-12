@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class CidadesReadDto
 {
@@ -21,3 +21,4 @@ public class CidadesUpdateDto
     public string? Cidade { get; set; }
     public int? CodEstado { get; set; }
 }
+

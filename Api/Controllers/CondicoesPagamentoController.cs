@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -91,7 +91,7 @@ public class CondicoesPagamentoController : ControllerBase
         }
         else
         {
-            return StatusCode(500, "Ocorreu um erro ao criar a condição de pagamento.");
+            return StatusCode(500, "Ocorreu um erro ao criar a condiÃ§Ã£o de pagamento.");
         }
     }
      [Authorize]
@@ -164,3 +164,4 @@ public class CondicoesPagamentoController : ControllerBase
         };
     }
 }
+

@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -83,6 +83,7 @@ public class NcmshController : ControllerBase
         command.Parameters.AddWithValue("@aliqIpiProdNFe", ncmshDto.AliqIpiProdNfe.HasValue ? ncmshDto.AliqIpiProdNfe.Value : DBNull.Value);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
+
         if (rowsAffected > 0)
         {
             return CreatedAtAction(nameof(BuscarPorCodigo), new { codigo = ncmshDto.Codigo }, null);
@@ -159,3 +160,4 @@ public class NcmshController : ControllerBase
         };
     }
 }
+

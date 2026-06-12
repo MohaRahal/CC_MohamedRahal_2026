@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class Fornecedores
 {
@@ -18,3 +18,4 @@ public class Fornecedores
 
     public Cidades? Cidade { get; set; }
 }
+

@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class NcmshReadDto
 {
@@ -21,3 +21,4 @@ public class NcmshUpdateDto
     public decimal? AliqIcmsProdNfe { get; set; }
     public decimal? AliqIpiProdNfe { get; set; }
 }
+

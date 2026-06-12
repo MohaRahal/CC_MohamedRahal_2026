@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -170,3 +170,4 @@ public class CondicaoPagamentoParcelasController : ControllerBase
         };
     }
 }
+

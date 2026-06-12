@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class ProdutosReadDto
 {
@@ -16,7 +16,6 @@ public class ProdutosReadDto
 
 public class ProdutosCreateDto
 {
-    public int CodProduto { get; set; }
     public string DescProd { get; set; } = string.Empty;
     public string NcmshProd { get; set; } = string.Empty;
     public int? UndProd { get; set; }
@@ -36,3 +35,4 @@ public class ProdutosUpdateDto
     public decimal? SaldoProd { get; set; }
     public decimal? CustoMedioProd { get; set; }
 }
+

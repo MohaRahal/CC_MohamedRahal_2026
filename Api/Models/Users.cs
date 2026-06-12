@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class Users
 {
@@ -12,3 +12,4 @@ public class Users
 
     public Role? Role { get; set; }
 }
+

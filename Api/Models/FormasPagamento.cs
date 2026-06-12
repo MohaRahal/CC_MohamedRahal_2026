@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class FormasPagamento
 {
@@ -8,3 +8,4 @@ public class FormasPagamento
     public DateTime CriadoEm { get; set; }
     public DateTime AtualizadoEm { get; set; }
 }
+

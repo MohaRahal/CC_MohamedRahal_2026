@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class CondicoesPagamentoReadDto
 {
@@ -23,3 +23,4 @@ public class CondicoesPagamentoUpdateDto
     public int? QtdParcelas { get; set; }
     public bool? Ativo { get; set; }
 }
+

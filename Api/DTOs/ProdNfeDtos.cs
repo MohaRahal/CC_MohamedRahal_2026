@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class ProdNfeCompletoReadDto
 {
@@ -49,3 +49,4 @@ public class ProdNfeUpdateDto
     public decimal? AliqIpiProdNfe { get; set; }
     public decimal? BaseCalcIcmsProd { get; set; }
 }
+

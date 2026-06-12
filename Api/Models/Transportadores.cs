@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 
 public class Transportadores
@@ -14,3 +14,4 @@ public class Transportadores
 
     public Cidades? Cidade { get; set; }
 }
+

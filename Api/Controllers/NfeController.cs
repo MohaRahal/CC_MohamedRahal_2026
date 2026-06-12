@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using System.Data;
@@ -92,7 +92,7 @@ public class NfeController : ControllerBase
         await using var readerNfe = await commandNfe.ExecuteReaderAsync(cancellationToken);
         if (!await readerNfe.ReadAsync(cancellationToken))
         {
-            return NotFound("Nota fiscal não encontrada.");
+            return NotFound("Nota fiscal nÃ£o encontrada.");
         }
 
         var nfe = MapearNfeCompleta(readerNfe);
@@ -259,7 +259,7 @@ public class NfeController : ControllerBase
             if (rowsAffected == 0)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return NotFound("Nota fiscal não encontrada.");
+                return NotFound("Nota fiscal nÃ£o encontrada.");
             }
 
             await transaction.CommitAsync(cancellationToken);
@@ -348,3 +348,4 @@ public class NfeController : ControllerBase
         return item;
     }
 }
+

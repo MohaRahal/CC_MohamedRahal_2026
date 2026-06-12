@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class FornecedoresReadDto
 {
@@ -44,3 +44,4 @@ public class FornecedoresUpdateDto
     public string? InscEstSubTrib { get; set; }
     public string? Cnpj { get; set; }
 }
+

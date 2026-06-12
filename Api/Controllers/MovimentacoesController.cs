@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
@@ -9,7 +9,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize] // Protegido para apenas usuários logados
+[Authorize] 
 public class MovimentacoesController : ControllerBase
 {
     private readonly MySqlConnection _connection;
@@ -19,7 +19,7 @@ public class MovimentacoesController : ControllerBase
         _connection = connection;
     }
 
-    // GET: api/movimentacoes
+    
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MovimentacaoReadDto>>> Listar(CancellationToken cancellationToken)
     {
@@ -62,25 +62,25 @@ public class MovimentacoesController : ControllerBase
         return Ok(movimentacoes);
     }
 
-    // POST: api/movimentacoes (Usado para Ajustes Manuais Pelo Frontend)
+    
     [HttpPost]
     public async Task<ActionResult> CriarAjusteManual([FromBody] MovimentacaoCreateDto dto, CancellationToken cancellationToken)
     {
-        // 1. Pegando o ID do usuário que fez a requisição usando o Token
+        
         var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var idUser = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
 
         if (dto.Quantidade <= 0) return BadRequest("A quantidade deve ser maior que zero.");
-        if (dto.Tipo != "Entrada" && dto.Tipo != "Saida") return BadRequest("Tipo inválido. Use 'Entrada' ou 'Saida'.");
+        if (dto.Tipo != "Entrada" && dto.Tipo != "Saida") return BadRequest("Tipo invÃ¡lido. Use 'Entrada' ou 'Saida'.");
 
         await _connection.OpenAsync(cancellationToken);
         
-        // Iniciando uma Transação (Garante que se falhar no meio, nada é salvo)
+        
         await using var transaction = await _connection.BeginTransactionAsync(cancellationToken);
 
         try
         {
-            // 2. Pega o Saldo Anterior do banco e tranca a linha (FOR UPDATE) para evitar problemas de concorrência
+            
             await using var cmdSaldo = _connection.CreateCommand();
             cmdSaldo.Transaction = transaction;
             cmdSaldo.CommandText = "SELECT saldoProd FROM produtos WHERE codProduto = @codProduto FOR UPDATE";
@@ -90,12 +90,12 @@ public class MovimentacoesController : ControllerBase
             if (saldoObj == null)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return NotFound("Produto não encontrado.");
+                return NotFound("Produto nÃ£o encontrado.");
             }
 
             decimal saldoAnterior = Convert.ToDecimal(saldoObj);
             
-            // 3. Calcula qual será o Novo Saldo
+            
             decimal saldoAtual = dto.Tipo == "Entrada" 
                 ? saldoAnterior + dto.Quantidade 
                 : saldoAnterior - dto.Quantidade;
@@ -103,10 +103,10 @@ public class MovimentacoesController : ControllerBase
             if (saldoAtual < 0)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return BadRequest("Atenção: Saldo insuficiente para realizar essa saída.");
+                return BadRequest("AtenÃ§Ã£o: Saldo insuficiente para realizar essa saÃ­da.");
             }
 
-            // 4. Salva a Movimentação com os valores calculados
+            
             await using var cmdMov = _connection.CreateCommand();
             cmdMov.Transaction = transaction;
             cmdMov.CommandText = """
@@ -122,7 +122,7 @@ public class MovimentacoesController : ControllerBase
             cmdMov.Parameters.AddWithValue("@motivo", dto.Motivo);
             await cmdMov.ExecuteNonQueryAsync(cancellationToken);
 
-            // 5. Atualiza o saldo real na tabela de Produtos
+            
             await using var cmdUpd = _connection.CreateCommand();
             cmdUpd.Transaction = transaction;
             cmdUpd.CommandText = "UPDATE produtos SET saldoProd = @saldoAtual WHERE codProduto = @codProduto";
@@ -130,14 +130,15 @@ public class MovimentacoesController : ControllerBase
             cmdUpd.Parameters.AddWithValue("@codProduto", dto.CodProduto);
             await cmdUpd.ExecuteNonQueryAsync(cancellationToken);
 
-            // Tudo deu certo, confirma o banco de dados!
+            
             await transaction.CommitAsync(cancellationToken);
-            return Ok(new { mensagem = "Movimentação registrada e estoque atualizado com sucesso!" });
+            return Ok(new { mensagem = "MovimentaÃ§Ã£o registrada e estoque atualizado com sucesso!" });
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
-            return StatusCode(500, $"Erro ao processar movimentação: {ex.Message}");
+            return StatusCode(500, $"Erro ao processar movimentaÃ§Ã£o: {ex.Message}");
         }
     }
 }
+

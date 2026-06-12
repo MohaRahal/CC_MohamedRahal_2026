@@ -1,4 +1,4 @@
-using Api.DTOs;
+﻿using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -99,7 +99,7 @@ public class UsersController : ControllerBase
         }
         else
         {
-            return StatusCode(500, "Ocorreu um erro ao criar o usuário.");
+            return StatusCode(500, "Ocorreu um erro ao criar o usuÃ¡rio.");
         }
     }
      [Authorize]
@@ -174,3 +174,4 @@ public class UsersController : ControllerBase
         };
     }
 }
+
