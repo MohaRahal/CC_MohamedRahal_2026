@@ -34,15 +34,15 @@ function FloatingNavbar() {
       {/*  <NavItem icon={<Boxes size={18} strokeWidth={1.5} />} label="Estoque" isExpanded={isExpanded} to="/Estoque" />
         <NavItem icon={<StickyNoteCheck size={18} strokeWidth={1.5} />} label="Vendas" isExpanded={isExpanded} to="/Vendas" />*/}
         <NavItem icon={<Users size={18} strokeWidth={1.5} />} label="Fornecedores" isExpanded={isExpanded} to="/Fornecedores" />
+        <NavItem icon={<UserRoundCheck size={18} strokeWidth={1.5} />} label="Funcionários" isExpanded={isExpanded} to="/funcionarios" />
+        <NavItem icon={<UserCog size={18} strokeWidth={1.5} />} label="Cargos" isExpanded={isExpanded} to="/cargos" />
         <NavItem icon={<UserCog size={18} strokeWidth={1.5} />} label="Usuários" isExpanded={isExpanded} to="/Usuarios" />
-       {/* <NavItem icon={<Wallet size={18} strokeWidth={1.5} />} label="Financeiro" isExpanded={isExpanded} to="/Financeiro" />
-        <NavItem icon={<ArrowLeftRight size={18} strokeWidth={1.5} />} label="Movimentações" isExpanded={isExpanded} to="/Movimentacoes" />
-        <NavItem icon={<ShieldAlert size={18} strokeWidth={1.5} />} label="Logs" isExpanded={isExpanded} to="/Logs" />*/}
         <NavItem icon={<Earth size={18} strokeWidth={1.5} />} label="Países" isExpanded={isExpanded} to="/paises" />
         <NavItem icon={<Map size={18} strokeWidth={1.5} />} label="Estados" isExpanded={isExpanded} to="/estados" />
         <NavItem icon={<MapPin size={18} strokeWidth={1.5} />} label="Cidades" isExpanded={isExpanded} to="/cidades" />
-        <NavItem icon={<UserCog size={18} strokeWidth={1.5} />} label="Cargos" isExpanded={isExpanded} to="/cargos" />
-        <NavItem icon={<UserRoundCheck size={18} strokeWidth={1.5} />} label="Funcionários" isExpanded={isExpanded} to="/funcionarios" />
+       {/* <NavItem icon={<Wallet size={18} strokeWidth={1.5} />} label="Financeiro" isExpanded={isExpanded} to="/Financeiro" />
+        <NavItem icon={<ArrowLeftRight size={18} strokeWidth={1.5} />} label="Movimentações" isExpanded={isExpanded} to="/Movimentacoes" />
+        <NavItem icon={<ShieldAlert size={18} strokeWidth={1.5} />} label="Logs" isExpanded={isExpanded} to="/Logs" />*/}
         
       </div>
 
