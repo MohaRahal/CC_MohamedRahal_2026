@@ -339,7 +339,7 @@ create table funcionarios(
     `codFuncionario` int(11) not null auto_increment,
     `funcionario` varchar(25) not null,
     `cpf` varchar(11) not null unique,
-    `data_nascimento` date not null,
+    `data_nascimento` varchar(11) not null,
     `sexo` varchar(1) not null,
     `codCargo` int(11) not null,
     `ender` varchar(50) DEFAULT NULL,

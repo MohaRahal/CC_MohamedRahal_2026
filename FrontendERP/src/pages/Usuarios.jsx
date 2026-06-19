@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Loader2 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, Plus, Loader2, Edit2, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import AnimatedPage from './AnimatedPage';
 import { usersService } from '../services/usersService';
+import { cargosService } from '../services/cargosService';
 
 export default function Usuarios() {
+  const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
+  const [cargos, setCargos] = useState({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     fetchUsuarios();
+    fetchCargos();
   }, []);
 
   const fetchUsuarios = async () => {
@@ -25,8 +30,37 @@ export default function Usuarios() {
     }
   };
 
+  const fetchCargos = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const data = await cargosService.getCargos(token);
+      // build a lookup map: { codCargo: nomeCargo }
+      const map = {};
+      (data || []).forEach(c => { map[c.codCargo] = c.cargo; });
+      setCargos(map);
+    } catch (error) {
+      console.error("Erro ao carregar cargos:", error);
+    }
+  };
+
+  const handleDeleteClick = async (id, nome) => {
+    const confirmou = window.confirm(`Tem certeza que deseja excluir o usuário "${nome}"?`);
+    if (confirmou) {
+      try {
+        setDeletingId(id);
+        await usersService.deleteUser(id);
+        setUsuarios(usuarios.filter(u => u.codUsuario !== id));
+      } catch (error) {
+        console.error("Erro ao deletar:", error);
+        alert("Não foi possível excluir o usuário.");
+      } finally {
+        setDeletingId(null);
+      }
+    }
+  };
+
   const filteredUsuarios = usuarios.filter(u => 
-    u.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    u.usuario?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -39,7 +73,7 @@ export default function Usuarios() {
               <h1 className="text-3xl font-light text-gray-900 tracking-tight">Usuários</h1>
               <p className="text-sm text-gray-500 mt-1">Gerencie os acessos, senhas e permissões da equipe</p>
             </div>
-            <Link to="/Usuarios/AddUser" className="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
+            <Link to="/Usuarios/AddUser" className="flex items-center gap-2 bg-ink-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md">
               <Plus size={16} />
               Novo Usuário
             </Link>
@@ -49,14 +83,14 @@ export default function Usuarios() {
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
               type="text" 
-              placeholder="Buscar por nome..." 
+              placeholder="Buscar por usuário..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all shadow-sm"
             />
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             {loading ? (
               <div className="flex justify-center items-center py-20">
                 <Loader2 className="animate-spin text-gray-400" size={24} />
@@ -66,30 +100,36 @@ export default function Usuarios() {
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">ID</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Nível de Acesso</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Funcionário</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Status</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Cadastrado em</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Atualizado em</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filteredUsuarios.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="py-16 text-center text-sm text-gray-500">
+                      <td colSpan="8" className="py-16 text-center text-sm text-gray-500">
                         Nenhum usuário encontrado.
                       </td>
                     </tr>
                   ) : (
                     filteredUsuarios.map(usuario => (
-                      <tr key={usuario.id} className="hover:bg-gray-50/50 transition-colors group">
+                      <tr key={usuario.codUsuario} className="hover:bg-gray-50/50 transition-colors group">
                         <td className="py-4 px-6 text-[13px] text-gray-400 font-mono">
-                          #{usuario.id.toString().padStart(3, '0')}
+                          #{usuario.codUsuario.toString().padStart(3, '0')}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium">
-                          {usuario.name}
+                          {usuario.usuario}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {usuario.roleId === 1 ? 'Administrador' : 'Usuário Padrão'}
+                          {cargos[usuario.codCargo] ?? `#${usuario.codCargo}`}
+                        </td>
+                        <td className="py-4 px-6 text-[13px] text-gray-600">
+                          {usuario.codFuncionario}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-center">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
@@ -99,7 +139,26 @@ export default function Usuarios() {
                           </span>
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-500 text-right">
-                          {new Date(usuario.criadoEm).toLocaleDateString('pt-BR')}
+                          {new Date(usuario.criado_em).toLocaleDateString('pt-BR')}
+                        </td>
+                        <td className="py-4 px-6 text-[13px] text-gray-500 text-right">
+                          {new Date(usuario.atualizado_em).toLocaleDateString('pt-BR')}
+                        </td>
+                        <td className="py-4 px-6 text-[13px] text-right">
+                          <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button 
+                              onClick={() => navigate(`/Usuarios/editar/${usuario.codUsuario}`)}
+                              className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">
+                              <Edit2 size={16} />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteClick(usuario.codUsuario, usuario.usuario)}
+                              disabled={deletingId === usuario.codUsuario}
+                              className={`transition-colors cursor-pointer ${deletingId === usuario.codUsuario ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`} 
+                              title="Excluir">
+                              {deletingId === usuario.codUsuario ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))

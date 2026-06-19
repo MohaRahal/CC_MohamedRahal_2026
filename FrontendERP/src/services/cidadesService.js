@@ -1,64 +1,64 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-export const paisesService = {
-    getPaises: async (token) => {
-        const response = await fetch(`${API_BASE_URL}/api/paises`, {
+export const cidadesService = {
+    getCidades: async (token) => {
+        const response = await fetch(`${API_BASE_URL}/api/cidades`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
         });
-        if (!response.ok) throw new Error("Erro ao buscar países");
+        if (!response.ok) throw new Error("Erro ao buscar cidades");
         return response.json();
     },
 
-    getPaisById: async (token, codPais) => {
-        const response = await fetch(`${API_BASE_URL}/api/paises/${codPais}`, {
+    getCidadeById: async (token, codCidade) => {
+        const response = await fetch(`${API_BASE_URL}/api/cidades/${codCidade}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
         });
-        if (!response.ok) throw new Error("Erro ao buscar país");
+        if (!response.ok) throw new Error("Erro ao buscar cidade");
         return response.json();
     },
 
-    createPais: async (token, paisData) => {
-        const response = await fetch(`${API_BASE_URL}/api/paises`, {
+    createCidade: async (token, cidadeData) => {
+        const response = await fetch(`${API_BASE_URL}/api/cidades`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(paisData),
+            body: JSON.stringify(cidadeData),
         });
-        if (!response.ok) throw new Error("Erro ao criar país");
+        if (!response.ok) throw new Error("Erro ao criar cidade");
         return response.json().catch(() => null);
     },
 
-    updatePais: async (token, codPais, paisData) => {
-        const response = await fetch(`${API_BASE_URL}/api/paises/${codPais}`, {
+    updateCidade: async (token, codCidade, cidadeData) => {
+        const response = await fetch(`${API_BASE_URL}/api/cidades/${codCidade}`, {
             method: "PATCH",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(paisData),
+            body: JSON.stringify(cidadeData),
         });
-        if (!response.ok) throw new Error("Erro ao atualizar país");
+        if (!response.ok) throw new Error("Erro ao atualizar cidade");
         return true;
     },
 
-    deletePais: async (token, codPais) => {
-        const response = await fetch(`${API_BASE_URL}/api/paises/${codPais}`, {
+    deleteCidade: async (token, codCidade) => {
+        const response = await fetch(`${API_BASE_URL}/api/cidades/${codCidade}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${token}`,
             },
         });
-        if (!response.ok) throw new Error("Erro ao deletar país");
+        if (!response.ok) throw new Error("Erro ao deletar cidade");
         return true;
     }
 };

@@ -1,6 +1,9 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Boxes, Settings,ShieldAlert,ArrowLeftRight, LogOut, Wallet, StickyNoteCheck, Users, UserCog, Earth } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { 
+  LayoutDashboard, Users, UserCog, LogOut, FileText, 
+  Settings, FolderKanban, ShieldAlert, Boxes, ArrowLeftRight, UserRoundCheck, Wallet, HandCoins, Earth, StickyNoteCheck, Map, MapPin
+} from 'lucide-react';
 
 function FloatingNavbar() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -28,14 +31,19 @@ function FloatingNavbar() {
 
       <div className="flex flex-row gap-1 pl-3">
         <NavItem icon={<LayoutDashboard size={18} strokeWidth={1.5} />} label="Dashboard" isExpanded={isExpanded} to="/dashboard" />
-        <NavItem icon={<Boxes size={18} strokeWidth={1.5} />} label="Estoque" isExpanded={isExpanded} to="/Estoque" />
-        <NavItem icon={<StickyNoteCheck size={18} strokeWidth={1.5} />} label="Vendas" isExpanded={isExpanded} to="/Vendas" />
+      {/*  <NavItem icon={<Boxes size={18} strokeWidth={1.5} />} label="Estoque" isExpanded={isExpanded} to="/Estoque" />
+        <NavItem icon={<StickyNoteCheck size={18} strokeWidth={1.5} />} label="Vendas" isExpanded={isExpanded} to="/Vendas" />*/}
         <NavItem icon={<Users size={18} strokeWidth={1.5} />} label="Fornecedores" isExpanded={isExpanded} to="/Fornecedores" />
         <NavItem icon={<UserCog size={18} strokeWidth={1.5} />} label="Usuários" isExpanded={isExpanded} to="/Usuarios" />
-        <NavItem icon={<Wallet size={18} strokeWidth={1.5} />} label="Financeiro" isExpanded={isExpanded} to="/Financeiro" />
+       {/* <NavItem icon={<Wallet size={18} strokeWidth={1.5} />} label="Financeiro" isExpanded={isExpanded} to="/Financeiro" />
         <NavItem icon={<ArrowLeftRight size={18} strokeWidth={1.5} />} label="Movimentações" isExpanded={isExpanded} to="/Movimentacoes" />
-        <NavItem icon={<ShieldAlert size={18} strokeWidth={1.5} />} label="Logs" isExpanded={isExpanded} to="/Logs" />
-        <NavItem icon={<Earth size={18} strokeWidth={1.5} />} label="Geografia" isExpanded={isExpanded} to="/Geografia" />
+        <NavItem icon={<ShieldAlert size={18} strokeWidth={1.5} />} label="Logs" isExpanded={isExpanded} to="/Logs" />*/}
+        <NavItem icon={<Earth size={18} strokeWidth={1.5} />} label="Países" isExpanded={isExpanded} to="/paises" />
+        <NavItem icon={<Map size={18} strokeWidth={1.5} />} label="Estados" isExpanded={isExpanded} to="/estados" />
+        <NavItem icon={<MapPin size={18} strokeWidth={1.5} />} label="Cidades" isExpanded={isExpanded} to="/cidades" />
+        <NavItem icon={<UserCog size={18} strokeWidth={1.5} />} label="Cargos" isExpanded={isExpanded} to="/cargos" />
+        <NavItem icon={<UserRoundCheck size={18} strokeWidth={1.5} />} label="Funcionários" isExpanded={isExpanded} to="/funcionarios" />
+        
       </div>
 
       <div className="ml-2 pl-3 pr-1 border-l border-paper-white/10">

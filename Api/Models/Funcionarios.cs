@@ -3,7 +3,7 @@ public class Funcionarios{
     public int codFuncionario { get; set; }
     public string funcionario { get; set; } = string.Empty;
     public string cpf {get; set;} = string.Empty;
-    public DateOnly data_nascimento { get; set;}
+    public string data_nascimento { get; set;} = string.Empty;
     public string sexo { get; set;} = string.Empty;
     public int codCargo { get; set;}
     

@@ -18,6 +18,15 @@ export const usersService = {
         return await response.json();
     },
 
+    getUserById: async (id) => {
+        const response = await fetch(`${API_URL}/api/users/${id}`, {
+            method: "GET",
+            headers: getAuthHeaders(),
+        });
+        if (!response.ok) throw new Error("Erro ao buscar usuário");
+        return await response.json();
+    },
+
     createUser: async (userData) => {
         const response = await fetch(`${API_URL}/api/users`, {
             method: "POST",
@@ -28,7 +37,7 @@ export const usersService = {
             const error = await response.text();
             throw new Error(error || "Erro ao criar usuário");
         }
-        return await response.json();
+        // API returns 201 with no body
     },
 
     updateUser: async (id, userData) => {

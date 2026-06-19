@@ -9,12 +9,12 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RoleController : ControllerBase
+public class CargosController : ControllerBase
 {
     private readonly MySqlConnection _connection;
 
     [ActivatorUtilitiesConstructor]
-    public RoleController(MySqlConnection connection)
+    public CargosController(MySqlConnection connection)
     {
         _connection = connection;
     }
