@@ -1,14 +1,22 @@
-﻿namespace Api.Models;
+namespace Api.Models;
 
 public class Veiculos
 {
-    public int CodVeic { get; set; }
-    public string PlacaVeic { get; set; } = string.Empty;
-    public int CodEstado { get; set; }
-    public int CodAntt { get; set; }
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+   public int codVeiculo { get; set; }
+   public string? placaVeiculo { get; set; }
+   public string? placaMercosul { get; set; }
+   public string? chassi { get; set; }
+   public int codModelo { get; set; }
+   public int codTransportador { get; set; }
+   public int? codEstado { get; set; }
+   public string? codANTT { get; set; }
+   public int codUsuario { get; set; }
+   public DateTime criado_em { get; set; }
+   public DateTime atualizado_em { get; set; }
 
-    public Estados? Estado { get; set; }
+   public Modelos Modelo { get; set; } = null!;
+   public Transportadores Transportador { get; set; } = null!;
+   public Estados? Estado { get; set; }
+   public Usuarios Usuario { get; set; } = null!;
 }
 

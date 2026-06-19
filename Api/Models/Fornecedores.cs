@@ -1,21 +1,30 @@
-﻿namespace Api.Models;
+namespace Api.Models;
 
 public class Fornecedores
 {
-    public int CodFor { get; set; }
-    public string RazaoSocial { get; set; } = string.Empty;
-    public string Endereco { get; set; } = string.Empty;
-    public string Bairro { get; set; } = string.Empty;
-    public int CodCidade { get; set; }
-    public string Cep { get; set; } = string.Empty;
-    public string Fone { get; set; } = string.Empty;
-    public string Email { get; set; } = string.Empty;
-    public string InscEst { get; set; } = string.Empty;
-    public string InscEstSubTrib { get; set; } = string.Empty;
-    public string Cnpj { get; set; } = string.Empty;
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public int codForn { get; set; }
+    public string fornecedor { get; set; } = string.Empty;
+    public string apelido_NomeFantasia { get; set; } = string.Empty;
+    public string ender { get; set; } = string.Empty;
+    public string numero { get; set; } = string.Empty;
+    public string complemento { get; set; } = string.Empty;
+    public string bairro { get; set; } = string.Empty;
+    public int codCidade { get; set; }
+    public string cep { get; set; } = string.Empty;
+    public string site { get; set; } = string.Empty;
+    public string fone { get; set; } = string.Empty;
+    public string email { get; set; } = string.Empty;
+    public int codCondPagamento { get; set; }
+    public decimal limiteCredito { get; set; }
+    public string rg_inscEst { get; set; } = string.Empty;
+    public string tipoPessoa { get; set; } = string.Empty;
+    public string cpf_cnpj { get; set; } = string.Empty;
+    public int codUsuario { get; set; }
+
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
 
     public Cidades? Cidade { get; set; }
+    public Usuarios? Usuario { get; set; }
 }
 

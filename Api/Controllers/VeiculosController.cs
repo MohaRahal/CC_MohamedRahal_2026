@@ -1,4 +1,4 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +13,7 @@ public class VeiculosController : ControllerBase
     {
         _connection = connection;
     }
-    [Authorize]
+////[Authorize]
     [HttpGet]
     public async Task<ActionResult<List<VeiculosReadDto>>> Listar(CancellationToken cancellationToken)
     {
@@ -24,13 +24,17 @@ public class VeiculosController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codVeic AS CodVeic,
-                placaVeic AS PlacaVeic,
-                codEstado AS CodEstado,
-                codANTT AS CodAntt,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM veiculo
+                codVeiculo,
+                placaVeiculo,
+                placaMercosul,
+                chassi,
+                codModelo,
+                codTransportador,
+                codEstado,
+                codANTT,
+                criado_em,
+                atualizado_em
+            FROM veiculos
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -39,25 +43,29 @@ public class VeiculosController : ControllerBase
         }
         return Ok(veiculos);
     }
-     [Authorize]
-    [HttpGet("{codVeic:int}")]
-    public async Task<ActionResult<VeiculosReadDto>> BuscarPorCodigo(int codVeic, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpGet("{codVeiculo:int}")]
+    public async Task<ActionResult<VeiculosReadDto>> BuscarPorCodigo(int codVeiculo, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codVeic AS CodVeic,
-                placaVeic AS PlacaVeic,
-                codEstado AS CodEstado,
-                codANTT AS CodAntt,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM veiculo
-            WHERE codVeic = @codVeic
+                codVeiculo,
+                placaVeiculo,
+                placaMercosul,
+                chassi,
+                codModelo,
+                codTransportador,
+                codEstado,
+                codANTT,
+                criado_em,
+                atualizado_em
+            FROM veiculos
+            WHERE codVeiculo = @codVeiculo
             """;
-        command.Parameters.AddWithValue("@codVeic", codVeic);
+        command.Parameters.AddWithValue("@codVeiculo", codVeiculo);
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
@@ -69,41 +77,52 @@ public class VeiculosController : ControllerBase
             return NotFound();
         }
     }
-    [Authorize]
+////[Authorize]
     [HttpPost]
     public async Task<ActionResult> Criar([FromBody] VeiculosCreateDto veiculoDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var idUserLogado = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO veiculo (placaVeic, codEstado, codANTT)
-            VALUES (@placaVeic, @codEstado, @codANTT);
+            INSERT INTO veiculos (placaVeiculo, placaMercosul, chassi, codModelo, codTransportador, codEstado, codANTT, codUsuario)
+            VALUES (@placaVeiculo, @placaMercosul, @chassi, @codModelo, @codTransportador, @codEstado, @codANTT, @codUsuario);
             """;
-        command.Parameters.AddWithValue("@placaVeic", veiculoDto.PlacaVeic);
-        command.Parameters.AddWithValue("@codEstado", veiculoDto.CodEstado.HasValue ? veiculoDto.CodEstado.Value : DBNull.Value);
-        command.Parameters.AddWithValue("@codANTT", veiculoDto.CodAntt);
+        command.Parameters.AddWithValue("@placaVeiculo", string.IsNullOrEmpty(veiculoDto.placaVeiculo) ? (object)DBNull.Value : veiculoDto.placaVeiculo);
+        command.Parameters.AddWithValue("@placaMercosul", string.IsNullOrEmpty(veiculoDto.placaMercosul) ? (object)DBNull.Value : veiculoDto.placaMercosul);
+        command.Parameters.AddWithValue("@chassi", string.IsNullOrEmpty(veiculoDto.chassi) ? (object)DBNull.Value : veiculoDto.chassi);
+        command.Parameters.AddWithValue("@codModelo", veiculoDto.codModelo);
+        command.Parameters.AddWithValue("@codTransportador", veiculoDto.codTransportador);
+        command.Parameters.AddWithValue("@codEstado", veiculoDto.codEstado.HasValue ? veiculoDto.codEstado.Value : DBNull.Value);
+        command.Parameters.AddWithValue("@codANTT", string.IsNullOrEmpty(veiculoDto.codANTT) ? (object)DBNull.Value : veiculoDto.codANTT);
+        command.Parameters.AddWithValue("@codUsuario", idUserLogado);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
         {
-            return CreatedAtAction(nameof(BuscarPorCodigo), new { codVeic = command.LastInsertedId }, null);
+            return CreatedAtAction(nameof(BuscarPorCodigo), new { codVeiculo = command.LastInsertedId }, null);
         }
         else
         {
-            return StatusCode(500, "Ocorreu um erro ao criar o veÃ­culo.");
+            return StatusCode(500, "Ocorreu um erro ao criar o veículo.");
         }
     }
-     [Authorize]
-    [HttpPatch("{codVeic:int}")]
-    public async Task<ActionResult> Atualizar(int codVeic, [FromBody] VeiculosUpdateDto veiculoDto, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpPatch("{codVeiculo:int}")]
+    public async Task<ActionResult> Atualizar(int codVeiculo, [FromBody] VeiculosUpdateDto veiculoDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         var updates = new List<string>();
-        if (veiculoDto.PlacaVeic != null) updates.Add("placaVeic = @placaVeic");
-        if (veiculoDto.CodEstado.HasValue) updates.Add("codEstado = @codEstado");
-        if (veiculoDto.CodAntt != null) updates.Add("codANTT = @codANTT");
+        if (veiculoDto.placaVeiculo != null) updates.Add("placaVeiculo = @placaVeiculo");
+        if (veiculoDto.placaMercosul != null) updates.Add("placaMercosul = @placaMercosul");
+        if (veiculoDto.chassi != null) updates.Add("chassi = @chassi");
+        if (veiculoDto.codModelo.HasValue) updates.Add("codModelo = @codModelo");
+        if (veiculoDto.codTransportador.HasValue) updates.Add("codTransportador = @codTransportador");
+        if (veiculoDto.codEstado.HasValue) updates.Add("codEstado = @codEstado");
+        if (veiculoDto.codANTT != null) updates.Add("codANTT = @codANTT");
 
         if (updates.Count == 0)
         {
@@ -111,14 +130,19 @@ public class VeiculosController : ControllerBase
         }
 
         var updateClause = string.Join(", ", updates);
-        var commandText = $"UPDATE veiculo SET {updateClause} WHERE codVeic = @codVeic";
+        var commandText = $"UPDATE veiculos SET {updateClause} WHERE codVeiculo = @codVeiculo";
 
         await using var command = _connection.CreateCommand();
         command.CommandText = commandText;
-        command.Parameters.AddWithValue("@codVeic", codVeic);
-        if (veiculoDto.PlacaVeic != null) command.Parameters.AddWithValue("@placaVeic", veiculoDto.PlacaVeic);
-        if (veiculoDto.CodEstado.HasValue) command.Parameters.AddWithValue("@codEstado", veiculoDto.CodEstado.Value);
-        if (veiculoDto.CodAntt != null) command.Parameters.AddWithValue("@codANTT", veiculoDto.CodAntt);
+        command.Parameters.AddWithValue("@codVeiculo", codVeiculo);
+        
+        if (veiculoDto.placaVeiculo != null) command.Parameters.AddWithValue("@placaVeiculo", veiculoDto.placaVeiculo);
+        if (veiculoDto.placaMercosul != null) command.Parameters.AddWithValue("@placaMercosul", veiculoDto.placaMercosul);
+        if (veiculoDto.chassi != null) command.Parameters.AddWithValue("@chassi", veiculoDto.chassi);
+        if (veiculoDto.codModelo.HasValue) command.Parameters.AddWithValue("@codModelo", veiculoDto.codModelo.Value);
+        if (veiculoDto.codTransportador.HasValue) command.Parameters.AddWithValue("@codTransportador", veiculoDto.codTransportador.Value);
+        if (veiculoDto.codEstado.HasValue) command.Parameters.AddWithValue("@codEstado", veiculoDto.codEstado.Value);
+        if (veiculoDto.codANTT != null) command.Parameters.AddWithValue("@codANTT", veiculoDto.codANTT);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -130,15 +154,15 @@ public class VeiculosController : ControllerBase
             return NotFound();
         }
     }
-    [Authorize]
-    [HttpDelete("{codVeic:int}")]
-    public async Task<ActionResult> Deletar(int codVeic, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpDelete("{codVeiculo:int}")]
+    public async Task<ActionResult> Deletar(int codVeiculo, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
-        command.CommandText = "DELETE FROM veiculo WHERE codVeic = @codVeic";
-        command.Parameters.AddWithValue("@codVeic", codVeic);
+        command.CommandText = "DELETE FROM veiculos WHERE codVeiculo = @codVeiculo";
+        command.Parameters.AddWithValue("@codVeiculo", codVeiculo);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -155,13 +179,16 @@ public class VeiculosController : ControllerBase
     {
         return new VeiculosReadDto
         {
-            CodVeic = reader.GetInt32("CodVeic"),
-            PlacaVeic = reader.IsDBNull(reader.GetOrdinal("PlacaVeic")) ? string.Empty : reader.GetString("PlacaVeic"),
-            CodEstado = reader.IsDBNull(reader.GetOrdinal("CodEstado")) ? null : reader.GetInt32("CodEstado"),
-            CodAntt = reader.IsDBNull(reader.GetOrdinal("CodAntt")) ? string.Empty : reader.GetString("CodAntt"),
-            CriadoEm = reader.GetDateTime("CriadoEm"),
-            AtualizadoEm = reader.GetDateTime("AtualizadoEm")
+            codVeiculo = reader.GetInt32("codVeiculo"),
+            placaVeiculo = reader.IsDBNull(reader.GetOrdinal("placaVeiculo")) ? string.Empty : reader.GetString("placaVeiculo"),
+            placaMercosul = reader.IsDBNull(reader.GetOrdinal("placaMercosul")) ? string.Empty : reader.GetString("placaMercosul"),
+            chassi = reader.IsDBNull(reader.GetOrdinal("chassi")) ? string.Empty : reader.GetString("chassi"),
+            codModelo = reader.GetInt32("codModelo"),
+            codTransportador = reader.GetInt32("codTransportador"),
+            codEstado = reader.IsDBNull(reader.GetOrdinal("codEstado")) ? null : reader.GetInt32("codEstado"),
+            codANTT = reader.IsDBNull(reader.GetOrdinal("codANTT")) ? string.Empty : reader.GetString("codANTT"),
+            criado_em = reader.GetDateTime("criado_em"),
+            atualizado_em = reader.GetDateTime("atualizado_em")
         };
     }
 }
-

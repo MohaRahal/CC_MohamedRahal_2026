@@ -1,4 +1,4 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using MySqlConnector;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,22 +19,22 @@ public class RoleController : ControllerBase
         _connection = connection;
     }
     
-    [Authorize]
+////[Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<RoleReadDto>>> Listar(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<CargoReadDto>>> Listar(CancellationToken cancellationToken)
     {
-        var roles = new List<RoleReadDto>();
+        var roles = new List<CargoReadDto>();
 
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                id AS Id,
-                name AS Name,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM roles
+                codCargo,
+                cargo,
+                criado_em,
+                atualizado_em
+            FROM cargos
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -44,23 +44,23 @@ public class RoleController : ControllerBase
         return Ok(roles);
     
     }
-     [Authorize]
+////[Authorize]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<RoleReadDto>> BuscarPorId(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<CargoReadDto>> BuscarPorId(int id, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                id AS Id,
-                name AS Name,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM roles
-            WHERE id = @id
+                codCargo,
+                cargo,
+                criado_em,
+                atualizado_em
+            FROM cargos
+            WHERE codCargo = @codCargo
             """;
-        command.Parameters.AddWithValue("@id", id);
+        command.Parameters.AddWithValue("@codCargo", id);
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
         {
@@ -71,38 +71,38 @@ public class RoleController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPost]
-    public async Task<ActionResult> Criar([FromBody] RoleCreateDto role, CancellationToken cancellationToken)
+    public async Task<ActionResult> Criar([FromBody] CargoCreateDto role, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO roles (name)
-            VALUES (@name);
+            INSERT INTO cargos (cargo)
+            VALUES (@cargo);
             """;
-        command.Parameters.AddWithValue("@name", role.Name);
+        command.Parameters.AddWithValue("@cargo", role.cargo);
 
         await command.ExecuteNonQueryAsync(cancellationToken);
         var id = command.LastInsertedId;
 
         return CreatedAtAction(nameof(BuscarPorId), new { id }, role);
     }
-     [Authorize]
+////[Authorize]
     [HttpPatch("{id:int}")]
-    public async Task<ActionResult> Atualizar(int id, [FromBody] RoleUpdateDto role, CancellationToken cancellationToken)
+    public async Task<ActionResult> Atualizar(int id, [FromBody] CargoUpdateDto role, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            UPDATE roles
-            SET name = @name
-            WHERE id = @id;
+            UPDATE cargos
+            SET cargo = @cargo
+            WHERE codCargo = @codCargo;
             """;
-        command.Parameters.AddWithValue("@name", role.Name);
-        command.Parameters.AddWithValue("@id", id);
+        command.Parameters.AddWithValue("@cargo", role.cargo);
+        command.Parameters.AddWithValue("@codCargo", id);
         
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
@@ -115,17 +115,17 @@ public class RoleController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Deletar(int id, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
         var command = _connection.CreateCommand();
         command.CommandText = """
-            DELETE FROM roles
-            WHERE id = @id;
+            DELETE FROM cargos
+            WHERE codCargo = @codCargo;
             """;
-        command.Parameters.AddWithValue("@id", id);
+        command.Parameters.AddWithValue("@codCargo", id);
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);  
         if (rowsAffected > 0)
         {
@@ -137,14 +137,14 @@ public class RoleController : ControllerBase
         }
     }
 
-    private static RoleReadDto MapearRole(MySqlDataReader reader)
+    private static CargoReadDto MapearRole(MySqlDataReader reader)
     {
-        return new RoleReadDto
+        return new CargoReadDto
         {
-            Id = reader.GetInt32("Id"),
-            Name = reader.GetString("Name"),
-            created_at = reader.GetDateTime("CriadoEm"),
-            updated_at = reader.GetDateTime("AtualizadoEm")
+            codCargo = reader.GetInt32("codCargo"),
+            cargo = reader.GetString("cargo"),
+            criado_em = reader.GetDateTime("criado_em"),
+            atualizado_em = reader.GetDateTime("atualizado_em")
         };
     }
 }

@@ -34,7 +34,7 @@ export default function Estoque() {
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
         <div className="max-w-5xl mx-auto">
           
-          {/* Cabeçalho Minimalista */}
+         
           <div className="flex justify-between items-end mb-8">
             <div>
               <h1 className="text-3xl font-light text-gray-900 tracking-tight">Estoque</h1>
@@ -46,7 +46,7 @@ export default function Estoque() {
             </button>
           </div>
 
-          {/* Barra de Busca Clean */}
+          
           <div className="mb-6 relative">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input 
@@ -58,7 +58,7 @@ export default function Estoque() {
             />
           </div>
 
-          {/* Tabela Minimalista */}
+        
           <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
             {loading ? (
               <div className="flex justify-center items-center py-20">

@@ -26,8 +26,8 @@ CREATE TABLE `cidades` (
   `codCidade` int(11) NOT NULL AUTO_INCREMENT,
   `cidade` varchar(100) DEFAULT NULL,
   `codEstado` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codCidade`),
   KEY `codEstado` (`codEstado`),
   CONSTRAINT `cidades_ibfk_1` FOREIGN KEY (`codEstado`) REFERENCES `estados` (`codEstado`)
@@ -56,8 +56,8 @@ CREATE TABLE `condicao_pagamento_parcelas` (
   `numeroParcela` int(11) NOT NULL,
   `diasVencimento` int(11) NOT NULL,
   `percentual` decimal(5,2) DEFAULT 100.00,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codParcela`),
   KEY `codCondPagamento` (`codCondPagamento`),
   CONSTRAINT `condicao_pagamento_parcelas_ibfk_1` FOREIGN KEY (`codCondPagamento`) REFERENCES `condicoes_pagamento` (`codCondPagamento`)
@@ -85,8 +85,8 @@ CREATE TABLE `condicoes_pagamento` (
   `descricao` varchar(100) NOT NULL,
   `qtdParcelas` int(11) NOT NULL,
   `ativo` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codCondPagamento`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -112,8 +112,8 @@ CREATE TABLE `estados` (
   `UF` char(2) DEFAULT NULL,
   `estado` varchar(100) DEFAULT NULL,
   `codPais` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codEstado`),
   KEY `codPais` (`codPais`),
   CONSTRAINT `estados_ibfk_1` FOREIGN KEY (`codPais`) REFERENCES `paises` (`codPais`)
@@ -141,8 +141,8 @@ CREATE TABLE `formas_pagamento` (
   `codFormaPagamento` int(11) NOT NULL AUTO_INCREMENT,
   `descricao` varchar(100) NOT NULL,
   `ativo` tinyint(1) DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codFormaPagamento`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -176,8 +176,8 @@ CREATE TABLE `fornecedores` (
   `inscEst` varchar(30) DEFAULT NULL,
   `InscEstSubTrib` varchar(30) DEFAULT NULL,
   `cnpj` varchar(20) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codForn`),
   KEY `codCidade` (`codCidade`),
   CONSTRAINT `fornecedores_ibfk_1` FOREIGN KEY (`codCidade`) REFERENCES `cidades` (`codCidade`)
@@ -231,8 +231,8 @@ CREATE TABLE `ncm_sh` (
   `ncmSh` varchar(10) NOT NULL,
   `aliqIcmsProdNFe` decimal(10,2) DEFAULT NULL,
   `aliqIpiProdNFe` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`ncmSh`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -285,8 +285,8 @@ CREATE TABLE `nfe` (
   `pesoBrutoVol` decimal(10,2) DEFAULT NULL,
   `pesoLiqVol` decimal(10,2) DEFAULT NULL,
   `infComp` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `codFormaPagamento` int(11) DEFAULT NULL,
   `codCondPagamento` int(11) DEFAULT NULL,
   PRIMARY KEY (`numNfe`,`serie`,`modelo`,`codForn`),
@@ -363,8 +363,8 @@ CREATE TABLE `prod_nfe` (
   `aliqIcmsProdNFe` decimal(10,2) DEFAULT NULL,
   `aliqIpiProdNFe` decimal(10,2) DEFAULT NULL,
   `baseCalcIcmsProd` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`numNfe`,`serie`,`modelo`,`codProd`),
   KEY `codProd` (`codProd`),
   CONSTRAINT `prod_nfe_ibfk_1` FOREIGN KEY (`numNfe`, `serie`, `modelo`) REFERENCES `nfe` (`numNfe`, `serie`, `modelo`),
@@ -397,8 +397,8 @@ CREATE TABLE `produtos` (
   `pesoLiq` decimal(10,2) DEFAULT NULL,
   `saldoProd` decimal(10,2) DEFAULT NULL,
   `custoMedioProd` decimal(10,2) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codProd`),
   KEY `NCMSHPROD` (`NCMSHPROD`),
   CONSTRAINT `produtos_ibfk_1` FOREIGN KEY (`NCMSHPROD`) REFERENCES `ncm_sh` (`ncmSh`)
@@ -424,8 +424,8 @@ DROP TABLE IF EXISTS `roles`;
 CREATE TABLE `roles` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -455,8 +455,8 @@ CREATE TABLE `transportadores` (
   `codCidade` int(11) DEFAULT NULL,
   `razaoSocTransp` varchar(150) DEFAULT NULL,
   `inscEstTransp` varchar(30) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codTransp`),
   KEY `codCidade` (`codCidade`),
   CONSTRAINT `transportadores_ibfk_1` FOREIGN KEY (`codCidade`) REFERENCES `cidades` (`codCidade`)
@@ -484,8 +484,8 @@ CREATE TABLE `users` (
   `name` varchar(50) NOT NULL,
   `senha` varchar(100) NOT NULL,
   `roleid` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`),
   KEY `roleid` (`roleid`),
@@ -515,8 +515,8 @@ CREATE TABLE `veiculo` (
   `placaVeic` varchar(10) DEFAULT NULL,
   `codEstado` int(11) DEFAULT NULL,
   `codANTT` varchar(20) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
+  `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codVeic`),
   KEY `codEstado` (`codEstado`),
   CONSTRAINT `veiculo_ibfk_1` FOREIGN KEY (`codEstado`) REFERENCES `estados` (`codEstado`)

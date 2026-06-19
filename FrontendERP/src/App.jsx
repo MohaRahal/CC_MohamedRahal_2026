@@ -12,6 +12,7 @@ import Vendas from './pages/Vendas';
 import Financeiro from './pages/Financeiro';
 import NotFound from './pages/NotFound';
 import Layout from './Layout';
+import Paises from './pages/Paises';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -31,6 +32,7 @@ function AnimatedRoutes() {
           <Route path="/Fornecedores" element={<Fornecedores />} />
           <Route path="/Vendas" element={<Vendas />} />
           <Route path="/Financeiro" element={<Financeiro />} />
+          <Route path="/paises" element={<Paises />} />
         </Route>
         
         <Route path="*" element={<NotFound />} />

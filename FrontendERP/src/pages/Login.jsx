@@ -30,7 +30,6 @@ export default function Login() {
 
       const data = await response.json();
 
-      // Salva o token JWT e as informações do usuário (id, name, roleid)
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.usuario));
 
@@ -46,7 +45,7 @@ export default function Login() {
   return (
     <AnimatedPage>
       <div className="w-full h-screen flex relative overflow-hidden bg-paper-white text-ink-black">
-        {/* Left Side: Form (White Editorial Surface) */}
+       
         <div className="w-full md:w-1/2 flex flex-col justify-center px-12 md:px-24 z-10">
           <h1 className="text-[78px] leading-[1.15] font-[300] mb-[64px] tracking-normal whitespace-pre-wrap">
             I  N  T  E  G  R  A   |   ONE
@@ -75,7 +74,7 @@ export default function Login() {
               />
             </div>
 
-            {/* Mensagem de Erro */}
+            
             {error && (
               <p className="text-red-500 text-sm mt-1">{error}</p>
             )}
@@ -93,16 +92,14 @@ export default function Login() {
           </form>
         </div>
 
-        {/* Right Side: Immersive Image Frame */}
+        
         <div className="hidden md:block md:w-1/2 relative bg-ink-black overflow-hidden group">
-          {/* User Image */}
+         
           <img
             src="/Logo.png"
             alt="logo"
             className="absolute inset-0 w-full h-full object-cover z-0 group-hover:scale-105 transition-transform duration-1000 ease-in-out"
           />
-
-          {/* Overlay gradient to maintain the cinematic darkroom vibe */}
           <div className="absolute inset-0 z-10 bg-gradient-to-br mix-blend-multiply pointer-events-none"></div>
         </div>
       </div>

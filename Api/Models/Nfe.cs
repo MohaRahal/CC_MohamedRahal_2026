@@ -1,40 +1,42 @@
-﻿namespace Api.Models;
+namespace Api.Models;
 
 public class Nfe
 {
-    public int NumNfe { get; set; }
-    public int Serie { get; set; }
-    public int Modelo { get; set; }
-    public int CodFornecedor { get; set; }
-    public int Pagina { get; set; }
-    public string NatOper { get; set; } = string.Empty;
-    public string ProtAcesso { get; set; } = string.Empty;
-    public DateTime DataProtAcesso { get; set; }
-    public TimeOnly HoraProtAcesso { get; set; }
-    public string ChaveAcessoNFe { get; set; } = string.Empty;
-    public DateTime DataEmitNfe { get; set; }
-    public DateTime DataEntNfe { get; set; }
-    public TimeOnly HoraEntNfe { get; set; }
-    public decimal ValorIcms { get; set; }
-    public decimal BaseCalcIcmsSub { get; set; }
-    public decimal ValorIcmsSub { get; set; }
-    public decimal ValorFreteNfe { get; set; }
-    public decimal ValorSeguroNfe { get; set; }
-    public decimal DescontoNfe { get; set; }
-    public decimal OutrasDespesasNfe { get; set; }
-    public decimal ValorIpi { get; set; }
-    public int? CodTransportadora { get; set; }
-    public int FretePorContaNfe { get; set; }
-    public int? CodVeiculo { get; set; }
-    public int QtdadeVol { get; set; }
-    public string EspecieVol { get; set; } = string.Empty;
-    public string MarcaVol { get; set; } = string.Empty;
-    public decimal PesoBrutoVol { get; set; }
-    public decimal PesoLiquidoVol { get; set; }
-    public int CodFormaPagamento { get; set; }
-    public int CodCondicaoPagamento { get; set; }
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public int numNfe { get; set; }
+    public int serie { get; set; }
+    public int modelo { get; set; }
+    public int codForn { get; set; }
+    public int? pagina { get; set; }
+    public string? natOper { get; set; }
+    public string? protAcesso { get; set; }
+    public DateOnly? dataProtAcesso { get; set; }
+    public TimeOnly? horaProtAcesso { get; set; }
+    public string? chaveAcessoNFe { get; set; }
+    public DateOnly? dataEmitNfe { get; set; }
+    public DateOnly? dataEntNfe { get; set; }
+    public TimeOnly? horaEntNFe { get; set; }
+    public decimal? baseCalcIcms { get; set; }
+    public decimal? valorIcms { get; set; }
+    public decimal? baseCalcIcmsSub { get; set; }
+    public decimal? valorIcmsSub { get; set; }
+    public decimal? valorFreteNFe { get; set; }
+    public decimal? valorSeguroNFe { get; set; }
+    public decimal? descontoNFe { get; set; }
+    public decimal? outrasDespNfe { get; set; }
+    public decimal? valorIpi { get; set; }
+    public int? codTransp { get; set; }
+    public int? fretePorContaNFe { get; set; }
+    public int? codVeic { get; set; }
+    public int? qtdadeVol { get; set; }
+    public string? especieVol { get; set; }
+    public string? marcaVol { get; set; }
+    public decimal? pesoBrutoVol { get; set; }
+    public decimal? pesoLiqVol { get; set; }
+    public string? infComp { get; set; }
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
+    public int? codFormaPagamento { get; set; }
+    public int? codCondPagamento { get; set; }
 
     public Fornecedores? Fornecedor { get; set; }
     public Transportadores? Transportadora { get; set; }

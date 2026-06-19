@@ -1,26 +1,27 @@
-﻿namespace Api.DTOs;
+namespace Api.DTOs;
 
 public class PaisesCreateDto
 {
-    public string Nome { get; set; } = string.Empty;
-    public string Sigla { get; set; } = string.Empty;
-    public string Ddi { get; set; } = string.Empty;
-    public string Moeda { get; set; } = string.Empty;
+    public string pais { get; set; } = string.Empty;
+    public string sigla { get; set; } = string.Empty;
+    public string ddi { get; set; } = string.Empty;
+    public string moeda { get; set; } = string.Empty;
 }
 public class PaisesReadDto
 {
-    public int CodPais { get; set; }
-    public string Nome { get; set; } = string.Empty;
-    public string Sigla { get; set; } = string.Empty;
-    public string Ddi { get; set; } = string.Empty;
-    public string Moeda { get; set; } = string.Empty;
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public int codPais { get; set; }
+    public string pais { get; set; } = string.Empty;
+    public string sigla { get; set; } = string.Empty;
+    public string ddi { get; set; } = string.Empty;
+    public string moeda { get; set; } = string.Empty;
+    public int codUsuario { get; set; }
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
 }
 public class PaisesUpdateDto
 {
-    public string? Nome { get; set; }
-    public string? Sigla { get; set; }
-    public string? Ddi { get; set; }
-    public string? Moeda { get; set; }
+    public string? pais { get; set; }
+    public string? sigla { get; set; }
+    public string? ddi { get; set; }
+    public string? moeda { get; set; }
 }

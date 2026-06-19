@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Boxes, Settings,ShieldAlert,ArrowLeftRight, LogOut, Wallet, StickyNoteCheck, Users, UserCog } from 'lucide-react';
+import { LayoutDashboard, Boxes, Settings,ShieldAlert,ArrowLeftRight, LogOut, Wallet, StickyNoteCheck, Users, UserCog, Earth } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 function FloatingNavbar() {
@@ -19,9 +19,6 @@ function FloatingNavbar() {
       onMouseLeave={() => setIsExpanded(false)}
     >
       <div className="flex items-center pr-3 border-r border-paper-white/10 shrink-0">
-        <div className="w-8 h-8 rounded-full bg-paper-white text-ink-black flex items-center justify-center font-bold text-[14px] shrink-0 ml-1">
-          I
-        </div>
         <span 
           className={`text-paper-white font-[300] tracking-widest text-[11px] whitespace-nowrap transition-all duration-1000 ease-in-out overflow-hidden ${isExpanded ? 'opacity-100 max-w-[150px] ml-4 pr-2' : 'opacity-0 max-w-0 ml-0 pr-0'}`}
         >
@@ -38,6 +35,7 @@ function FloatingNavbar() {
         <NavItem icon={<Wallet size={18} strokeWidth={1.5} />} label="Financeiro" isExpanded={isExpanded} to="/Financeiro" />
         <NavItem icon={<ArrowLeftRight size={18} strokeWidth={1.5} />} label="Movimentações" isExpanded={isExpanded} to="/Movimentacoes" />
         <NavItem icon={<ShieldAlert size={18} strokeWidth={1.5} />} label="Logs" isExpanded={isExpanded} to="/Logs" />
+        <NavItem icon={<Earth size={18} strokeWidth={1.5} />} label="Geografia" isExpanded={isExpanded} to="/Geografia" />
       </div>
 
       <div className="ml-2 pl-3 pr-1 border-l border-paper-white/10">

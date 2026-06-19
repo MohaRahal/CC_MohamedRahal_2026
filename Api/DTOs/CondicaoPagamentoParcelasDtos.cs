@@ -1,29 +1,31 @@
-﻿namespace Api.DTOs;
+namespace Api.DTOs;
 
 public class CondicaoPagamentoParcelasReadDto
 {
-    public int CodParcela { get; set; }
-    public int CodCondPagamento { get; set; }
-    public int NumParcela { get; set; }
-    public int DiasVencimento { get; set; }
-    public decimal Percentual { get; set; }
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public int codCondPagamento { get; set; }
+    public int numeroParcela { get; set; }
+    public int diasVencimento { get; set; }
+    public int codFormaPagamento { get; set; }
+    public decimal percentual { get; set; }
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
 }
 
 public class CondicaoPagamentoParcelasCreateDto
 {
-    public int CodCondPagamento { get; set; }
-    public int NumParcela { get; set; }
-    public int DiasVencimento { get; set; }
-    public decimal? Percentual { get; set; }
+    public int codCondPagamento { get; set; }
+    public int numeroParcela { get; set; }
+    public int diasVencimento { get; set; }
+    public int codFormaPagamento { get; set; }
+    public decimal? percentual { get; set; }
 }
 
 public class CondicaoPagamentoParcelasUpdateDto
 {
-    public int? CodCondPagamento { get; set; }
-    public int? NumParcela { get; set; }
-    public int? DiasVencimento { get; set; }
-    public decimal? Percentual { get; set; }
+    public int? codCondPagamento { get; set; }
+    public int? numeroParcela { get; set; }
+    public int? diasVencimento { get; set; }
+    public int? codFormaPagamento { get; set; }
+    public decimal? percentual { get; set; }
 }
 

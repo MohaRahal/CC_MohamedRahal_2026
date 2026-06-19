@@ -1,8 +1,8 @@
-﻿namespace Api.DTOs;
+namespace Api.DTOs;
 
 public class LoginDto
 {
-    public string Name { get; set; } = string.Empty;
-    public string Senha { get; set; } = string.Empty;
+    public string usuario { get; set; } = string.Empty;
+    public string senha { get; set; } = string.Empty;
 }
 

@@ -1,4 +1,4 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +13,7 @@ public class ProdutosController : ControllerBase
     {
         _connection = connection;
     }
-     [Authorize]
+////[Authorize]
     [HttpGet]
     public async Task<ActionResult<List<ProdutosReadDto>>> Listar(CancellationToken cancellationToken)
     {
@@ -24,16 +24,21 @@ public class ProdutosController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codProd AS CodProduto,
-                descProd AS DescProd,
-                NCMSHPROD AS NcmshProd,
-                undProd AS UndProd,
-                pesoBruto AS PesoProd,
-                pesoLiq AS PesoLiq,
-                saldoProd AS SaldoProd,
-                custoMedioProd AS CustoMedioProd,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
+                codProd,
+                produto,
+                codMarca,
+                codGrupo,
+                codUnidade,
+                codigoBarras,
+                undProd,
+                pesoBruto,
+                pesoLiq,
+                saldoProd,
+                precoVenda,
+                precoCompra,
+                custoMedioProd,
+                criado_em,
+                atualizado_em
             FROM produtos
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -43,29 +48,34 @@ public class ProdutosController : ControllerBase
         }
         return Ok(produtos);
     }
-     [Authorize]
-    [HttpGet("{codProduto:int}")]
-    public async Task<ActionResult<ProdutosReadDto>> BuscarPorCodigo(int codProduto, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpGet("{codProd:int}")]
+    public async Task<ActionResult<ProdutosReadDto>> BuscarPorCodigo(int codProd, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codProd AS CodProduto,
-                descProd AS DescProd,
-                NCMSHPROD AS NcmshProd,
-                undProd AS UndProd,
-                pesoBruto AS PesoProd,
-                pesoLiq AS PesoLiq,
-                saldoProd AS SaldoProd,
-                custoMedioProd AS CustoMedioProd,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
+                codProd,
+                produto,
+                codMarca,
+                codGrupo,
+                codUnidade,
+                codigoBarras,
+                undProd,
+                pesoBruto,
+                pesoLiq,
+                saldoProd,
+                precoVenda,
+                precoCompra,
+                custoMedioProd,
+                criado_em,
+                atualizado_em
             FROM produtos
             WHERE codProd = @codProd
             """;
-        command.Parameters.AddWithValue("@codProd", codProduto);
+        command.Parameters.AddWithValue("@codProd", codProd);
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
@@ -77,51 +87,65 @@ public class ProdutosController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPost]
     public async Task<ActionResult> Criar([FromBody] ProdutosCreateDto produtoDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var idUserLogado = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
+
         await using var command = _connection.CreateCommand();
         
         command.CommandText = """
-            INSERT INTO produtos ( descProd, NCMSHPROD, undProd, pesoBruto, pesoLiq, saldoProd, custoMedioProd)
-            VALUES ( @descProd, @NCMSHPROD, @undProd, @pesoBruto, @pesoLiq, @saldoProd, @custoMedioProd);
+            INSERT INTO produtos (produto, codMarca, codGrupo, codUnidade, codigoBarras, undProd, pesoBruto, pesoLiq, saldoProd, precoVenda, precoCompra, custoMedioProd, codUsuario)
+            VALUES (@produto, @codMarca, @codGrupo, @codUnidade, @codigoBarras, @undProd, @pesoBruto, @pesoLiq, @saldoProd, @precoVenda, @precoCompra, @custoMedioProd, @codUsuario);
             """;
 
-        command.Parameters.AddWithValue("@descProd", produtoDto.DescProd);
-        command.Parameters.AddWithValue("@NCMSHPROD", produtoDto.NcmshProd);
-        command.Parameters.AddWithValue("@undProd", produtoDto.UndProd.HasValue ? produtoDto.UndProd.Value : DBNull.Value);
-        command.Parameters.AddWithValue("@pesoBruto", produtoDto.PesoProd.HasValue ? produtoDto.PesoProd.Value : 0m);
-        command.Parameters.AddWithValue("@pesoLiq", produtoDto.PesoLiq.HasValue ? produtoDto.PesoLiq.Value : 0m);
-        command.Parameters.AddWithValue("@saldoProd", produtoDto.SaldoProd.HasValue ? produtoDto.SaldoProd.Value : 0m);
-        command.Parameters.AddWithValue("@custoMedioProd", produtoDto.CustoMedioProd.HasValue ? produtoDto.CustoMedioProd.Value : 0m);
+        command.Parameters.AddWithValue("@produto", string.IsNullOrEmpty(produtoDto.produto) ? (object)DBNull.Value : produtoDto.produto);
+        command.Parameters.AddWithValue("@codMarca", produtoDto.codMarca);
+        command.Parameters.AddWithValue("@codGrupo", produtoDto.codGrupo);
+        command.Parameters.AddWithValue("@codUnidade", produtoDto.codUnidade);
+        command.Parameters.AddWithValue("@codigoBarras", produtoDto.codigoBarras);
+        command.Parameters.AddWithValue("@undProd", string.IsNullOrEmpty(produtoDto.undProd) ? (object)DBNull.Value : produtoDto.undProd);
+        command.Parameters.AddWithValue("@pesoBruto", produtoDto.pesoBruto.HasValue ? produtoDto.pesoBruto.Value : DBNull.Value);
+        command.Parameters.AddWithValue("@pesoLiq", produtoDto.pesoLiq.HasValue ? produtoDto.pesoLiq.Value : DBNull.Value);
+        command.Parameters.AddWithValue("@saldoProd", produtoDto.saldoProd.HasValue ? produtoDto.saldoProd.Value : DBNull.Value);
+        command.Parameters.AddWithValue("@precoVenda", produtoDto.precoVenda);
+        command.Parameters.AddWithValue("@precoCompra", produtoDto.precoCompra);
+        command.Parameters.AddWithValue("@custoMedioProd", produtoDto.custoMedioProd.HasValue ? produtoDto.custoMedioProd.Value : DBNull.Value);
+        command.Parameters.AddWithValue("@codUsuario", idUserLogado);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
         {
-            return Ok("Produto criado com sucesso");
+            return CreatedAtAction(nameof(BuscarPorCodigo), new { codProd = command.LastInsertedId }, null);
         }
         else
         {
             return StatusCode(500, "Ocorreu um erro ao criar o produto.");
         }
     }
-     [Authorize]
-    [HttpPatch("{codProduto:int}")]
-    public async Task<ActionResult> Atualizar(int codProduto, [FromBody] ProdutosUpdateDto produtoDto, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpPatch("{codProd:int}")]
+    public async Task<ActionResult> Atualizar(int codProd, [FromBody] ProdutosUpdateDto produtoDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         var updates = new List<string>();
-        if (produtoDto.DescProd != null) updates.Add("descProd = @descProd");
-        if (produtoDto.NcmshProd != null) updates.Add("NCMSHPROD = @NCMSHPROD");
-        if (produtoDto.UndProd.HasValue) updates.Add("undProd = @undProd");
-        if (produtoDto.PesoProd.HasValue) updates.Add("pesoBruto = @pesoBruto");
-        if (produtoDto.PesoLiq.HasValue) updates.Add("pesoLiq = @pesoLiq");
-        if (produtoDto.SaldoProd.HasValue) updates.Add("saldoProd = @saldoProd");
-        if (produtoDto.CustoMedioProd.HasValue) updates.Add("custoMedioProd = @custoMedioProd");
+        if (produtoDto.produto != null) updates.Add("produto = @produto");
+        if (produtoDto.codMarca.HasValue) updates.Add("codMarca = @codMarca");
+        if (produtoDto.codGrupo.HasValue) updates.Add("codGrupo = @codGrupo");
+        if (produtoDto.codUnidade.HasValue) updates.Add("codUnidade = @codUnidade");
+        if (produtoDto.codigoBarras != null) updates.Add("codigoBarras = @codigoBarras");
+        if (produtoDto.undProd != null) updates.Add("undProd = @undProd");
+        if (produtoDto.pesoBruto.HasValue) updates.Add("pesoBruto = @pesoBruto");
+        if (produtoDto.pesoLiq.HasValue) updates.Add("pesoLiq = @pesoLiq");
+        if (produtoDto.saldoProd.HasValue) updates.Add("saldoProd = @saldoProd");
+        if (produtoDto.precoVenda.HasValue) updates.Add("precoVenda = @precoVenda");
+        if (produtoDto.precoCompra.HasValue) updates.Add("precoCompra = @precoCompra");
+        if (produtoDto.custoMedioProd.HasValue) updates.Add("custoMedioProd = @custoMedioProd");
 
         if (updates.Count == 0)
         {
@@ -133,14 +157,20 @@ public class ProdutosController : ControllerBase
 
         await using var command = _connection.CreateCommand();
         command.CommandText = commandText;
-        command.Parameters.AddWithValue("@codProd", codProduto);
-        if (produtoDto.DescProd != null) command.Parameters.AddWithValue("@descProd", produtoDto.DescProd);
-        if (produtoDto.NcmshProd != null) command.Parameters.AddWithValue("@NCMSHPROD", produtoDto.NcmshProd);
-        if (produtoDto.UndProd.HasValue) command.Parameters.AddWithValue("@undProd", produtoDto.UndProd.Value);
-        if (produtoDto.PesoProd.HasValue) command.Parameters.AddWithValue("@pesoBruto", produtoDto.PesoProd.Value);
-        if (produtoDto.PesoLiq.HasValue) command.Parameters.AddWithValue("@pesoLiq", produtoDto.PesoLiq.Value);
-        if (produtoDto.SaldoProd.HasValue) command.Parameters.AddWithValue("@saldoProd", produtoDto.SaldoProd.Value);
-        if (produtoDto.CustoMedioProd.HasValue) command.Parameters.AddWithValue("@custoMedioProd", produtoDto.CustoMedioProd.Value);
+        command.Parameters.AddWithValue("@codProd", codProd);
+        
+        if (produtoDto.produto != null) command.Parameters.AddWithValue("@produto", produtoDto.produto);
+        if (produtoDto.codMarca.HasValue) command.Parameters.AddWithValue("@codMarca", produtoDto.codMarca.Value);
+        if (produtoDto.codGrupo.HasValue) command.Parameters.AddWithValue("@codGrupo", produtoDto.codGrupo.Value);
+        if (produtoDto.codUnidade.HasValue) command.Parameters.AddWithValue("@codUnidade", produtoDto.codUnidade.Value);
+        if (produtoDto.codigoBarras != null) command.Parameters.AddWithValue("@codigoBarras", produtoDto.codigoBarras);
+        if (produtoDto.undProd != null) command.Parameters.AddWithValue("@undProd", produtoDto.undProd);
+        if (produtoDto.pesoBruto.HasValue) command.Parameters.AddWithValue("@pesoBruto", produtoDto.pesoBruto.Value);
+        if (produtoDto.pesoLiq.HasValue) command.Parameters.AddWithValue("@pesoLiq", produtoDto.pesoLiq.Value);
+        if (produtoDto.saldoProd.HasValue) command.Parameters.AddWithValue("@saldoProd", produtoDto.saldoProd.Value);
+        if (produtoDto.precoVenda.HasValue) command.Parameters.AddWithValue("@precoVenda", produtoDto.precoVenda.Value);
+        if (produtoDto.precoCompra.HasValue) command.Parameters.AddWithValue("@precoCompra", produtoDto.precoCompra.Value);
+        if (produtoDto.custoMedioProd.HasValue) command.Parameters.AddWithValue("@custoMedioProd", produtoDto.custoMedioProd.Value);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -152,15 +182,15 @@ public class ProdutosController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
-    [HttpDelete("{codProduto:int}")]
-    public async Task<ActionResult> Deletar(int codProduto, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpDelete("{codProd:int}")]
+    public async Task<ActionResult> Deletar(int codProd, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = "DELETE FROM produtos WHERE codProd = @codProd";
-        command.Parameters.AddWithValue("@codProd", codProduto);
+        command.Parameters.AddWithValue("@codProd", codProd);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -177,17 +207,21 @@ public class ProdutosController : ControllerBase
     {
         return new ProdutosReadDto
         {
-            CodProduto = reader.GetInt32("CodProduto"),
-            DescProd = reader.IsDBNull(reader.GetOrdinal("DescProd")) ? string.Empty : reader.GetString("DescProd"),
-            NcmshProd = reader.IsDBNull(reader.GetOrdinal("NcmshProd")) ? string.Empty : reader.GetString("NcmshProd"),
-            UndProd = reader.IsDBNull(reader.GetOrdinal("UndProd")) ? null : reader.GetInt32("UndProd"),
-            PesoProd = reader.IsDBNull(reader.GetOrdinal("PesoProd")) ? 0m : reader.GetDecimal("PesoProd"),
-            PesoLiq = reader.IsDBNull(reader.GetOrdinal("PesoLiq")) ? 0m : reader.GetDecimal("PesoLiq"),
-            SaldoProd = reader.IsDBNull(reader.GetOrdinal("SaldoProd")) ? 0m : reader.GetDecimal("SaldoProd"),
-            CustoMedioProd = reader.IsDBNull(reader.GetOrdinal("CustoMedioProd")) ? 0m : reader.GetDecimal("CustoMedioProd"),
-            CriadoEm = reader.GetDateTime("CriadoEm"),
-            AtualizadoEm = reader.GetDateTime("AtualizadoEm")
+            codProd = reader.GetInt32("codProd"),
+            produto = reader.IsDBNull(reader.GetOrdinal("produto")) ? string.Empty : reader.GetString("produto"),
+            codMarca = reader.GetInt32("codMarca"),
+            codGrupo = reader.GetInt32("codGrupo"),
+            codUnidade = reader.GetInt32("codUnidade"),
+            codigoBarras = reader.GetString("codigoBarras"),
+            undProd = reader.IsDBNull(reader.GetOrdinal("undProd")) ? string.Empty : reader.GetString("undProd"),
+            pesoBruto = reader.IsDBNull(reader.GetOrdinal("pesoBruto")) ? null : reader.GetDecimal("pesoBruto"),
+            pesoLiq = reader.IsDBNull(reader.GetOrdinal("pesoLiq")) ? null : reader.GetDecimal("pesoLiq"),
+            saldoProd = reader.IsDBNull(reader.GetOrdinal("saldoProd")) ? null : reader.GetDecimal("saldoProd"),
+            precoVenda = reader.GetDecimal("precoVenda"),
+            precoCompra = reader.GetDecimal("precoCompra"),
+            custoMedioProd = reader.IsDBNull(reader.GetOrdinal("custoMedioProd")) ? null : reader.GetDecimal("custoMedioProd"),
+            criado_em = reader.GetDateTime("criado_em"),
+            atualizado_em = reader.GetDateTime("atualizado_em")
         };
     }
 }
-

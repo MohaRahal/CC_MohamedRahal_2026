@@ -1,13 +1,15 @@
-﻿namespace Api.Models;
+namespace Api.Models;
 
 public class Cidades
 {
-    public int CodCidade { get; set; }
-    public string Cidade { get; set; } = string.Empty;
-    public int CodEstado { get; set; }
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public int codCidade { get; set; }
+    public string cidade { get; set; } = string.Empty;
+    public int codEstado { get; set; }
+    public int codUsuario { get; set; }
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
 
-    public Estados? Estado { get; set; }
+    public Estados Estado { get; set; } = null!;
+    public Usuarios Usuario { get; set; } = null!;
 }
 

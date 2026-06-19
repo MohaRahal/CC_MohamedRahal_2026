@@ -1,27 +1,27 @@
-﻿namespace Api.DTOs;
+namespace Api.DTOs;
 
 public class EstadosReadDto
 {
-    public int CodEstado { get; set; }
-    public string Uf { get; set; } = string.Empty;
-    public string Estado { get; set; } = string.Empty;
-    public int? CodPais { get; set; }
+    public int codEstado { get; set; }
+    public string UF { get; set; } = string.Empty;
+    public string estado { get; set; } = string.Empty;
+    public int? codPais { get; set; }
     public PaisesReadDto? Pais { get; set; }
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
 }
 
 public class EstadosCreateDto
 {
-    public string Uf { get; set; } = string.Empty;
-    public string Estado { get; set; } = string.Empty;
-    public int? CodPais { get; set; }
+    public string UF { get; set; } = string.Empty;
+    public string estado { get; set; } = string.Empty;
+    public int? codPais { get; set; }
 }
 
 public class EstadosUpdateDto
 {
-    public string? Uf { get; set; }
-    public string? Estado { get; set; }
-    public int? CodPais { get; set; }
+    public string? UF { get; set; }
+    public string? estado { get; set; }
+    public int? codPais { get; set; }
 }
 

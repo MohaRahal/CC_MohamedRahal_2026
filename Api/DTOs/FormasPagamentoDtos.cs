@@ -1,23 +1,23 @@
-﻿namespace Api.DTOs;
+namespace Api.DTOs;
 
 public class FormasPagamentoReadDto
 {
-    public int CodFormaPagamento { get; set; }
-    public string Descricao { get; set; } = string.Empty;
-    public bool Ativo { get; set; }
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public int codFormaPagamento { get; set; }
+    public string formaPagamento { get; set; } = string.Empty;
+    public bool ativo { get; set; }
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
 }
 
 public class FormasPagamentoCreateDto
 {
-    public string Descricao { get; set; } = string.Empty;
-    public bool? Ativo { get; set; }
+    public string formaPagamento { get; set; } = string.Empty;
+    public bool? ativo { get; set; }
 }
 
 public class FormasPagamentoUpdateDto
 {
-    public string? Descricao { get; set; }
-    public bool? Ativo { get; set; }
+    public string? formaPagamento { get; set; }
+    public bool? ativo { get; set; }
 }
 

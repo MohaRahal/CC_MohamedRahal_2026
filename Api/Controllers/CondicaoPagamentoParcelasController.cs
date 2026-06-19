@@ -1,4 +1,4 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +13,7 @@ public class CondicaoPagamentoParcelasController : ControllerBase
     {
         _connection = connection;
     }
-     [Authorize]
+////[Authorize]
     [HttpGet]
     public async Task<ActionResult<List<CondicaoPagamentoParcelasReadDto>>> Listar(CancellationToken cancellationToken)
     {
@@ -24,13 +24,13 @@ public class CondicaoPagamentoParcelasController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codParcela AS CodParcela,
-                codCondPagamento AS CodCondPagamento,
-                numeroParcela AS NumParcela,
-                diasVencimento AS DiasVencimento,
-                percentual AS Percentual,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
+                codCondPagamento,
+                numeroParcela,
+                diasVencimento,
+                codFormaPagamento,
+                percentual,
+                criado_em,
+                atualizado_em
             FROM condicao_pagamento_parcelas
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -40,26 +40,27 @@ public class CondicaoPagamentoParcelasController : ControllerBase
         }
         return Ok(parcelas);
     }
-     [Authorize]
-    [HttpGet("{codParcela:int}")]
-    public async Task<ActionResult<CondicaoPagamentoParcelasReadDto>> BuscarPorCodigo(int codParcela, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpGet("{codCondPagamento:int}/{numeroParcela:int}")]
+    public async Task<ActionResult<CondicaoPagamentoParcelasReadDto>> BuscarPorCodigo(int codCondPagamento, int numeroParcela, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codParcela AS CodParcela,
-                codCondPagamento AS CodCondPagamento,
-                numeroParcela AS NumParcela,
-                diasVencimento AS DiasVencimento,
-                percentual AS Percentual,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
+                codCondPagamento,
+                numeroParcela,
+                diasVencimento,
+                codFormaPagamento,
+                percentual,
+                criado_em,
+                atualizado_em
             FROM condicao_pagamento_parcelas
-            WHERE codParcela = @codParcela
+            WHERE codCondPagamento = @codCondPagamento AND numeroParcela = @numeroParcela
             """;
-        command.Parameters.AddWithValue("@codParcela", codParcela);
+        command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+        command.Parameters.AddWithValue("@numeroParcela", numeroParcela);
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
@@ -71,7 +72,7 @@ public class CondicaoPagamentoParcelasController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPost]
     public async Task<ActionResult> Criar([FromBody] CondicaoPagamentoParcelasCreateDto parcelaDto, CancellationToken cancellationToken)
     {
@@ -79,35 +80,35 @@ public class CondicaoPagamentoParcelasController : ControllerBase
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO condicao_pagamento_parcelas (codCondPagamento, numeroParcela, diasVencimento, percentual)
-            VALUES (@codCondPagamento, @numeroParcela, @diasVencimento, @percentual);
+            INSERT INTO condicao_pagamento_parcelas (codCondPagamento, numeroParcela, diasVencimento, codFormaPagamento, percentual)
+            VALUES (@codCondPagamento, @numeroParcela, @diasVencimento, @codFormaPagamento, @percentual);
             """;
-        command.Parameters.AddWithValue("@codCondPagamento", parcelaDto.CodCondPagamento);
-        command.Parameters.AddWithValue("@numeroParcela", parcelaDto.NumParcela);
-        command.Parameters.AddWithValue("@diasVencimento", parcelaDto.DiasVencimento);
-        command.Parameters.AddWithValue("@percentual", parcelaDto.Percentual.HasValue ? parcelaDto.Percentual.Value : DBNull.Value);
+        command.Parameters.AddWithValue("@codCondPagamento", parcelaDto.codCondPagamento);
+        command.Parameters.AddWithValue("@numeroParcela", parcelaDto.numeroParcela);
+        command.Parameters.AddWithValue("@diasVencimento", parcelaDto.diasVencimento);
+        command.Parameters.AddWithValue("@codFormaPagamento", parcelaDto.codFormaPagamento);
+        command.Parameters.AddWithValue("@percentual", parcelaDto.percentual.HasValue ? parcelaDto.percentual.Value : 0m);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
         {
-            return CreatedAtAction(nameof(BuscarPorCodigo), new { codParcela = command.LastInsertedId }, null);
+            return CreatedAtAction(nameof(BuscarPorCodigo), new { codCondPagamento = parcelaDto.codCondPagamento, numeroParcela = parcelaDto.numeroParcela }, null);
         }
         else
         {
             return StatusCode(500, "Ocorreu um erro ao criar a parcela.");
         }
     }
-     [Authorize]
-    [HttpPatch("{codParcela:int}")]
-    public async Task<ActionResult> Atualizar(int codParcela, [FromBody] CondicaoPagamentoParcelasUpdateDto parcelaDto, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpPatch("{codCondPagamento:int}/{numeroParcela:int}")]
+    public async Task<ActionResult> Atualizar(int codCondPagamento, int numeroParcela, [FromBody] CondicaoPagamentoParcelasUpdateDto parcelaDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         var updates = new List<string>();
-        if (parcelaDto.CodCondPagamento.HasValue) updates.Add("codCondPagamento = @codCondPagamento");
-        if (parcelaDto.NumParcela.HasValue) updates.Add("numeroParcela = @numeroParcela");
-        if (parcelaDto.DiasVencimento.HasValue) updates.Add("diasVencimento = @diasVencimento");
-        if (parcelaDto.Percentual.HasValue) updates.Add("percentual = @percentual");
+        if (parcelaDto.diasVencimento.HasValue) updates.Add("diasVencimento = @diasVencimento");
+        if (parcelaDto.codFormaPagamento.HasValue) updates.Add("codFormaPagamento = @codFormaPagamento");
+        if (parcelaDto.percentual.HasValue) updates.Add("percentual = @percentual");
 
         if (updates.Count == 0)
         {
@@ -115,15 +116,15 @@ public class CondicaoPagamentoParcelasController : ControllerBase
         }
 
         var updateClause = string.Join(", ", updates);
-        var commandText = $"UPDATE condicao_pagamento_parcelas SET {updateClause} WHERE codParcela = @codParcela";
+        var commandText = $"UPDATE condicao_pagamento_parcelas SET {updateClause} WHERE codCondPagamento = @codCondPagamento AND numeroParcela = @numeroParcela";
 
         await using var command = _connection.CreateCommand();
         command.CommandText = commandText;
-        command.Parameters.AddWithValue("@codParcela", codParcela);
-        if (parcelaDto.CodCondPagamento.HasValue) command.Parameters.AddWithValue("@codCondPagamento", parcelaDto.CodCondPagamento.Value);
-        if (parcelaDto.NumParcela.HasValue) command.Parameters.AddWithValue("@numeroParcela", parcelaDto.NumParcela.Value);
-        if (parcelaDto.DiasVencimento.HasValue) command.Parameters.AddWithValue("@diasVencimento", parcelaDto.DiasVencimento.Value);
-        if (parcelaDto.Percentual.HasValue) command.Parameters.AddWithValue("@percentual", parcelaDto.Percentual.Value);
+        command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+        command.Parameters.AddWithValue("@numeroParcela", numeroParcela);
+        if (parcelaDto.diasVencimento.HasValue) command.Parameters.AddWithValue("@diasVencimento", parcelaDto.diasVencimento.Value);
+        if (parcelaDto.codFormaPagamento.HasValue) command.Parameters.AddWithValue("@codFormaPagamento", parcelaDto.codFormaPagamento.Value);
+        if (parcelaDto.percentual.HasValue) command.Parameters.AddWithValue("@percentual", parcelaDto.percentual.Value);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -135,15 +136,16 @@ public class CondicaoPagamentoParcelasController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
-    [HttpDelete("{codParcela:int}")]
-    public async Task<ActionResult> Deletar(int codParcela, CancellationToken cancellationToken)
+////[Authorize]
+    [HttpDelete("{codCondPagamento:int}/{numeroParcela:int}")]
+    public async Task<ActionResult> Deletar(int codCondPagamento, int numeroParcela, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
-        command.CommandText = "DELETE FROM condicao_pagamento_parcelas WHERE codParcela = @codParcela";
-        command.Parameters.AddWithValue("@codParcela", codParcela);
+        command.CommandText = "DELETE FROM condicao_pagamento_parcelas WHERE codCondPagamento = @codCondPagamento AND numeroParcela = @numeroParcela";
+        command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+        command.Parameters.AddWithValue("@numeroParcela", numeroParcela);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -160,14 +162,13 @@ public class CondicaoPagamentoParcelasController : ControllerBase
     {
         return new CondicaoPagamentoParcelasReadDto
         {
-            CodParcela = reader.GetInt32("CodParcela"),
-            CodCondPagamento = reader.GetInt32("CodCondPagamento"),
-            NumParcela = reader.GetInt32("NumParcela"),
-            DiasVencimento = reader.GetInt32("DiasVencimento"),
-            Percentual = reader.IsDBNull(reader.GetOrdinal("Percentual")) ? 0m : reader.GetDecimal("Percentual"),
-            CriadoEm = reader.GetDateTime("CriadoEm"),
-            AtualizadoEm = reader.GetDateTime("AtualizadoEm")
+            codCondPagamento = reader.GetInt32("codCondPagamento"),
+            numeroParcela = reader.GetInt32("numeroParcela"),
+            diasVencimento = reader.GetInt32("diasVencimento"),
+            codFormaPagamento = reader.GetInt32("codFormaPagamento"),
+            percentual = reader.GetDecimal("percentual"),
+            criado_em = reader.GetDateTime("criado_em"),
+            atualizado_em = reader.GetDateTime("atualizado_em")
         };
     }
 }
-

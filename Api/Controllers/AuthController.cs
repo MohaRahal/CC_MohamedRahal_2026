@@ -1,4 +1,4 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.IdentityModel.Tokens;
@@ -28,12 +28,12 @@ public class AuthController : ControllerBase
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            SELECT id, name, roleid, ativo
-            FROM users
-            WHERE name = @name AND senha = @senha
+            SELECT codUsuario, usuario, codCargo, ativo
+            FROM usuarios
+            WHERE usuario = @usuario AND senha = @senha
             """;
-        command.Parameters.AddWithValue("@name", login.Name);
-        command.Parameters.AddWithValue("@senha", login.Senha);
+        command.Parameters.AddWithValue("@usuario", login.usuario);
+        command.Parameters.AddWithValue("@senha", login.senha);
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (!await reader.ReadAsync(cancellationToken))
@@ -47,9 +47,9 @@ public class AuthController : ControllerBase
             return Unauthorized(new { mensagem = "UsuÃ¡rio inativo. O acesso estÃ¡ bloqueado." });
         }
 
-        var userId = reader.GetInt32("id");
-        var userName = reader.GetString("name");
-        var roleId = reader.GetInt32("roleid");
+        var userId = reader.GetInt32("codUsuario");
+        var userName = reader.GetString("usuario");
+        var roleId = reader.GetInt32("codCargo");
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var jwtKey = _configuration["Jwt:Key"];

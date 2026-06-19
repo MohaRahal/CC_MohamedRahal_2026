@@ -1,8 +1,7 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
-
 namespace Api.Controllers;
 
 [ApiController]
@@ -14,7 +13,7 @@ public class EstadosController : ControllerBase
     {
         _connection = connection;
     }
-     [Authorize]
+////[Authorize]
     [HttpGet]
     public async Task<ActionResult<List<EstadosReadDto>>> Listar(CancellationToken cancellationToken)
     {
@@ -25,19 +24,19 @@ public class EstadosController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                e.codEstado AS CodEstado,
-                e.estado AS Nome,
-                e.Uf AS Sigla,
-                e.codPais AS CodPais,
-                e.created_at AS CriadoEm,
-                e.updated_at AS AtualizadoEm,
-                p.codPais AS Pais_CodPais,
-                p.pais AS Pais_Nome,
-                p.sigla AS Pais_Sigla,
-                p.DDI AS Pais_Ddi,
-                p.moeda AS Pais_Moeda,
-                p.created_at AS Pais_CriadoEm,
-                p.updated_at AS Pais_AtualizadoEm
+                e.codEstado,
+                e.UF,
+                e.estado,
+                e.codPais,
+                e.criado_em,
+                e.atualizado_em,
+                p.codPais AS Pais_codPais,
+                p.pais AS Pais_pais,
+                p.sigla AS Pais_sigla,
+                p.ddi AS Pais_ddi,
+                p.moeda AS Pais_moeda,
+                p.criado_em AS Pais_criado_em,
+                p.atualizado_em AS Pais_atualizado_em
             FROM estados e
             LEFT JOIN paises p ON e.codPais = p.codPais
             """;
@@ -48,7 +47,7 @@ public class EstadosController : ControllerBase
         }
         return Ok(estados);
     }
-     [Authorize]
+////[Authorize]
     [HttpGet("{codEstado:int}")]
     public async Task<ActionResult<EstadosReadDto>> BuscarPorCodigo(int codEstado, CancellationToken cancellationToken)
     {
@@ -57,19 +56,19 @@ public class EstadosController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                e.codEstado AS CodEstado,
-                e.estado AS Nome,
-                e.Uf AS Sigla,
-                e.codPais AS CodPais,
-                e.created_at AS CriadoEm,
-                e.updated_at AS AtualizadoEm,
-                p.codPais AS Pais_CodPais,
-                p.nome AS Pais_Nome,
-                p.sigla AS Pais_Sigla,
-                p.ddi AS Pais_Ddi,
-                p.moeda AS Pais_Moeda,
-                p.created_at AS Pais_CriadoEm,
-                p.updated_at AS Pais_AtualizadoEm
+                e.codEstado,
+                e.UF,
+                e.estado,
+                e.codPais,
+                e.criado_em,
+                e.atualizado_em,
+                p.codPais AS Pais_codPais,
+                p.pais AS Pais_pais,
+                p.sigla AS Pais_sigla,
+                p.ddi AS Pais_ddi,
+                p.moeda AS Pais_moeda,
+                p.criado_em AS Pais_criado_em,
+                p.atualizado_em AS Pais_atualizado_em
             FROM estados e
             LEFT JOIN paises p ON e.codPais = p.codPais
             WHERE e.codEstado = @codEstado
@@ -86,20 +85,24 @@ public class EstadosController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPost]
-    public async Task<ActionResult> Criar([FromBody] EstadosCreateDto estados, CancellationToken cancellationToken)
+    public async Task<ActionResult> Criar([FromBody] EstadosCreateDto estadoDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var idUserLogado = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
+
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO estados (estado, Uf, codPais)
-            VALUES (@estado, @Uf, @codPais);
+            INSERT INTO estados (UF, estado, codPais, codUsuario)
+            VALUES (@UF, @estado, @codPais, @codUsuario);
             """;
-        command.Parameters.AddWithValue("@estado", estados.Estado);
-        command.Parameters.AddWithValue("@Uf", estados.Uf);
-        command.Parameters.AddWithValue("@codPais", estados.CodPais);
+        command.Parameters.AddWithValue("@UF", estadoDto.UF);
+        command.Parameters.AddWithValue("@estado", estadoDto.estado);
+        command.Parameters.AddWithValue("@codPais", estadoDto.codPais.HasValue ? estadoDto.codPais.Value : DBNull.Value);
+        command.Parameters.AddWithValue("@codUsuario", idUserLogado);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -111,16 +114,16 @@ public class EstadosController : ControllerBase
             return StatusCode(500, "Ocorreu um erro ao criar o estado.");
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPatch("{codEstado:int}")]
-    public async Task<ActionResult> Atualizar(int codEstado, [FromBody] EstadosUpdateDto estados, CancellationToken cancellationToken)
+    public async Task<ActionResult> Atualizar(int codEstado, [FromBody] EstadosUpdateDto estadoDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         var updates = new List<string>();
-        if (estados.Estado != null) updates.Add("estado = @estado");
-        if (estados.Uf != null) updates.Add("Uf = @Uf");
-        if (estados.CodPais.HasValue) updates.Add("codPais = @codPais");
+        if (estadoDto.UF != null) updates.Add("UF = @UF");
+        if (estadoDto.estado != null) updates.Add("estado = @estado");
+        if (estadoDto.codPais.HasValue) updates.Add("codPais = @codPais");
 
         if (updates.Count == 0)
         {
@@ -133,9 +136,9 @@ public class EstadosController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = commandText;
         command.Parameters.AddWithValue("@codEstado", codEstado);
-        if (estados.Estado != null) command.Parameters.AddWithValue("@estado", estados.Estado);
-        if (estados.Uf != null) command.Parameters.AddWithValue("@Uf", estados.Uf);
-        if (estados.CodPais.HasValue) command.Parameters.AddWithValue("@codPais", estados.CodPais.Value);
+        if (estadoDto.UF != null) command.Parameters.AddWithValue("@UF", estadoDto.UF);
+        if (estadoDto.estado != null) command.Parameters.AddWithValue("@estado", estadoDto.estado);
+        if (estadoDto.codPais.HasValue) command.Parameters.AddWithValue("@codPais", estadoDto.codPais.Value);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -147,7 +150,7 @@ public class EstadosController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpDelete("{codEstado:int}")]
     public async Task<ActionResult> Deletar(int codEstado, CancellationToken cancellationToken)
     {
@@ -167,31 +170,30 @@ public class EstadosController : ControllerBase
             return NotFound();
         }
     }
-    
 
     private static EstadosReadDto MapearEstado(MySqlDataReader reader)
     {
         var estado = new EstadosReadDto
         {
-            CodEstado = reader.GetInt32("CodEstado"),
-            Estado = reader.GetString("Nome"),
-            Uf = reader.GetString("Sigla"),
-            CodPais = reader.IsDBNull(reader.GetOrdinal("CodPais")) ? null : reader.GetInt32("CodPais"),
-            CriadoEm = reader.GetDateTime("CriadoEm"),
-            AtualizadoEm = reader.GetDateTime("AtualizadoEm")
+            codEstado = reader.GetInt32("codEstado"),
+            UF = reader.IsDBNull(reader.GetOrdinal("UF")) ? string.Empty : reader.GetString("UF"),
+            estado = reader.IsDBNull(reader.GetOrdinal("estado")) ? string.Empty : reader.GetString("estado"),
+            codPais = reader.IsDBNull(reader.GetOrdinal("codPais")) ? null : reader.GetInt32("codPais"),
+            criado_em = reader.GetDateTime("criado_em"),
+            atualizado_em = reader.GetDateTime("atualizado_em")
         };
 
-        if (!reader.IsDBNull(reader.GetOrdinal("Pais_CodPais")))
+        if (!reader.IsDBNull(reader.GetOrdinal("Pais_codPais")))
         {
             estado.Pais = new PaisesReadDto
             {
-                CodPais = reader.GetInt32("Pais_CodPais"),
-                Nome = reader.GetString("Pais_Nome"),
-                Sigla = reader.GetString("Pais_Sigla"),
-                Ddi = reader.GetString("Pais_Ddi"),
-                Moeda = reader.GetString("Pais_Moeda"),
-                CriadoEm = reader.GetDateTime("Pais_CriadoEm"),
-                AtualizadoEm = reader.GetDateTime("Pais_AtualizadoEm")
+                codPais = reader.GetInt32("Pais_codPais"),
+                pais = reader.IsDBNull(reader.GetOrdinal("Pais_pais")) ? string.Empty : reader.GetString("Pais_pais"),
+                sigla = reader.IsDBNull(reader.GetOrdinal("Pais_sigla")) ? string.Empty : reader.GetString("Pais_sigla"),
+                ddi = reader.IsDBNull(reader.GetOrdinal("Pais_ddi")) ? string.Empty : reader.GetString("Pais_ddi"),
+                moeda = reader.IsDBNull(reader.GetOrdinal("Pais_moeda")) ? string.Empty : reader.GetString("Pais_moeda"),
+                criado_em = reader.GetDateTime("Pais_criado_em"),
+                atualizado_em = reader.GetDateTime("Pais_atualizado_em")
             };
         }
 

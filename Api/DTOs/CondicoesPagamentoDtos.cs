@@ -1,26 +1,35 @@
-﻿namespace Api.DTOs;
+namespace Api.DTOs;
 
 public class CondicoesPagamentoReadDto
 {
-    public int CodCondPagamento { get; set; }
-    public string Descricao { get; set; } = string.Empty;
-    public int QtdParcelas { get; set; }
-    public bool Ativo { get; set; }
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public int codCondPagamento { get; set; }
+    public string condPagamento { get; set; } = string.Empty;
+    public int qtdParcelas { get; set; }
+    public bool ativo { get; set; }
+    public decimal juros { get; set; }
+    public decimal multa { get; set; }
+    public decimal desconto { get; set; }
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
 }
 
 public class CondicoesPagamentoCreateDto
 {
-    public string Descricao { get; set; } = string.Empty;
-    public int QtdParcelas { get; set; }
-    public bool? Ativo { get; set; }
+    public string condPagamento { get; set; } = string.Empty;
+    public int qtdParcelas { get; set; }
+    public bool? ativo { get; set; }
+    public decimal juros { get; set; }
+    public decimal multa { get; set; }
+    public decimal desconto { get; set; }
 }
 
 public class CondicoesPagamentoUpdateDto
 {
-    public string? Descricao { get; set; }
-    public int? QtdParcelas { get; set; }
-    public bool? Ativo { get; set; }
+    public string? condPagamento { get; set; }
+    public int? qtdParcelas { get; set; }
+    public bool? ativo { get; set; }
+    public decimal? juros { get; set; }
+    public decimal? multa { get; set; }
+    public decimal? desconto { get; set; }
 }
 

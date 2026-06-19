@@ -1,4 +1,4 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +13,7 @@ public class CondicoesPagamentoController : ControllerBase
     {
         _connection = connection;
     }
-     [Authorize]
+////[Authorize]
     [HttpGet]
     public async Task<ActionResult<List<CondicoesPagamentoReadDto>>> Listar(CancellationToken cancellationToken)
     {
@@ -24,22 +24,25 @@ public class CondicoesPagamentoController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codCondPagamento AS CodCondPagamento,
-                descricao AS Descricao,
-                qtdParcelas AS QtdParcelas,
-                ativo AS Ativo,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
+                codCondPagamento,
+                condPagamento,
+                qtdParcelas,
+                ativo,
+                juros,
+                multa,
+                desconto,
+                criado_em,
+                atualizado_em
             FROM condicoes_pagamento
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
-            condicoes.Add(MapearCondicao(reader));
+            condicoes.Add(MapearCondicaoPagamento(reader));
         }
         return Ok(condicoes);
     }
-     [Authorize]
+////[Authorize]
     [HttpGet("{codCondPagamento:int}")]
     public async Task<ActionResult<CondicoesPagamentoReadDto>> BuscarPorCodigo(int codCondPagamento, CancellationToken cancellationToken)
     {
@@ -48,12 +51,15 @@ public class CondicoesPagamentoController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codCondPagamento AS CodCondPagamento,
-                descricao AS Descricao,
-                qtdParcelas AS QtdParcelas,
-                ativo AS Ativo,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
+                codCondPagamento,
+                condPagamento,
+                qtdParcelas,
+                ativo,
+                juros,
+                multa,
+                desconto,
+                criado_em,
+                atualizado_em
             FROM condicoes_pagamento
             WHERE codCondPagamento = @codCondPagamento
             """;
@@ -62,27 +68,34 @@ public class CondicoesPagamentoController : ControllerBase
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
         {
-            return Ok(MapearCondicao(reader));
+            return Ok(MapearCondicaoPagamento(reader));
         }
         else
         {
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPost]
     public async Task<ActionResult> Criar([FromBody] CondicoesPagamentoCreateDto condicaoDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var idUserLogado = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
+
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO condicoes_pagamento (descricao, qtdParcelas, ativo)
-            VALUES (@descricao, @qtdParcelas, @ativo);
+            INSERT INTO condicoes_pagamento (condPagamento, qtdParcelas, ativo, juros, multa, desconto, codUsuario)
+            VALUES (@condPagamento, @qtdParcelas, @ativo, @juros, @multa, @desconto, @codUsuario);
             """;
-        command.Parameters.AddWithValue("@descricao", condicaoDto.Descricao);
-        command.Parameters.AddWithValue("@qtdParcelas", condicaoDto.QtdParcelas);
-        command.Parameters.AddWithValue("@ativo", condicaoDto.Ativo.HasValue ? condicaoDto.Ativo.Value : true);
+        command.Parameters.AddWithValue("@condPagamento", condicaoDto.condPagamento);
+        command.Parameters.AddWithValue("@qtdParcelas", condicaoDto.qtdParcelas);
+        command.Parameters.AddWithValue("@ativo", condicaoDto.ativo ?? true);
+        command.Parameters.AddWithValue("@juros", condicaoDto.juros);
+        command.Parameters.AddWithValue("@multa", condicaoDto.multa);
+        command.Parameters.AddWithValue("@desconto", condicaoDto.desconto);
+        command.Parameters.AddWithValue("@codUsuario", idUserLogado);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -91,19 +104,22 @@ public class CondicoesPagamentoController : ControllerBase
         }
         else
         {
-            return StatusCode(500, "Ocorreu um erro ao criar a condiÃ§Ã£o de pagamento.");
+            return StatusCode(500, "Ocorreu um erro ao criar a condicao de pagamento.");
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPatch("{codCondPagamento:int}")]
     public async Task<ActionResult> Atualizar(int codCondPagamento, [FromBody] CondicoesPagamentoUpdateDto condicaoDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         var updates = new List<string>();
-        if (condicaoDto.Descricao != null) updates.Add("descricao = @descricao");
-        if (condicaoDto.QtdParcelas.HasValue) updates.Add("qtdParcelas = @qtdParcelas");
-        if (condicaoDto.Ativo.HasValue) updates.Add("ativo = @ativo");
+        if (condicaoDto.condPagamento != null) updates.Add("condPagamento = @condPagamento");
+        if (condicaoDto.qtdParcelas.HasValue) updates.Add("qtdParcelas = @qtdParcelas");
+        if (condicaoDto.ativo.HasValue) updates.Add("ativo = @ativo");
+        if (condicaoDto.juros.HasValue) updates.Add("juros = @juros");
+        if (condicaoDto.multa.HasValue) updates.Add("multa = @multa");
+        if (condicaoDto.desconto.HasValue) updates.Add("desconto = @desconto");
 
         if (updates.Count == 0)
         {
@@ -116,9 +132,12 @@ public class CondicoesPagamentoController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = commandText;
         command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
-        if (condicaoDto.Descricao != null) command.Parameters.AddWithValue("@descricao", condicaoDto.Descricao);
-        if (condicaoDto.QtdParcelas.HasValue) command.Parameters.AddWithValue("@qtdParcelas", condicaoDto.QtdParcelas.Value);
-        if (condicaoDto.Ativo.HasValue) command.Parameters.AddWithValue("@ativo", condicaoDto.Ativo.Value);
+        if (condicaoDto.condPagamento != null) command.Parameters.AddWithValue("@condPagamento", condicaoDto.condPagamento);
+        if (condicaoDto.qtdParcelas.HasValue) command.Parameters.AddWithValue("@qtdParcelas", condicaoDto.qtdParcelas.Value);
+        if (condicaoDto.ativo.HasValue) command.Parameters.AddWithValue("@ativo", condicaoDto.ativo.Value);
+        if (condicaoDto.juros.HasValue) command.Parameters.AddWithValue("@juros", condicaoDto.juros.Value);
+        if (condicaoDto.multa.HasValue) command.Parameters.AddWithValue("@multa", condicaoDto.multa.Value);
+        if (condicaoDto.desconto.HasValue) command.Parameters.AddWithValue("@desconto", condicaoDto.desconto.Value);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -130,7 +149,7 @@ public class CondicoesPagamentoController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpDelete("{codCondPagamento:int}")]
     public async Task<ActionResult> Deletar(int codCondPagamento, CancellationToken cancellationToken)
     {
@@ -151,17 +170,19 @@ public class CondicoesPagamentoController : ControllerBase
         }
     }
 
-    private static CondicoesPagamentoReadDto MapearCondicao(MySqlDataReader reader)
+    private static CondicoesPagamentoReadDto MapearCondicaoPagamento(MySqlDataReader reader)
     {
         return new CondicoesPagamentoReadDto
         {
-            CodCondPagamento = reader.GetInt32("CodCondPagamento"),
-            Descricao = reader.GetString("Descricao"),
-            QtdParcelas = reader.GetInt32("QtdParcelas"),
-            Ativo = reader.GetBoolean("Ativo"),
-            CriadoEm = reader.GetDateTime("CriadoEm"),
-            AtualizadoEm = reader.GetDateTime("AtualizadoEm")
+            codCondPagamento = reader.GetInt32("codCondPagamento"),
+            condPagamento = reader.IsDBNull(reader.GetOrdinal("condPagamento")) ? string.Empty : reader.GetString("condPagamento"),
+            qtdParcelas = reader.GetInt32("qtdParcelas"),
+            ativo = reader.GetBoolean("ativo"),
+            juros = reader.GetDecimal("juros"),
+            multa = reader.GetDecimal("multa"),
+            desconto = reader.GetDecimal("desconto"),
+            criado_em = reader.GetDateTime("criado_em"),
+            atualizado_em = reader.GetDateTime("atualizado_em")
         };
     }
 }
-

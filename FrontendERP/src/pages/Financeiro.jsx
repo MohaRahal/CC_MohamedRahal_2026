@@ -2,7 +2,7 @@ import { Search, Plus, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-r
 import AnimatedPage from './AnimatedPage';
 
 export default function Financeiro() {
-  // Tela de Interface (Sem conexão com API ainda pois o Controller não existe)
+ // dados mockados
   const stats = [
     { label: "Receita (Mês)", value: "R$ 45.231,00", icon: <ArrowUpRight size={20} className="text-green-500" />, trend: "+12.5%" },
     { label: "Despesas (Mês)", value: "R$ 12.054,00", icon: <ArrowDownRight size={20} className="text-red-500" />, trend: "-2.4%" },

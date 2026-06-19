@@ -1,4 +1,4 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -13,7 +13,7 @@ public class TransportadoresController : ControllerBase
     {
         _connection = connection;
     }
-     [Authorize]
+////[Authorize]
     [HttpGet]
     public async Task<ActionResult<List<TransportadoresReadDto>>> Listar(CancellationToken cancellationToken)
     {
@@ -24,15 +24,28 @@ public class TransportadoresController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codTransp AS CodTransp,
-                cpf_cnpjTransp AS CpfCnpjTransp,
-                endTransp AS EndTransp,
-                codCidade AS CodCidade,
-                razaoSocTransp AS RazaoSocTransp,
-                inscEstTransp AS InscEstTransp,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM transportadores
+                t.codTransp,
+                t.apelido_NomeFantasia,
+                t.transportador,
+                t.inscEstTransp,
+                t.tipoPessoa,
+                t.cpf_cnpjTransp,
+                t.ender,
+                t.numero,
+                t.complemento,
+                t.bairro,
+                t.codCidade,
+                t.cep,
+                t.site,
+                t.fone,
+                t.email,
+                t.ativo,
+                t.criado_em,
+                t.atualizado_em,
+                c.cidade,
+                c.codEstado
+            FROM transportadores t
+            LEFT JOIN cidades c ON t.codCidade = c.codCidade
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -41,7 +54,7 @@ public class TransportadoresController : ControllerBase
         }
         return Ok(transportadores);
     }
-     [Authorize]
+////[Authorize]
     [HttpGet("{codTransp:int}")]
     public async Task<ActionResult<TransportadoresReadDto>> BuscarPorCodigo(int codTransp, CancellationToken cancellationToken)
     {
@@ -50,16 +63,29 @@ public class TransportadoresController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codTransp AS CodTransp,
-                cpf_cnpjTransp AS CpfCnpjTransp,
-                endTransp AS EndTransp,
-                codCidade AS CodCidade,
-                razaoSocTransp AS RazaoSocTransp,
-                inscEstTransp AS InscEstTransp,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM transportadores
-            WHERE codTransp = @codTransp
+                t.codTransp,
+                t.apelido_NomeFantasia,
+                t.transportador,
+                t.inscEstTransp,
+                t.tipoPessoa,
+                t.cpf_cnpjTransp,
+                t.ender,
+                t.numero,
+                t.complemento,
+                t.bairro,
+                t.codCidade,
+                t.cep,
+                t.site,
+                t.fone,
+                t.email,
+                t.ativo,
+                t.criado_em,
+                t.atualizado_em,
+                c.cidade,
+                c.codEstado
+            FROM transportadores t
+            LEFT JOIN cidades c ON t.codCidade = c.codCidade
+            WHERE t.codTransp = @codTransp
             """;
         command.Parameters.AddWithValue("@codTransp", codTransp);
 
@@ -73,22 +99,36 @@ public class TransportadoresController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPost]
     public async Task<ActionResult> Criar([FromBody] TransportadoresCreateDto transpDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var idUserLogado = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
+
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO transportadores (cpf_cnpjTransp, endTransp, codCidade, razaoSocTransp, inscEstTransp)
-            VALUES (@cpf_cnpjTransp, @endTransp, @codCidade, @razaoSocTransp, @inscEstTransp);
+            INSERT INTO transportadores (apelido_NomeFantasia, transportador, inscEstTransp, tipoPessoa, cpf_cnpjTransp, ender, numero, complemento, bairro, codCidade, cep, site, fone, email, ativo, codUsuario)
+            VALUES (@apelido_NomeFantasia, @transportador, @inscEstTransp, @tipoPessoa, @cpf_cnpjTransp, @ender, @numero, @complemento, @bairro, @codCidade, @cep, @site, @fone, @email, @ativo, @codUsuario);
             """;
-        command.Parameters.AddWithValue("@cpf_cnpjTransp", transpDto.CpfCnpjTransp);
-        command.Parameters.AddWithValue("@endTransp", transpDto.EndTransp);
-        command.Parameters.AddWithValue("@codCidade", transpDto.CodCidade.HasValue ? transpDto.CodCidade.Value : DBNull.Value);
-        command.Parameters.AddWithValue("@razaoSocTransp", transpDto.RazaoSocTransp);
-        command.Parameters.AddWithValue("@inscEstTransp", transpDto.InscEstTransp);
+        command.Parameters.AddWithValue("@apelido_NomeFantasia", transpDto.apelido_NomeFantasia);
+        command.Parameters.AddWithValue("@transportador", string.IsNullOrEmpty(transpDto.transportador) ? (object)DBNull.Value : transpDto.transportador);
+        command.Parameters.AddWithValue("@inscEstTransp", string.IsNullOrEmpty(transpDto.inscEstTransp) ? (object)DBNull.Value : transpDto.inscEstTransp);
+        command.Parameters.AddWithValue("@tipoPessoa", transpDto.tipoPessoa);
+        command.Parameters.AddWithValue("@cpf_cnpjTransp", string.IsNullOrEmpty(transpDto.cpf_cnpjTransp) ? (object)DBNull.Value : transpDto.cpf_cnpjTransp);
+        command.Parameters.AddWithValue("@ender", string.IsNullOrEmpty(transpDto.ender) ? (object)DBNull.Value : transpDto.ender);
+        command.Parameters.AddWithValue("@numero", string.IsNullOrEmpty(transpDto.numero) ? (object)DBNull.Value : transpDto.numero);
+        command.Parameters.AddWithValue("@complemento", string.IsNullOrEmpty(transpDto.complemento) ? (object)DBNull.Value : transpDto.complemento);
+        command.Parameters.AddWithValue("@bairro", string.IsNullOrEmpty(transpDto.bairro) ? (object)DBNull.Value : transpDto.bairro);
+        command.Parameters.AddWithValue("@codCidade", transpDto.codCidade > 0 ? transpDto.codCidade : DBNull.Value);
+        command.Parameters.AddWithValue("@cep", string.IsNullOrEmpty(transpDto.cep) ? (object)DBNull.Value : transpDto.cep);
+        command.Parameters.AddWithValue("@site", string.IsNullOrEmpty(transpDto.site) ? (object)DBNull.Value : transpDto.site);
+        command.Parameters.AddWithValue("@fone", string.IsNullOrEmpty(transpDto.fone) ? (object)DBNull.Value : transpDto.fone);
+        command.Parameters.AddWithValue("@email", string.IsNullOrEmpty(transpDto.email) ? (object)DBNull.Value : transpDto.email);
+        command.Parameters.AddWithValue("@ativo", transpDto.ativo);
+        command.Parameters.AddWithValue("@codUsuario", idUserLogado);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -100,18 +140,28 @@ public class TransportadoresController : ControllerBase
             return StatusCode(500, "Ocorreu um erro ao criar o transportador.");
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPatch("{codTransp:int}")]
     public async Task<ActionResult> Atualizar(int codTransp, [FromBody] TransportadoresUpdateDto transpDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         var updates = new List<string>();
-        if (transpDto.CpfCnpjTransp != null) updates.Add("cpf_cnpjTransp = @cpf_cnpjTransp");
-        if (transpDto.EndTransp != null) updates.Add("endTransp = @endTransp");
-        if (transpDto.CodCidade.HasValue) updates.Add("codCidade = @codCidade");
-        if (transpDto.RazaoSocTransp != null) updates.Add("razaoSocTransp = @razaoSocTransp");
-        if (transpDto.InscEstTransp != null) updates.Add("inscEstTransp = @inscEstTransp");
+        if (transpDto.apelido_NomeFantasia != null) updates.Add("apelido_NomeFantasia = @apelido_NomeFantasia");
+        if (transpDto.transportador != null) updates.Add("transportador = @transportador");
+        if (transpDto.inscEstTransp != null) updates.Add("inscEstTransp = @inscEstTransp");
+        if (transpDto.tipoPessoa != null) updates.Add("tipoPessoa = @tipoPessoa");
+        if (transpDto.cpf_cnpjTransp != null) updates.Add("cpf_cnpjTransp = @cpf_cnpjTransp");
+        if (transpDto.ender != null) updates.Add("ender = @ender");
+        if (transpDto.numero != null) updates.Add("numero = @numero");
+        if (transpDto.complemento != null) updates.Add("complemento = @complemento");
+        if (transpDto.bairro != null) updates.Add("bairro = @bairro");
+        if (transpDto.codCidade.HasValue) updates.Add("codCidade = @codCidade");
+        if (transpDto.cep != null) updates.Add("cep = @cep");
+        if (transpDto.site != null) updates.Add("site = @site");
+        if (transpDto.fone != null) updates.Add("fone = @fone");
+        if (transpDto.email != null) updates.Add("email = @email");
+        if (transpDto.ativo.HasValue) updates.Add("ativo = @ativo");
 
         if (updates.Count == 0)
         {
@@ -124,11 +174,22 @@ public class TransportadoresController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = commandText;
         command.Parameters.AddWithValue("@codTransp", codTransp);
-        if (transpDto.CpfCnpjTransp != null) command.Parameters.AddWithValue("@cpf_cnpjTransp", transpDto.CpfCnpjTransp);
-        if (transpDto.EndTransp != null) command.Parameters.AddWithValue("@endTransp", transpDto.EndTransp);
-        if (transpDto.CodCidade.HasValue) command.Parameters.AddWithValue("@codCidade", transpDto.CodCidade.Value);
-        if (transpDto.RazaoSocTransp != null) command.Parameters.AddWithValue("@razaoSocTransp", transpDto.RazaoSocTransp);
-        if (transpDto.InscEstTransp != null) command.Parameters.AddWithValue("@inscEstTransp", transpDto.InscEstTransp);
+        
+        if (transpDto.apelido_NomeFantasia != null) command.Parameters.AddWithValue("@apelido_NomeFantasia", transpDto.apelido_NomeFantasia);
+        if (transpDto.transportador != null) command.Parameters.AddWithValue("@transportador", transpDto.transportador);
+        if (transpDto.inscEstTransp != null) command.Parameters.AddWithValue("@inscEstTransp", transpDto.inscEstTransp);
+        if (transpDto.tipoPessoa != null) command.Parameters.AddWithValue("@tipoPessoa", transpDto.tipoPessoa);
+        if (transpDto.cpf_cnpjTransp != null) command.Parameters.AddWithValue("@cpf_cnpjTransp", transpDto.cpf_cnpjTransp);
+        if (transpDto.ender != null) command.Parameters.AddWithValue("@ender", transpDto.ender);
+        if (transpDto.numero != null) command.Parameters.AddWithValue("@numero", transpDto.numero);
+        if (transpDto.complemento != null) command.Parameters.AddWithValue("@complemento", transpDto.complemento);
+        if (transpDto.bairro != null) command.Parameters.AddWithValue("@bairro", transpDto.bairro);
+        if (transpDto.codCidade.HasValue) command.Parameters.AddWithValue("@codCidade", transpDto.codCidade.Value);
+        if (transpDto.cep != null) command.Parameters.AddWithValue("@cep", transpDto.cep);
+        if (transpDto.site != null) command.Parameters.AddWithValue("@site", transpDto.site);
+        if (transpDto.fone != null) command.Parameters.AddWithValue("@fone", transpDto.fone);
+        if (transpDto.email != null) command.Parameters.AddWithValue("@email", transpDto.email);
+        if (transpDto.ativo.HasValue) command.Parameters.AddWithValue("@ativo", transpDto.ativo.Value);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -140,7 +201,7 @@ public class TransportadoresController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpDelete("{codTransp:int}")]
     public async Task<ActionResult> Deletar(int codTransp, CancellationToken cancellationToken)
     {
@@ -163,17 +224,37 @@ public class TransportadoresController : ControllerBase
 
     private static TransportadoresReadDto MapearTransportador(MySqlDataReader reader)
     {
-        return new TransportadoresReadDto
+        var dto = new TransportadoresReadDto
         {
-            CodTransp = reader.GetInt32("CodTransp"),
-            CpfCnpjTransp = reader.IsDBNull(reader.GetOrdinal("CpfCnpjTransp")) ? string.Empty : reader.GetString("CpfCnpjTransp"),
-            EndTransp = reader.IsDBNull(reader.GetOrdinal("EndTransp")) ? string.Empty : reader.GetString("EndTransp"),
-            CodCidade = reader.IsDBNull(reader.GetOrdinal("CodCidade")) ? null : reader.GetInt32("CodCidade"),
-            RazaoSocTransp = reader.IsDBNull(reader.GetOrdinal("RazaoSocTransp")) ? string.Empty : reader.GetString("RazaoSocTransp"),
-            InscEstTransp = reader.IsDBNull(reader.GetOrdinal("InscEstTransp")) ? string.Empty : reader.GetString("InscEstTransp"),
-            CriadoEm = reader.GetDateTime("CriadoEm"),
-            AtualizadoEm = reader.GetDateTime("AtualizadoEm")
+            codTransp = reader.GetInt32("codTransp"),
+            apelido_NomeFantasia = reader.GetString("apelido_NomeFantasia"),
+            transportador = reader.IsDBNull(reader.GetOrdinal("transportador")) ? string.Empty : reader.GetString("transportador"),
+            inscEstTransp = reader.IsDBNull(reader.GetOrdinal("inscEstTransp")) ? string.Empty : reader.GetString("inscEstTransp"),
+            tipoPessoa = reader.GetString("tipoPessoa"),
+            cpf_cnpjTransp = reader.IsDBNull(reader.GetOrdinal("cpf_cnpjTransp")) ? string.Empty : reader.GetString("cpf_cnpjTransp"),
+            ender = reader.IsDBNull(reader.GetOrdinal("ender")) ? string.Empty : reader.GetString("ender"),
+            numero = reader.IsDBNull(reader.GetOrdinal("numero")) ? string.Empty : reader.GetString("numero"),
+            complemento = reader.IsDBNull(reader.GetOrdinal("complemento")) ? string.Empty : reader.GetString("complemento"),
+            bairro = reader.IsDBNull(reader.GetOrdinal("bairro")) ? string.Empty : reader.GetString("bairro"),
+            codCidade = reader.IsDBNull(reader.GetOrdinal("codCidade")) ? 0 : reader.GetInt32("codCidade"),
+            cep = reader.IsDBNull(reader.GetOrdinal("cep")) ? string.Empty : reader.GetString("cep"),
+            site = reader.IsDBNull(reader.GetOrdinal("site")) ? string.Empty : reader.GetString("site"),
+            fone = reader.IsDBNull(reader.GetOrdinal("fone")) ? string.Empty : reader.GetString("fone"),
+            email = reader.IsDBNull(reader.GetOrdinal("email")) ? string.Empty : reader.GetString("email"),
+            ativo = reader.GetBoolean("ativo"),
+            criado_em = reader.GetDateTime("criado_em"),
+            atualizado_em = reader.GetDateTime("atualizado_em")
         };
+        
+        if (dto.codCidade != 0 && !reader.IsDBNull(reader.GetOrdinal("cidade")))
+        {
+            dto.Cidade = new CidadesReadDto
+            {
+                codCidade = dto.codCidade,
+                cidade = reader.GetString("cidade"),
+                codEstado = reader.IsDBNull(reader.GetOrdinal("codEstado")) ? 0 : reader.GetInt32("codEstado")
+            };
+        }
+        return dto;
     }
 }
-

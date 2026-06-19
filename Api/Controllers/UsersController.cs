@@ -1,4 +1,4 @@
-﻿using Api.DTOs;
+using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
@@ -13,24 +13,25 @@ public class UsersController : ControllerBase
     {
         _connection = connection;
     }
-     [Authorize]
+////[Authorize]
     [HttpGet]
-    public async Task<ActionResult<List<UsersReadDto>>> Listar(CancellationToken cancellationToken)
+    public async Task<ActionResult<List<UsuarioReadDto>>> Listar(CancellationToken cancellationToken)
     {
-        var users = new List<UsersReadDto>();
+        var users = new List<UsuarioReadDto>();
 
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                id AS Id,
-                name AS Name,
-                roleid AS RoleId,
-                ativo AS Ativo,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM users
+                codUsuario,
+                usuario,
+                codFuncionario,
+                codCargo,
+                ativo,
+                criado_em,
+                atualizado_em
+            FROM usuarios
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -39,25 +40,26 @@ public class UsersController : ControllerBase
         }
         return Ok(users);
     }
-     [Authorize]
+////[Authorize]
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<UsersReadDto>> BuscarPorCodigo(int id, CancellationToken cancellationToken)
+    public async Task<ActionResult<UsuarioReadDto>> BuscarPorCodigo(int id, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                id AS Id,
-                name AS Name,
-                roleid AS RoleId,
-                ativo AS Ativo,
-                created_at AS CriadoEm,
-                updated_at AS AtualizadoEm
-            FROM users
-            WHERE id = @id
+                codUsuario,
+                usuario,
+                codFuncionario,
+                codCargo,
+                ativo,
+                criado_em,
+                atualizado_em
+            FROM usuarios
+            WHERE codUsuario = @codUsuario
             """;
-        command.Parameters.AddWithValue("@id", id);
+        command.Parameters.AddWithValue("@codUsuario", id);
 
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
@@ -69,28 +71,23 @@ public class UsersController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPost]
-    public async Task<ActionResult> Criar([FromBody] UsersCreateDto userDto, CancellationToken cancellationToken)
+    public async Task<ActionResult> Criar([FromBody] UsuarioCreateDto userDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO users (name, senha, roleid, ativo)
-            VALUES (@name, @senha, @roleid, @ativo);
-            INSERT INTO logs (idUser, acao, tabela, tipo)
-            VALUES (@idUser, 'Criou um novo usuario', 'users', 'Insert')
+            INSERT INTO usuarios (usuario, senha, codFuncionario, codCargo, ativo)
+            VALUES (@usuario, @senha, @codFuncionario, @codCargo, @ativo);
             """;
        
-        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        var idUserLogado = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
-
-        command.Parameters.AddWithValue("@name", userDto.Name);
-        command.Parameters.AddWithValue("@senha", userDto.Senha);
-        command.Parameters.AddWithValue("@roleid", userDto.RoleId);
-        command.Parameters.AddWithValue("@ativo", userDto.Ativo);
-        command.Parameters.AddWithValue("@idUser", idUserLogado);
+        command.Parameters.AddWithValue("@usuario", userDto.usuario);
+        command.Parameters.AddWithValue("@senha", userDto.senha);
+        command.Parameters.AddWithValue("@codFuncionario", userDto.codFuncionario);
+        command.Parameters.AddWithValue("@codCargo", userDto.codCargo);
+        command.Parameters.AddWithValue("@ativo", userDto.ativo);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -102,17 +99,18 @@ public class UsersController : ControllerBase
             return StatusCode(500, "Ocorreu um erro ao criar o usuÃ¡rio.");
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpPatch("{id:int}")]
-    public async Task<ActionResult> Atualizar(int id, [FromBody] UsersUpdateDto userDto, CancellationToken cancellationToken)
+    public async Task<ActionResult> Atualizar(int id, [FromBody] UsuarioUpdateDto userDto, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         var updates = new List<string>();
-        if (userDto.Name != null) updates.Add("name = @name");
-        if (userDto.Senha != null) updates.Add("senha = @senha");
-        if (userDto.RoleId.HasValue) updates.Add("roleid = @roleid");
-        if (userDto.Ativo.HasValue) updates.Add("ativo = @ativo");
+        if (userDto.usuario != null) updates.Add("usuario = @usuario");
+        if (userDto.senha != null) updates.Add("senha = @senha");
+        if (userDto.codFuncionario.HasValue) updates.Add("codFuncionario = @codFuncionario");
+        if (userDto.codCargo.HasValue) updates.Add("codCargo = @codCargo");
+        if (userDto.ativo.HasValue) updates.Add("ativo = @ativo");
 
         if (updates.Count == 0)
         {
@@ -120,15 +118,19 @@ public class UsersController : ControllerBase
         }
 
         var updateClause = string.Join(", ", updates);
-        var commandText = $"UPDATE users SET {updateClause} WHERE id = @id";
+        var commandText = $"""
+        UPDATE usuarios SET {updateClause} WHERE codUsuario = @codUsuario
+        """;
 
         await using var command = _connection.CreateCommand();
         command.CommandText = commandText;
-        command.Parameters.AddWithValue("@id", id);
-        if (userDto.Name != null) command.Parameters.AddWithValue("@name", userDto.Name);
-        if (userDto.Senha != null) command.Parameters.AddWithValue("@senha", userDto.Senha);
-        if (userDto.RoleId.HasValue) command.Parameters.AddWithValue("@roleid", userDto.RoleId.Value);
-        if (userDto.Ativo.HasValue) command.Parameters.AddWithValue("@ativo", userDto.Ativo.Value);
+        command.Parameters.AddWithValue("@codUsuario", id);
+
+        if (userDto.usuario != null) command.Parameters.AddWithValue("@usuario", userDto.usuario);
+        if (userDto.senha != null) command.Parameters.AddWithValue("@senha", userDto.senha);
+        if (userDto.codFuncionario.HasValue) command.Parameters.AddWithValue("@codFuncionario", userDto.codFuncionario.Value);
+        if (userDto.codCargo.HasValue) command.Parameters.AddWithValue("@codCargo", userDto.codCargo.Value);
+        if (userDto.ativo.HasValue) command.Parameters.AddWithValue("@ativo", userDto.ativo.Value);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -140,15 +142,18 @@ public class UsersController : ControllerBase
             return NotFound();
         }
     }
-     [Authorize]
+////[Authorize]
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> Deletar(int id, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
-        command.CommandText = "DELETE FROM users WHERE id = @id";
-        command.Parameters.AddWithValue("@id", id);
+        command.CommandText =
+        """
+        DELETE FROM usuarios WHERE codUsuario = @codUsuario;
+        """;
+        command.Parameters.AddWithValue("@codUsuario", id);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
@@ -161,16 +166,17 @@ public class UsersController : ControllerBase
         }
     }
 
-    private static UsersReadDto MapearUser(MySqlDataReader reader)
+    private static UsuarioReadDto MapearUser(MySqlDataReader reader)
     {
-        return new UsersReadDto
+        return new UsuarioReadDto
         {
-            Id = reader.GetInt32("Id"),
-            Name = reader.GetString("Name"),
-            RoleId = reader.GetInt32("RoleId"),
-            Ativo = reader.GetBoolean("Ativo"),
-            CriadoEm = reader.GetDateTime("CriadoEm"),
-            AtualizadoEm = reader.GetDateTime("AtualizadoEm")
+            codUsuario = reader.GetInt32("codUsuario"),
+            usuario = reader.GetString("usuario"),
+            codFuncionario = reader.GetInt32("codFuncionario"),
+            codCargo = reader.GetInt32("codCargo"),
+            ativo = reader.GetBoolean("ativo"),
+            criado_em = reader.GetDateTime("criado_em"),
+            atualizado_em = reader.GetDateTime("atualizado_em")
         };
     }
 }

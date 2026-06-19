@@ -1,12 +1,19 @@
-﻿namespace Api.Models;
+namespace Api.Models;
 
 public class CondicoesPagamento
 {
-    public int CodCondPagamento { get; set; }
-    public string Descricao { get; set; } = string.Empty;
-    public int QtdParcelas { get; set; }
-    public bool Ativo { get; set; } = true;
-    public DateTime CriadoEm { get; set; }
-    public DateTime AtualizadoEm { get; set; }
+    public int codCondPagamento { get; set; }
+    public string condPagamento { get; set; } = string.Empty;
+    public int qtdParcelas { get; set; }
+    public bool ativo { get; set; } = true;
+    public decimal juros { get; set; }
+    public decimal multa { get; set; }
+    public decimal desconto { get; set; }
+    public int codUsuario { get; set; }
+    public DateTime criado_em { get; set; }
+    public DateTime atualizado_em { get; set; }
+
+    public Usuarios Usuario { get; set; } = null!;
+
 }
 

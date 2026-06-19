@@ -16,6 +16,6 @@ public class Movimentacao
     public DateTime CreatedAt { get; set; }
 
     public Produtos? Produto { get; set; }
-    public Users? User { get; set; }
+    public Usuarios? User { get; set; }
 }
 
