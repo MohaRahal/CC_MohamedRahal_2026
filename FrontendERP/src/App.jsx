@@ -14,7 +14,7 @@ import Financeiro from './pages/Financeiro';
 import NotFound from './pages/NotFound';
 import Layout from './Layout';
 import Paises from './pages/Paises';
-import AddPais from './pages/subpages/AddPais';
+import AddPaises from './pages/subpages/AddPaises';
 import EditPais from './pages/subpages/EditPais';
 import Estados from './pages/Estados';
 import AddEstado from './pages/subpages/AddEstado';
@@ -49,7 +49,7 @@ function AnimatedRoutes() {
           <Route path="/Vendas" element={<Vendas />} />
           <Route path="/Financeiro" element={<Financeiro />} />
           <Route path="/paises" element={<Paises />} />
-          <Route path="/paises/novo" element={<AddPais />} />
+          <Route path="/paises/novo" element={<AddPaises />} />
           <Route path="/paises/editar/:id" element={<EditPais />} />
           <Route path="/estados" element={<Estados />} />
           <Route path="/estados/novo" element={<AddEstado />} />
