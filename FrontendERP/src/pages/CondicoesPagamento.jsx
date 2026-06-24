@@ -3,52 +3,51 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedPage from './AnimatedPage';
-import { paisesService } from '../services/paisesService';
+import { condicoesPagamentosService } from '../services/condicoesPagamentosService';
 
-export default function Paises() {
+export default function CondicoesPagamento() {
   const navigate = useNavigate();
-  const [paises, setPaises] = useState([]);
+  const [condicoesPagamento, setCondicoesPagamento] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
-    fetchPaises();
+    fetchCondicoesPagamento();
   }, []);
 
-  const fetchPaises = async () => {
+  const fetchCondicoesPagamento = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const data = await paisesService.getPaises(token);
-      setPaises(data || []);
+      const data = await condicoesPagamentosService.getCondicoesPagamentos(token);
+      setCondicoesPagamento(data || []);
     } catch (error) {
-      console.error("Erro ao carregar paises:", error);
+      console.error("Erro ao carregar formas de pagamento:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteClick = async (id, nome) => {
-    const confirmou = window.confirm(`Tem certeza que deseja excluir o país "${nome}"?`);
+    const confirmou = window.confirm(`Tem certeza que deseja excluir a forma de pagamento "${nome}"?`);
     if (confirmou) {
       try {
         setDeletingId(id);
         const token = localStorage.getItem('token');
-        await paisesService.deletePais(token, id);
-        setPaises(paises.filter(p => p.codPais !== id));
+        await condicoesPagamentosService.deleteCondicoesPagamento(token, id);
+        setCondicoesPagamento(condicoesPagamento.filter(c => c.codCondPagamento !== id));
       } catch (error) {
         console.error("Erro ao deletar:", error);
-        alert("Não foi possível excluir o país. Ele pode estar sendo usado em outros registros.");
+        alert("Não foi possível excluir a condição de pagamento.");
       } finally {
         setDeletingId(null);
       }
     }
   };
 
-  const filteredPaises = paises.filter(pais => 
-    pais.pais.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pais.sigla.toLowerCase().includes(searchTerm.toLowerCase())
+  const condicoesPagamentoFiltradas = condicoesPagamento.filter(condicao => 
+    condicao.condPagamento.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const formatDate = (dateString) => {
   if (!dateString) return '-';
@@ -70,15 +69,15 @@ export default function Paises() {
           
           <div className="flex justify-between items-end mb-8">
             <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Países</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie os países cadastrados no sistema</p>
+              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Condições de Pagamento</h1>
+              <p className="text-sm text-gray-500 mt-1">Gerencie as condições de pagamento cadastradas no sistema</p>
             </div>
             
             <button 
-              onClick={() => navigate('/paises/novo')}
+              onClick={() => navigate('/condicoes-pagamento/novo')}
               className="flex items-center gap-2 bg-ink-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md">
               <Plus size={16} />
-              Novo País
+              Nova Condição de Pagamento
             </button>
           </div>
 
@@ -105,69 +104,81 @@ export default function Paises() {
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">País</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Sigla</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">DDI</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Moeda</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Condição de Pagamento</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Ativo</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Total de Parcelas</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Juros</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Multa</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Desconto</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {filteredPaises.length === 0 ? (
+                  {condicoesPagamentoFiltradas.length === 0 ? (
                     <tr>
                       <td colSpan="6" className="py-16 text-center text-sm text-gray-500">
-                        Nenhum país encontrado.
+                        Nenhuma forma de pagamento encontrada.
                       </td>
                     </tr>
                   ) : (
-                    filteredPaises.map((pais, idx) => (
+                    condicoesPagamentoFiltradas.map((condicao, idx) => (
                       <motion.tr 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        key={pais.codPais} 
+                        key={condicao.codCondPagamento} 
                         className="hover:bg-gray-50/80 transition-colors group"
                       >
                         <td className="py-4 px-6 text-[13px] text-gray-500 font-medium">
-                          #{pais.codPais}
+                          #{condicao.codCondPagamento}
                         </td>
                         <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
-                          {pais.pais}
+                          {condicao.condPagamento}
+                        </td>
+                       <td className="py-4 px-6 text-[13px] text-center">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            condicao.ativo ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+                          }`}>
+                            {condicao.ativo ? 'Ativo' : 'Inativo'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
+                          {condicao.qtdParcelas}
+                        </td>
+                        <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
+                          {condicao.juros}%
+                        </td>
+                        <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
+                          {condicao.multa}%
+                        </td>
+                        <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
+                          {condicao.desconto}%
+                        </td>
+                        <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
+                          {condicao.codUsuario}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {pais.sigla}
+                          {formatDate(condicao.criado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {pais.ddi}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {pais.moeda}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {pais.usuario.usuario}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {formatDate(pais.criado_em)}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {formatDate(pais.atualizado_em)}
+                          {formatDate(condicao.atualizado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-right">
                           <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button 
-                              onClick={() => navigate(`/paises/editar/${pais.codPais}`)}
+                              onClick={() => navigate(`/condicoes-pagamento/editar/${condicao.codCondPagamento}`)}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">
                               <Edit2 size={16} />
                             </button>
                             <button 
-                              onClick={() => handleDeleteClick(pais.codPais, pais.pais)}
-                              disabled={deletingId === pais.codPais}
-                              className={`transition-colors cursor-pointer ${deletingId === pais.codPais ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`} 
+                              onClick={() => handleDeleteClick(condicao.codCondPagamento, condicao.condPagamento)}
+                              disabled={deletingId === condicao.codCondPagamento}
+                              className={`transition-colors cursor-pointer ${deletingId === condicao.codCondPagamento ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`} 
                               title="Excluir">
-                              {deletingId === pais.codPais ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                              {deletingId === condicao.codCondPagamento ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                             </button>
                           </div>
                         </td>

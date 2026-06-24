@@ -24,15 +24,18 @@ public class PaisesController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codPais,
-                pais,
-                sigla,
-                ddi,
-                moeda,
-                codUsuario,
-                criado_em,
-                atualizado_em
-            FROM paises
+                p.codPais,
+                p.pais,
+                p.sigla,
+                p.ddi,
+                p.moeda,
+                p.codUsuario,
+                p.criado_em,
+                p.atualizado_em,
+                u.codUsuario AS UsuarioCodUsuario,
+                u.usuario AS UsuarioNome
+            FROM paises p
+            LEFT JOIN usuarios u ON p.codUsuario = u.codUsuario
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -50,16 +53,19 @@ public class PaisesController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codPais,
-                pais,
-                sigla,
-                ddi,
-                moeda,
-                codUsuario,
-                criado_em,
-                atualizado_em
-            FROM paises
-            WHERE codPais = @codPais
+                p.codPais,
+                p.pais,
+                p.sigla,
+                p.ddi,
+                p.moeda,
+                p.codUsuario,
+                p.criado_em,
+                p.atualizado_em,
+                u.codUsuario AS UsuarioCodUsuario,
+                u.usuario AS UsuarioNome
+            FROM paises p
+            LEFT JOIN usuarios u ON p.codUsuario = u.codUsuario
+            WHERE p.codPais = @codPais
             """;
         command.Parameters.AddWithValue("@codPais", codPais);
 
@@ -84,7 +90,7 @@ public class PaisesController : ControllerBase
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO paises (pais, sigla, ddi, moeda, codUsuario)
+             INSERT INTO paises (pais, sigla, ddi, moeda, codUsuario)
             VALUES (@pais, @sigla, @ddi, @moeda, @codUsuario);
             """;
         command.Parameters.AddWithValue("@pais", paisDto.pais);
@@ -164,16 +170,27 @@ public class PaisesController : ControllerBase
 
     private static PaisesReadDto MapearPais(MySqlDataReader reader)
     {
-        return new PaisesReadDto
+        var dto = new PaisesReadDto
         {
             codPais = reader.GetInt32("codPais"),
             pais = reader.IsDBNull(reader.GetOrdinal("pais")) ? string.Empty : reader.GetString("pais"),
             sigla = reader.IsDBNull(reader.GetOrdinal("sigla")) ? string.Empty : reader.GetString("sigla"),
             ddi = reader.IsDBNull(reader.GetOrdinal("ddi")) ? string.Empty : reader.GetString("ddi"),
             moeda = reader.IsDBNull(reader.GetOrdinal("moeda")) ? string.Empty : reader.GetString("moeda"),
-            codUsuario = reader.GetInt32("codUsuario"),
+            codUsuario = reader.IsDBNull(reader.GetOrdinal("codUsuario")) ? 0 : reader.GetInt32("codUsuario"),
             criado_em = reader.GetDateTime("criado_em"),
             atualizado_em = reader.GetDateTime("atualizado_em")
         };
+
+        if (!reader.IsDBNull(reader.GetOrdinal("UsuarioCodUsuario")))
+        {
+            dto.Usuario = new UsuarioReadDto
+            {
+                codUsuario = reader.GetInt32("UsuarioCodUsuario"),
+                usuario = reader.GetString("UsuarioNome")
+            };
+        }
+
+        return dto;
     }
 }

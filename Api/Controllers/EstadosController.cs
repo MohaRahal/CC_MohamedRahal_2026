@@ -28,6 +28,7 @@ public class EstadosController : ControllerBase
                 e.UF,
                 e.estado,
                 e.codPais,
+                e.codUsuario,
                 e.criado_em,
                 e.atualizado_em,
                 p.codPais AS Pais_codPais,
@@ -36,9 +37,12 @@ public class EstadosController : ControllerBase
                 p.ddi AS Pais_ddi,
                 p.moeda AS Pais_moeda,
                 p.criado_em AS Pais_criado_em,
-                p.atualizado_em AS Pais_atualizado_em
+                p.atualizado_em AS Pais_atualizado_em,
+                u.codUsuario AS Usuario_codUsuario,
+                u.usuario AS Usuario_usuario
             FROM estados e
             LEFT JOIN paises p ON e.codPais = p.codPais
+            LEFT JOIN usuarios u ON e.codUsuario = u.codUsuario
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -60,6 +64,7 @@ public class EstadosController : ControllerBase
                 e.UF,
                 e.estado,
                 e.codPais,
+                e.codUsuario,
                 e.criado_em,
                 e.atualizado_em,
                 p.codPais AS Pais_codPais,
@@ -68,9 +73,12 @@ public class EstadosController : ControllerBase
                 p.ddi AS Pais_ddi,
                 p.moeda AS Pais_moeda,
                 p.criado_em AS Pais_criado_em,
-                p.atualizado_em AS Pais_atualizado_em
+                p.atualizado_em AS Pais_atualizado_em,
+                u.codUsuario AS Usuario_codUsuario,
+                u.usuario AS Usuario_usuario
             FROM estados e
             LEFT JOIN paises p ON e.codPais = p.codPais
+            LEFT JOIN usuarios u ON e.codUsuario = u.codUsuario
             WHERE e.codEstado = @codEstado
             """;
         command.Parameters.AddWithValue("@codEstado", codEstado);
@@ -179,6 +187,7 @@ public class EstadosController : ControllerBase
             UF = reader.IsDBNull(reader.GetOrdinal("UF")) ? string.Empty : reader.GetString("UF"),
             estado = reader.IsDBNull(reader.GetOrdinal("estado")) ? string.Empty : reader.GetString("estado"),
             codPais = reader.IsDBNull(reader.GetOrdinal("codPais")) ? null : reader.GetInt32("codPais"),
+            codUsuario = reader.IsDBNull(reader.GetOrdinal("codUsuario")) ? 0 : reader.GetInt32("codUsuario"),
             criado_em = reader.GetDateTime("criado_em"),
             atualizado_em = reader.GetDateTime("atualizado_em")
         };
@@ -194,6 +203,15 @@ public class EstadosController : ControllerBase
                 moeda = reader.IsDBNull(reader.GetOrdinal("Pais_moeda")) ? string.Empty : reader.GetString("Pais_moeda"),
                 criado_em = reader.GetDateTime("Pais_criado_em"),
                 atualizado_em = reader.GetDateTime("Pais_atualizado_em")
+            };
+        }
+
+        if (!reader.IsDBNull(reader.GetOrdinal("Usuario_codUsuario")))
+        {
+            estado.Usuario = new UsuarioReadDto
+            {
+                codUsuario = reader.GetInt32("Usuario_codUsuario"),
+                usuario = reader.GetString("Usuario_usuario")
             };
         }
 

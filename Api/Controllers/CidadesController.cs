@@ -27,6 +27,7 @@ public class CidadesController : ControllerBase
                 c.codCidade,
                 c.cidade,
                 c.codEstado,
+                c.codUsuario,
                 c.criado_em,
                 c.atualizado_em,
                 e.codEstado AS Estado_codEstado,
@@ -41,10 +42,13 @@ public class CidadesController : ControllerBase
                 p.ddi AS Pais_ddi,
                 p.moeda AS Pais_moeda,
                 p.criado_em AS Pais_criado_em,
-                p.atualizado_em AS Pais_atualizado_em
+                p.atualizado_em AS Pais_atualizado_em,
+                u.codUsuario AS Usuario_codUsuario,
+                u.usuario AS Usuario_usuario
             FROM cidades c
             LEFT JOIN estados e ON c.codEstado = e.codEstado
             LEFT JOIN paises p ON e.codPais = p.codPais
+            LEFT JOIN usuarios u ON c.codUsuario = u.codUsuario
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -65,6 +69,7 @@ public class CidadesController : ControllerBase
                 c.codCidade,
                 c.cidade,
                 c.codEstado,
+                c.codUsuario,
                 c.criado_em,
                 c.atualizado_em,
                 e.codEstado AS Estado_codEstado,
@@ -79,10 +84,13 @@ public class CidadesController : ControllerBase
                 p.ddi AS Pais_ddi,
                 p.moeda AS Pais_moeda,
                 p.criado_em AS Pais_criado_em,
-                p.atualizado_em AS Pais_atualizado_em
+                p.atualizado_em AS Pais_atualizado_em,
+                u.codUsuario AS Usuario_codUsuario,
+                u.usuario AS Usuario_usuario
             FROM cidades c
             LEFT JOIN estados e ON c.codEstado = e.codEstado
             LEFT JOIN paises p ON e.codPais = p.codPais
+            LEFT JOIN usuarios u ON c.codUsuario = u.codUsuario
             WHERE c.codCidade = @codCidade
             """;
         command.Parameters.AddWithValue("@codCidade", codCidade);
@@ -187,6 +195,7 @@ public class CidadesController : ControllerBase
             codCidade = reader.GetInt32("codCidade"),
             cidade = reader.IsDBNull(reader.GetOrdinal("cidade")) ? string.Empty : reader.GetString("cidade"),
             codEstado = reader.IsDBNull(reader.GetOrdinal("codEstado")) ? null : reader.GetInt32("codEstado"),
+            codUsuario = reader.IsDBNull(reader.GetOrdinal("codUsuario")) ? 0 : reader.GetInt32("codUsuario"),
             criado_em = reader.GetDateTime("criado_em"),
             atualizado_em = reader.GetDateTime("atualizado_em")
         };
@@ -218,6 +227,15 @@ public class CidadesController : ControllerBase
             }
 
             cidade.Estado = estado;
+        }
+
+        if (!reader.IsDBNull(reader.GetOrdinal("Usuario_codUsuario")))
+        {
+            cidade.Usuario = new UsuarioReadDto
+            {
+                codUsuario = reader.GetInt32("Usuario_codUsuario"),
+                usuario = reader.GetString("Usuario_usuario")
+            };
         }
 
         return cidade;

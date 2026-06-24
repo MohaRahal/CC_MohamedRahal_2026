@@ -1,4 +1,4 @@
-namespace Api.DTOs;
+﻿namespace Api.DTOs;
 
 public class PaisesCreateDto
 {
@@ -15,6 +15,7 @@ public class PaisesReadDto
     public string ddi { get; set; } = string.Empty;
     public string moeda { get; set; } = string.Empty;
     public int codUsuario { get; set; }
+    public UsuarioReadDto? Usuario { get; set; }
     public DateTime criado_em { get; set; }
     public DateTime atualizado_em { get; set; }
 }

@@ -7,6 +7,8 @@ public class EstadosReadDto
     public string estado { get; set; } = string.Empty;
     public int? codPais { get; set; }
     public PaisesReadDto? Pais { get; set; }
+    public int codUsuario { get; set; }
+    public UsuarioReadDto? Usuario { get; set; }
     public DateTime criado_em { get; set; }
     public DateTime atualizado_em { get; set; }
 }

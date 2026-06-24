@@ -31,6 +31,7 @@ public class CondicoesPagamentoController : ControllerBase
                 juros,
                 multa,
                 desconto,
+                codUsuario,
                 criado_em,
                 atualizado_em
             FROM condicoes_pagamento
@@ -58,6 +59,7 @@ public class CondicoesPagamentoController : ControllerBase
                 juros,
                 multa,
                 desconto,
+                codUsuario,
                 criado_em,
                 atualizado_em
             FROM condicoes_pagamento
@@ -175,12 +177,13 @@ public class CondicoesPagamentoController : ControllerBase
         return new CondicoesPagamentoReadDto
         {
             codCondPagamento = reader.GetInt32("codCondPagamento"),
-            condPagamento = reader.IsDBNull(reader.GetOrdinal("condPagamento")) ? string.Empty : reader.GetString("condPagamento"),
+            condPagamento = reader.GetString("condPagamento"),
             qtdParcelas = reader.GetInt32("qtdParcelas"),
             ativo = reader.GetBoolean("ativo"),
             juros = reader.GetDecimal("juros"),
             multa = reader.GetDecimal("multa"),
             desconto = reader.GetDecimal("desconto"),
+            codUsuario = reader.IsDBNull(reader.GetOrdinal("codUsuario")) ? 0 : reader.GetInt32("codUsuario"),
             criado_em = reader.GetDateTime("criado_em"),
             atualizado_em = reader.GetDateTime("atualizado_em")
         };

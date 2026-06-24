@@ -1,3 +1,5 @@
+using Api.Models;
+
 namespace Api.DTOs;
 
 public class CondicoesPagamentoReadDto
@@ -9,6 +11,8 @@ public class CondicoesPagamentoReadDto
     public decimal juros { get; set; }
     public decimal multa { get; set; }
     public decimal desconto { get; set; }
+    public int codUsuario { get; set; }
+    public UsuarioReadDto? Usuario { get; set; }
     public DateTime criado_em { get; set; }
     public DateTime atualizado_em { get; set; }
 }

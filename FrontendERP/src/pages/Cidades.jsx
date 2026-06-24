@@ -104,6 +104,7 @@ export default function Cidades() {
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Estado / UF</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
@@ -133,6 +134,9 @@ export default function Cidades() {
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
                           {cidade.estado ? `${cidade.estado.estado} (${cidade.estado.uf || cidade.estado.UF || '-'})` : '-'}
+                        </td>
+                        <td className="py-4 px-6 text-[13px] text-gray-600">
+                          {cidade.usuario.usuario}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
                           {formatDate(cidade.criado_em)}

@@ -3,52 +3,51 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedPage from './AnimatedPage';
-import { paisesService } from '../services/paisesService';
+import { formasPagamentoService } from '../services/formasPagamentoService';
 
-export default function Paises() {
+export default function FormasPagamento() {
   const navigate = useNavigate();
-  const [paises, setPaises] = useState([]);
+  const [formasPagamento, setFormasPagamento] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
-    fetchPaises();
+    fetchFormasPagamento();
   }, []);
 
-  const fetchPaises = async () => {
+  const fetchFormasPagamento = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
-      const data = await paisesService.getPaises(token);
-      setPaises(data || []);
+      const data = await formasPagamentoService.getFormasPagamento(token);
+      setFormasPagamento(data || []);
     } catch (error) {
-      console.error("Erro ao carregar paises:", error);
+      console.error("Erro ao carregar formas de pagamento:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteClick = async (id, nome) => {
-    const confirmou = window.confirm(`Tem certeza que deseja excluir o país "${nome}"?`);
+    const confirmou = window.confirm(`Tem certeza que deseja excluir a forma de pagamento "${nome}"?`);
     if (confirmou) {
       try {
         setDeletingId(id);
         const token = localStorage.getItem('token');
-        await paisesService.deletePais(token, id);
-        setPaises(paises.filter(p => p.codPais !== id));
+        await formasPagamentoService.deleteFormaPagamento(token, id);
+        setFormasPagamento(formasPagamento.filter(f => f.codFormaPagamento !== id));
       } catch (error) {
         console.error("Erro ao deletar:", error);
-        alert("Não foi possível excluir o país. Ele pode estar sendo usado em outros registros.");
+        alert("Não foi possível excluir a forma de pagamento. Ela pode estar sendo usada em outros registros.");
       } finally {
         setDeletingId(null);
       }
     }
   };
 
-  const filteredPaises = paises.filter(pais => 
-    pais.pais.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    pais.sigla.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredFormasPagamento = formasPagamento.filter(forma => 
+    forma.formaPagamento.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const formatDate = (dateString) => {
   if (!dateString) return '-';
@@ -70,15 +69,15 @@ export default function Paises() {
           
           <div className="flex justify-between items-end mb-8">
             <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Países</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie os países cadastrados no sistema</p>
+              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Formas de Pagamento</h1>
+              <p className="text-sm text-gray-500 mt-1">Gerencie as formas de pagamento cadastradas no sistema</p>
             </div>
             
             <button 
-              onClick={() => navigate('/paises/novo')}
+              onClick={() => navigate('/formas-pagamento/novo')}
               className="flex items-center gap-2 bg-ink-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md">
               <Plus size={16} />
-              Novo País
+              Nova Forma de Pagamento
             </button>
           </div>
 
@@ -105,69 +104,61 @@ export default function Paises() {
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">País</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Sigla</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">DDI</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Moeda</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Forma de Pagamento</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Ativo</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {filteredPaises.length === 0 ? (
+                  {filteredFormasPagamento.length === 0 ? (
                     <tr>
                       <td colSpan="6" className="py-16 text-center text-sm text-gray-500">
-                        Nenhum país encontrado.
+                        Nenhuma forma de pagamento encontrada.
                       </td>
                     </tr>
                   ) : (
-                    filteredPaises.map((pais, idx) => (
+                    filteredFormasPagamento.map((forma, idx) => (
                       <motion.tr 
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        key={pais.codPais} 
+                        key={forma.codFormaPagamento} 
                         className="hover:bg-gray-50/80 transition-colors group"
                       >
                         <td className="py-4 px-6 text-[13px] text-gray-500 font-medium">
-                          #{pais.codPais}
+                          #{forma.codFormaPagamento}
                         </td>
                         <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
-                          {pais.pais}
+                          {forma.formaPagamento}
+                        </td>
+                       <td className="py-4 px-6 text-[13px] text-center">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            forma.ativo ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+                          }`}>
+                            {forma.ativo ? 'Ativo' : 'Inativo'}
+                          </span>
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {pais.sigla}
+                          {formatDate(forma.criado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {pais.ddi}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {pais.moeda}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {pais.usuario.usuario}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {formatDate(pais.criado_em)}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {formatDate(pais.atualizado_em)}
+                          {formatDate(forma.atualizado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-right">
                           <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
                             <button 
-                              onClick={() => navigate(`/paises/editar/${pais.codPais}`)}
+                              onClick={() => navigate(`/formas-pagamento/editar/${forma.codFormaPagamento}`)}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">
                               <Edit2 size={16} />
                             </button>
                             <button 
-                              onClick={() => handleDeleteClick(pais.codPais, pais.pais)}
-                              disabled={deletingId === pais.codPais}
-                              className={`transition-colors cursor-pointer ${deletingId === pais.codPais ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`} 
+                              onClick={() => handleDeleteClick(forma.codFormaPagamento, forma.nome)}
+                              disabled={deletingId === forma.codFormaPagamento}
+                              className={`transition-colors cursor-pointer ${deletingId === forma.codFormaPagamento ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`} 
                               title="Excluir">
-                              {deletingId === pais.codPais ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
+                              {deletingId === forma.codFormaPagamento ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                             </button>
                           </div>
                         </td>

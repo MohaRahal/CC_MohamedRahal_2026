@@ -9,6 +9,8 @@ import Usuarios from './pages/Usuarios';
 import AddUser from './pages/subpages/AddUser';
 import EditUser from './pages/subpages/EditUser';
 import Fornecedores from './pages/Fornecedores';
+import AddFornecedor from './pages/subpages/AddFornecedor';
+import EditFornecedor from './pages/subpages/EditFornecedor';
 import Vendas from './pages/Vendas';
 import Financeiro from './pages/Financeiro';
 import NotFound from './pages/NotFound';
@@ -28,6 +30,9 @@ import EditCargo from './pages/subpages/EditCargo';
 import Funcionarios from './pages/Funcionarios';
 import AddFuncionario from './pages/subpages/AddFuncionario';
 import EditFuncionario from './pages/subpages/EditFuncionario';
+import FormasPagamento from './pages/FormasPagamento';
+import AddFormaPagamento from './pages/subpages/AddFormaPagamento';
+import CondicoesPagamento from './pages/CondicoesPagamento';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -46,6 +51,8 @@ function AnimatedRoutes() {
           <Route path="/Usuarios/AddUser" element={<AddUser />} />
           <Route path="/Usuarios/editar/:id" element={<EditUser />} />
           <Route path="/Fornecedores" element={<Fornecedores />} />
+          <Route path="/Fornecedores/novo" element={<AddFornecedor />} />
+          <Route path="/Fornecedores/editar/:id" element={<EditFornecedor />} />
           <Route path="/Vendas" element={<Vendas />} />
           <Route path="/Financeiro" element={<Financeiro />} />
           <Route path="/paises" element={<Paises />} />
@@ -63,6 +70,10 @@ function AnimatedRoutes() {
           <Route path="/funcionarios" element={<Funcionarios />} />
           <Route path="/funcionarios/novo" element={<AddFuncionario />} />
           <Route path="/funcionarios/editar/:id" element={<EditFuncionario />} />
+          <Route path="/formas-pagamento" element={<FormasPagamento />} />
+          <Route path="/formas-pagamento/novo" element={<AddFormaPagamento />} />
+          
+          <Route path="/condicoes-pagamento" element={<CondicoesPagamento />} />
         </Route>
         
         <Route path="*" element={<NotFound />} />

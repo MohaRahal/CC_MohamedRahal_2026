@@ -16,10 +16,13 @@ public class FornecedoresReadDto
     public string fone { get; set; } = string.Empty;
     public string email { get; set; } = string.Empty;
     public int codCondPagamento { get; set; }
+    public CondicoesPagamentoReadDto? CondicaoPagamento { get; set; }
     public decimal limiteCredito { get; set; }
     public string rg_inscEst { get; set; } = string.Empty;
     public string tipoPessoa { get; set; } = string.Empty;
     public string cpf_cnpj { get; set; } = string.Empty;
+    public int codUsuario { get; set; }
+    public UsuarioReadDto? Usuario { get; set; }
     public DateTime criado_em { get; set; }
     public DateTime atualizado_em { get; set; }
 }

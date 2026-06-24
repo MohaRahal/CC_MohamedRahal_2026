@@ -24,26 +24,52 @@ public class FornecedoresController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codForn,
-                fornecedor,
-                apelido_NomeFantasia,
-                ender,
-                numero,
-                complemento,
-                bairro,
-                codCidade,
-                cep,
-                site,
-                fone,
-                email,
-                codCondPagamento,
-                limiteCredito,
-                rg_inscEst,
-                tipoPessoa,
-                cpf_cnpj,
-                criado_em,
-                atualizado_em
-            FROM fornecedores
+                f.codForn,
+                f.fornecedor,
+                f.apelido_NomeFantasia,
+                f.ender,
+                f.numero,
+                f.complemento,
+                f.bairro,
+                f.codCidade,
+                f.cep,
+                f.site,
+                f.fone,
+                f.email,
+                f.codCondPagamento,
+                f.limiteCredito,
+                f.rg_inscEst,
+                f.tipoPessoa,
+                f.cpf_cnpj,
+                f.codUsuario,
+                f.criado_em,
+                f.atualizado_em,
+                c.codCidade AS Cidade_codCidade,
+                c.cidade AS Cidade_cidade,
+                c.codEstado AS Cidade_codEstado,
+                c.codUsuario AS Cidade_codUsuario,
+                c.criado_em AS Cidade_criado_em,
+                c.atualizado_em AS Cidade_atualizado_em,
+                cp.codCondPagamento AS Condicao_codCondPagamento,
+                cp.condPagamento AS Condicao_condPagamento,
+                cp.qtdParcelas AS Condicao_qtdParcelas,
+                cp.ativo AS Condicao_ativo,
+                cp.juros AS Condicao_juros,
+                cp.multa AS Condicao_multa,
+                cp.desconto AS Condicao_desconto,
+                cp.criado_em AS Condicao_criado_em,
+                cp.atualizado_em AS Condicao_atualizado_em,
+                u.codUsuario AS Usuario_codUsuario,
+                u.usuario AS Usuario_usuario,
+                u.codFuncionario AS Usuario_codFuncionario,
+                u.codCargo AS Usuario_codCargo,
+                u.ativo AS Usuario_ativo,
+                u.criado_em AS Usuario_criado_em,
+                u.atualizado_em AS Usuario_atualizado_em
+            FROM fornecedores f
+            LEFT JOIN cidades c ON f.codCidade = c.codCidade
+            LEFT JOIN condicoes_pagamento cp ON f.codCondPagamento = cp.codCondPagamento
+            LEFT JOIN usuarios u ON f.codUsuario = u.codUsuario
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -61,27 +87,53 @@ public class FornecedoresController : ControllerBase
         await using var command = _connection.CreateCommand();
         command.CommandText = """
             SELECT
-                codForn,
-                fornecedor,
-                apelido_NomeFantasia,
-                ender,
-                numero,
-                complemento,
-                bairro,
-                codCidade,
-                cep,
-                site,
-                fone,
-                email,
-                codCondPagamento,
-                limiteCredito,
-                rg_inscEst,
-                tipoPessoa,
-                cpf_cnpj,
-                criado_em,
-                atualizado_em
-            FROM fornecedores
-            WHERE codForn = @codForn
+                f.codForn,
+                f.fornecedor,
+                f.apelido_NomeFantasia,
+                f.ender,
+                f.numero,
+                f.complemento,
+                f.bairro,
+                f.codCidade,
+                f.cep,
+                f.site,
+                f.fone,
+                f.email,
+                f.codCondPagamento,
+                f.limiteCredito,
+                f.rg_inscEst,
+                f.tipoPessoa,
+                f.cpf_cnpj,
+                f.codUsuario,
+                f.criado_em,
+                f.atualizado_em,
+                c.codCidade AS Cidade_codCidade,
+                c.cidade AS Cidade_cidade,
+                c.codEstado AS Cidade_codEstado,
+                c.codUsuario AS Cidade_codUsuario,
+                c.criado_em AS Cidade_criado_em,
+                c.atualizado_em AS Cidade_atualizado_em,
+                cp.codCondPagamento AS Condicao_codCondPagamento,
+                cp.condPagamento AS Condicao_condPagamento,
+                cp.qtdParcelas AS Condicao_qtdParcelas,
+                cp.ativo AS Condicao_ativo,
+                cp.juros AS Condicao_juros,
+                cp.multa AS Condicao_multa,
+                cp.desconto AS Condicao_desconto,
+                cp.criado_em AS Condicao_criado_em,
+                cp.atualizado_em AS Condicao_atualizado_em,
+                u.codUsuario AS Usuario_codUsuario,
+                u.usuario AS Usuario_usuario,
+                u.codFuncionario AS Usuario_codFuncionario,
+                u.codCargo AS Usuario_codCargo,
+                u.ativo AS Usuario_ativo,
+                u.criado_em AS Usuario_criado_em,
+                u.atualizado_em AS Usuario_atualizado_em
+            FROM fornecedores f
+            LEFT JOIN cidades c ON f.codCidade = c.codCidade
+            LEFT JOIN condicoes_pagamento cp ON f.codCondPagamento = cp.codCondPagamento
+            LEFT JOIN usuarios u ON f.codUsuario = u.codUsuario
+            WHERE f.codForn = @codForn
             """;
         command.Parameters.AddWithValue("@codForn", codForn);
 
@@ -224,7 +276,7 @@ public class FornecedoresController : ControllerBase
 
     private static FornecedoresReadDto MapearFornecedor(MySqlDataReader reader)
     {
-        return new FornecedoresReadDto
+        var dto = new FornecedoresReadDto
         {
             codForn = reader.GetInt32("codForn"),
             fornecedor = reader.IsDBNull(reader.GetOrdinal("fornecedor")) ? string.Empty : reader.GetString("fornecedor"),
@@ -243,8 +295,54 @@ public class FornecedoresController : ControllerBase
             rg_inscEst = reader.IsDBNull(reader.GetOrdinal("rg_inscEst")) ? string.Empty : reader.GetString("rg_inscEst"),
             tipoPessoa = reader.GetString("tipoPessoa"),
             cpf_cnpj = reader.IsDBNull(reader.GetOrdinal("cpf_cnpj")) ? string.Empty : reader.GetString("cpf_cnpj"),
+            codUsuario = reader.IsDBNull(reader.GetOrdinal("codUsuario")) ? 0 : reader.GetInt32("codUsuario"),
             criado_em = reader.GetDateTime("criado_em"),
             atualizado_em = reader.GetDateTime("atualizado_em")
         };
+
+        if (!reader.IsDBNull(reader.GetOrdinal("Cidade_codCidade")))
+        {
+            dto.Cidade = new CidadesReadDto
+            {
+                codCidade = reader.GetInt32("Cidade_codCidade"),
+                cidade = reader.GetString("Cidade_cidade"),
+                codEstado = reader.IsDBNull(reader.GetOrdinal("Cidade_codEstado")) ? null : reader.GetInt32("Cidade_codEstado"),
+                codUsuario = reader.IsDBNull(reader.GetOrdinal("Cidade_codUsuario")) ? 0 : reader.GetInt32("Cidade_codUsuario"),
+                criado_em = reader.GetDateTime("Cidade_criado_em"),
+                atualizado_em = reader.GetDateTime("Cidade_atualizado_em")
+            };
+        }
+
+        if (!reader.IsDBNull(reader.GetOrdinal("Condicao_codCondPagamento")))
+        {
+            dto.CondicaoPagamento = new CondicoesPagamentoReadDto
+            {
+                codCondPagamento = reader.GetInt32("Condicao_codCondPagamento"),
+                condPagamento = reader.GetString("Condicao_condPagamento"),
+                qtdParcelas = reader.GetInt32("Condicao_qtdParcelas"),
+                ativo = reader.GetBoolean("Condicao_ativo"),
+                juros = reader.GetDecimal("Condicao_juros"),
+                multa = reader.GetDecimal("Condicao_multa"),
+                desconto = reader.GetDecimal("Condicao_desconto"),
+                criado_em = reader.GetDateTime("Condicao_criado_em"),
+                atualizado_em = reader.GetDateTime("Condicao_atualizado_em")
+            };
+        }
+
+        if (!reader.IsDBNull(reader.GetOrdinal("Usuario_codUsuario")))
+        {
+            dto.Usuario = new UsuarioReadDto
+            {
+                codUsuario = reader.GetInt32("Usuario_codUsuario"),
+                usuario = reader.GetString("Usuario_usuario"),
+                codFuncionario = reader.IsDBNull(reader.GetOrdinal("Usuario_codFuncionario")) ? 0 : reader.GetInt32("Usuario_codFuncionario"),
+                codCargo = reader.IsDBNull(reader.GetOrdinal("Usuario_codCargo")) ? 0 : reader.GetInt32("Usuario_codCargo"),
+                ativo = reader.GetBoolean("Usuario_ativo"),
+                criado_em = reader.GetDateTime("Usuario_criado_em"),
+                atualizado_em = reader.GetDateTime("Usuario_atualizado_em")
+            };
+        }
+
+        return dto;
     }
 }

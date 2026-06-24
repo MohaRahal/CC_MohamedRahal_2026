@@ -1,8 +1,9 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState} from 'react';
 import { 
   LayoutDashboard, Users, UserCog, LogOut, FileText, 
-  Settings, FolderKanban, ShieldAlert, Boxes, ArrowLeftRight, UserRoundCheck, Wallet, HandCoins, Earth, StickyNoteCheck, Map, MapPin
+  Settings, FolderKanban, ShieldAlert, Boxes, ArrowLeftRight, UserRoundCheck, Wallet, HandCoins, Earth, StickyNoteCheck, Map, MapPin,
+  ShieldUser
 } from 'lucide-react';
 
 function FloatingNavbar() {
@@ -35,11 +36,13 @@ function FloatingNavbar() {
         <NavItem icon={<StickyNoteCheck size={18} strokeWidth={1.5} />} label="Vendas" isExpanded={isExpanded} to="/Vendas" />*/}
         <NavItem icon={<Users size={18} strokeWidth={1.5} />} label="Fornecedores" isExpanded={isExpanded} to="/Fornecedores" />
         <NavItem icon={<UserRoundCheck size={18} strokeWidth={1.5} />} label="Funcionários" isExpanded={isExpanded} to="/funcionarios" />
-        <NavItem icon={<UserCog size={18} strokeWidth={1.5} />} label="Cargos" isExpanded={isExpanded} to="/cargos" />
+        <NavItem icon={<ShieldUser size={18} strokeWidth={1.5} />} label="Cargos" isExpanded={isExpanded} to="/cargos" />
         <NavItem icon={<UserCog size={18} strokeWidth={1.5} />} label="Usuários" isExpanded={isExpanded} to="/Usuarios" />
         <NavItem icon={<Earth size={18} strokeWidth={1.5} />} label="Países" isExpanded={isExpanded} to="/paises" />
         <NavItem icon={<Map size={18} strokeWidth={1.5} />} label="Estados" isExpanded={isExpanded} to="/estados" />
         <NavItem icon={<MapPin size={18} strokeWidth={1.5} />} label="Cidades" isExpanded={isExpanded} to="/cidades" />
+        <NavItem icon={<StickyNoteCheck size={18} strokeWidth={1.5} />} label="Condições de Pagamento" isExpanded={isExpanded} to="/condicoes-pagamento"/>
+        <NavItem icon={<Wallet size={18} strokeWidth={1.5} />} label="Formas de Pagamento" isExpanded={isExpanded} to="/formas-pagamento" />
        {/* <NavItem icon={<Wallet size={18} strokeWidth={1.5} />} label="Financeiro" isExpanded={isExpanded} to="/Financeiro" />
         <NavItem icon={<ArrowLeftRight size={18} strokeWidth={1.5} />} label="Movimentações" isExpanded={isExpanded} to="/Movimentacoes" />
         <NavItem icon={<ShieldAlert size={18} strokeWidth={1.5} />} label="Logs" isExpanded={isExpanded} to="/Logs" />*/}
@@ -84,37 +87,9 @@ function NavItem({ icon, label, isExpanded, to }) {
 }
 
 export default function Layout() {
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error("Erro ao carregar usuário:", err);
-      }
-    }
-  }, []);
-
-  const initial = user?.name ? user.name.charAt(0).toUpperCase() : '?';
-  const roleName = user?.roleid === 1 ? 'Admin' : 'Logado';
-
   return (
     <div className="min-h-screen bg-paper-white text-carbon relative">
       <FloatingNavbar />
-
-      {/* User Profile (Dynamic) */}
-      <div className="fixed top-8 right-12 z-50 flex items-center gap-3 bg-paper-white/90 backdrop-blur-xl border border-carbon/10 shadow-sm rounded-[75px] py-1.5 pr-5 pl-1.5 hover:shadow-md hover:border-carbon/20 transition-all duration-500 cursor-pointer group">
-        <div className="w-8 h-8 rounded-full bg-carbon text-paper-white flex items-center justify-center text-[12px] font-[400] group-hover:scale-105 transition-transform duration-500 uppercase">
-          {initial}
-        </div>
-        <div className="flex flex-col justify-center">
-          <span className="text-[9px] uppercase tracking-widest text-ash leading-none mb-1">{roleName}</span>
-          <span className="text-[13px] text-carbon font-[400] leading-none">{user?.name || 'Visitante'}</span>
-        </div>
-      </div>
-
       <Outlet />
     </div>
   );
