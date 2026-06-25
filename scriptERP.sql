@@ -283,10 +283,14 @@ DROP TABLE IF EXISTS `cargos`;
 CREATE TABLE `cargos` (
   `codCargo` int(11) NOT NULL AUTO_INCREMENT,
   `cargo` varchar(15) NOT NULL,
+  `codUsuario` INT(11) NOT NULL,
   `criado_em` timestamp NOT NULL DEFAULT current_timestamp(),
   `atualizado_em` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`codCargo`),
-  UNIQUE KEY `cargo` (`cargo`)
+  UNIQUE KEY `cargo` (`cargo`),
+KEY `codUsuario` (`codUsuario`),
+    CONSTRAINT `grupos_ibfk_1` FOREIGN KEY (`codUsuario`) REFERENCES `usuarios` (`codUsuario`)
+
 );
 DROP TABLE IF EXISTS `transportadores`;
 
