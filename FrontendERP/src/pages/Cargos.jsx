@@ -101,6 +101,7 @@ export default function Cargos() {
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
@@ -128,6 +129,9 @@ export default function Cargos() {
                         <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
                           {cargo.cargo}
                         </td>
+                        <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
+                          {cargo.usuario.usuario}
+                        </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
                           {formatDate(cargo.criado_em)}
                         </td>
@@ -135,7 +139,7 @@ export default function Cargos() {
                           {formatDate(cargo.atualizado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-right">
-                          <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center justify-end gap-3 transition-opacity">
                             <button 
                               onClick={() => navigate(`/cargos/editar/${cargo.codCargo}`)}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">

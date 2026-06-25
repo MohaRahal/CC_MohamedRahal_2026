@@ -19,6 +19,8 @@ public class TransportadoresReadDto
     public string fone { get; set; } = string.Empty;
     public string email { get; set; } = string.Empty;
     public bool ativo { get; set; }
+    public int codUsuario { get; set; }
+    public UsuarioReadDto? Usuario { get; set; }
     public DateTime criado_em { get; set; }
     public DateTime atualizado_em { get; set; }
 }

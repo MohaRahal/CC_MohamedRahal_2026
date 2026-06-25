@@ -65,7 +65,7 @@ export default function CondicoesPagamento() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           
           <div className="flex justify-between items-end mb-8">
             <div>
@@ -94,7 +94,7 @@ export default function CondicoesPagamento() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
             {loading ? (
               <div className="flex justify-center items-center py-20">
                 <Loader2 className="animate-spin text-gray-400" size={24} />
@@ -167,7 +167,7 @@ export default function CondicoesPagamento() {
                           {formatDate(condicao.atualizado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-right">
-                          <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center justify-end gap-3 transition-opacity">
                             <button 
                               onClick={() => navigate(`/condicoes-pagamento/editar/${condicao.codCondPagamento}`)}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">

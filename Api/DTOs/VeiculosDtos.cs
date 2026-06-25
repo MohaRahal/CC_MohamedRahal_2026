@@ -10,6 +10,7 @@ public class VeiculosReadDto
     public int codTransportador { get; set; }
     public int? codEstado { get; set; }
     public string? codANTT { get; set; }
+    public UsuarioReadDto? Usuario { get; set; }
     public DateTime criado_em { get; set; }
     public DateTime atualizado_em { get; set; }
 }

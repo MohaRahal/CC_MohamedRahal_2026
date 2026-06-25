@@ -11,7 +11,6 @@ import EditUser from './pages/subpages/EditUser';
 import Fornecedores from './pages/Fornecedores';
 import AddFornecedor from './pages/subpages/AddFornecedor';
 import EditFornecedor from './pages/subpages/EditFornecedor';
-import Vendas from './pages/Vendas';
 import Financeiro from './pages/Financeiro';
 import NotFound from './pages/NotFound';
 import Layout from './Layout';
@@ -33,6 +32,10 @@ import EditFuncionario from './pages/subpages/EditFuncionario';
 import FormasPagamento from './pages/FormasPagamento';
 import AddFormaPagamento from './pages/subpages/AddFormaPagamento';
 import CondicoesPagamento from './pages/CondicoesPagamento';
+import Transportadores from './pages/Transportadores';
+import AddTransportador from './pages/subpages/AddTransportador';
+import EditTransportador from './pages/subpages/EditTransportador';
+import Veiculos from './pages/Veiculos';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -53,7 +56,10 @@ function AnimatedRoutes() {
           <Route path="/Fornecedores" element={<Fornecedores />} />
           <Route path="/Fornecedores/novo" element={<AddFornecedor />} />
           <Route path="/Fornecedores/editar/:id" element={<EditFornecedor />} />
-          <Route path="/Vendas" element={<Vendas />} />
+          <Route path="/Transportadores" element={<Transportadores />} />
+          <Route path="/Transportadores/novo" element={<AddTransportador />} />
+          <Route path="/Transportadores/editar/:id" element={<EditTransportador />} />
+          <Route path="/Veiculos" element={<Veiculos />} />
           <Route path="/Financeiro" element={<Financeiro />} />
           <Route path="/paises" element={<Paises />} />
           <Route path="/paises/novo" element={<AddPaises />} />

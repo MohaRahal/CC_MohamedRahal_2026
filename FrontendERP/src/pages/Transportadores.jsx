@@ -1,46 +1,44 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Loader2, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Loader2, Edit, Trash2,Truck,ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AnimatedPage from './AnimatedPage';
-import { fornecedoresService } from '../services/fornecedoresService';
+import { transportadoresService } from '../services/transportadoresService';
 
-export default function Fornecedores() {
-  const [fornecedores, setFornecedores] = useState([]);
+export default function Transportadores() {
+  const [transportadores, setTransportadores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
-    fetchFornecedores();
+    fetchTransportadores();
   }, []);
 
-  const fetchFornecedores = async () => {
+  const fetchTransportadores = async () => {
     try {
       setLoading(true);
-      const data = await fornecedoresService.getFornecedores();
-      setFornecedores(data || []);
+      const data = await transportadoresService.getTransportadores();
+      setTransportadores(data || []);
     } catch (error) {
-      console.error("Erro ao carregar fornecedores:", error);
+      console.error("Erro ao carregar transportadores:", error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir este fornecedor?")) {
+    if (window.confirm("Tem certeza que deseja excluir este transportador?")) {
       try {
-        await fornecedoresService.deleteFornecedor(id);
-        setFornecedores(fornecedores.filter(f => f.codForn !== id));
+        await transportadoresService.deleteTransportador(id);
+        setTransportadores(transportadores.filter(t => t.codTrans !== id));
       } catch (error) {
-        console.error("Erro ao excluir fornecedor:", error);
-        alert("Erro ao excluir fornecedor.");
+        console.error("Erro ao excluir transportador:", error);
+        alert("Erro ao excluir transportador.");
       }
     }
   };
 
-  const filtered = fornecedores.filter(f =>
-    f.fornecedor?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.cpf_cnpj?.includes(searchTerm) ||
-    f.apelido_NomeFantasia?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filtered = transportadores.filter(t =>
+    t.transportador?.toLowerCase().includes(searchTerm.toLowerCase()) 
   );
 
   return (
@@ -50,13 +48,19 @@ export default function Fornecedores() {
           
           <div className="flex justify-between items-end mb-8">
             <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Fornecedores</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie seus parceiros e fornecedores de produtos</p>
+              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Transportadores</h1>
+              <p className="text-sm text-gray-500 mt-1">Gerencie seus transportadores</p>
             </div>
-            <Link to="/Fornecedores/novo" className="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
+            <Link to="/Transportadores/novo" className="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
               <Plus size={16} />
-              Novo Fornecedor
+              Novo Transportador
             </Link>
+            <Link to="/Veiculos" className="flex items-center gap-2 bg-red-900 text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
+              <Truck size={16} />
+              Veiculos
+              <ExternalLink size={16} className="ml-3" />
+            </Link>
+            
           </div>
 
           <div className="mb-6 relative">
@@ -79,9 +83,8 @@ export default function Fornecedores() {
               <table className="w-full text-left border-collapse min-w-max">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Ações</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Cód</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Fornecedor</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Transportador</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Nome Fantasia</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Endereço</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Número</th>
@@ -92,41 +95,31 @@ export default function Fornecedores() {
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Site</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Fone</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Email</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Cond. Pagamento</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Lim. Crédito</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">RG/Insc. Estadual</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Insc. Estadual de Transporte</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Tipo</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">CPF/CNPJ</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Usuário</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Ativo</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Usuario</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Criado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Atualizado em</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filtered.length === 0 ? (
                     <tr>
                       <td colSpan="21" className="py-16 text-center text-sm text-gray-500">
-                        Nenhum fornecedor encontrado.
+                        Nenhum transportador encontrado.
                       </td>
                     </tr>
                   ) : (
                     filtered.map(f => (
-                      <tr key={f.codForn} className="hover:bg-gray-50/50 transition-colors group">
-                        <td className="py-4 px-6 text-[13px] whitespace-nowrap">
-                          <div className="flex gap-2">
-                            <Link to={`/Fornecedores/editar/${f.codForn}`} className="p-1.5 text-gray-400 hover:text-black hover:bg-gray-100 rounded transition-colors">
-                              <Edit size={16} />
-                            </Link>
-                            <button onClick={() => handleDelete(f.codForn)} className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors">
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
+                      <tr key={f.codTransp} className="hover:bg-gray-50/50 transition-colors group">
                         <td className="py-4 px-6 text-[13px] text-gray-400 font-mono">
-                          #{f.codForn}
+                          #{f.codTransp}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.fornecedor}
+                          {f.transportador}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
                           {f.apelido_NomeFantasia}
@@ -159,28 +152,39 @@ export default function Fornecedores() {
                           {f.email}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.condicaoPagamento.condPagamento}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          R$ {f.limiteCredito}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.rg_inscEst}
+                          {f.inscEstTransp}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
                           {f.tipoPessoa}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.cpf_cnpj}
+                          {f.cpf_cnpjTransp}
                         </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.usuario.usuario}
+                        <td className="py-4 px-6 text-[13px] text-center">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            f.ativo ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+                          }`}>
+                            {f.ativo ? 'Ativo' : 'Inativo'}
+                          </span>
+                        </td>
+                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
+                          {f.usuario?.usuario || '-'}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
                           {f.criado_em ? new Date(f.criado_em).toLocaleDateString('pt-BR') : ''}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
                           {f.atualizado_em ? new Date(f.atualizado_em).toLocaleDateString('pt-BR') : ''}
+                        </td>
+                        <td className="py-4 px-6 text-[13px] whitespace-nowrap">
+                          <div className="flex gap-2">
+                            <Link to={`/Transportadores/editar/${f.codTransp}`} className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors">
+                              <Edit size={16} />
+                            </Link>
+                            <button onClick={() => handleDelete(f.codTransp)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))

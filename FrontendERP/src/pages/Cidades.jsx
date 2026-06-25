@@ -133,7 +133,7 @@ export default function Cidades() {
                           {cidade.cidade}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {cidade.estado ? `${cidade.estado.estado} (${cidade.estado.uf || cidade.estado.UF || '-'})` : '-'}
+                          {cidade.estado.estado} ({cidade.estado.uf})
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
                           {cidade.usuario.usuario}
@@ -145,7 +145,7 @@ export default function Cidades() {
                           {formatDate(cidade.atualizado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-right">
-                          <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center justify-end gap-3 transition-opacity">
                             <button 
                               onClick={() => navigate(`/cidades/editar/${cidade.codCidade}`)}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">

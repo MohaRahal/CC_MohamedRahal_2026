@@ -3,7 +3,7 @@ import { useState} from 'react';
 import { 
   LayoutDashboard, Users, UserCog, LogOut, FileText, 
   Settings, FolderKanban, ShieldAlert, Boxes, ArrowLeftRight, UserRoundCheck, Wallet, HandCoins, Earth, StickyNoteCheck, Map, MapPin,
-  ShieldUser
+  ShieldUser, Truck
 } from 'lucide-react';
 
 function FloatingNavbar() {
@@ -35,6 +35,7 @@ function FloatingNavbar() {
       {/*  <NavItem icon={<Boxes size={18} strokeWidth={1.5} />} label="Estoque" isExpanded={isExpanded} to="/Estoque" />
         <NavItem icon={<StickyNoteCheck size={18} strokeWidth={1.5} />} label="Vendas" isExpanded={isExpanded} to="/Vendas" />*/}
         <NavItem icon={<Users size={18} strokeWidth={1.5} />} label="Fornecedores" isExpanded={isExpanded} to="/Fornecedores" />
+        <NavItem icon={<Truck size={18} strokeWidth={1.5} />} label="Transportadores" isExpanded={isExpanded} to="/Transportadores" />
         <NavItem icon={<UserRoundCheck size={18} strokeWidth={1.5} />} label="Funcionários" isExpanded={isExpanded} to="/funcionarios" />
         <NavItem icon={<ShieldUser size={18} strokeWidth={1.5} />} label="Cargos" isExpanded={isExpanded} to="/cargos" />
         <NavItem icon={<UserCog size={18} strokeWidth={1.5} />} label="Usuários" isExpanded={isExpanded} to="/Usuarios" />

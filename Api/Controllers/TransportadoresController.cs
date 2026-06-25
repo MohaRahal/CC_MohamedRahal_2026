@@ -40,12 +40,21 @@ public class TransportadoresController : ControllerBase
                 t.fone,
                 t.email,
                 t.ativo,
+                t.codUsuario,
                 t.criado_em,
                 t.atualizado_em,
                 c.cidade,
-                c.codEstado
+                c.codEstado,
+                u.codUsuario as u_codUsuario,
+                u.usuario as u_usuario,
+                u.codFuncionario as u_codFuncionario,
+                u.codCargo as u_codCargo,
+                u.ativo as u_ativo,
+                u.criado_em as u_criado_em,
+                u.atualizado_em as u_atualizado_em
             FROM transportadores t
             LEFT JOIN cidades c ON t.codCidade = c.codCidade
+            LEFT JOIN usuarios u ON t.codUsuario = u.codUsuario
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -79,12 +88,21 @@ public class TransportadoresController : ControllerBase
                 t.fone,
                 t.email,
                 t.ativo,
+                t.codUsuario,
                 t.criado_em,
                 t.atualizado_em,
                 c.cidade,
-                c.codEstado
+                c.codEstado,
+                u.codUsuario as u_codUsuario,
+                u.usuario as u_usuario,
+                u.codFuncionario as u_codFuncionario,
+                u.codCargo as u_codCargo,
+                u.ativo as u_ativo,
+                u.criado_em as u_criado_em,
+                u.atualizado_em as u_atualizado_em
             FROM transportadores t
             LEFT JOIN cidades c ON t.codCidade = c.codCidade
+            LEFT JOIN usuarios u ON t.codUsuario = u.codUsuario
             WHERE t.codTransp = @codTransp
             """;
         command.Parameters.AddWithValue("@codTransp", codTransp);
@@ -242,6 +260,7 @@ public class TransportadoresController : ControllerBase
             fone = reader.IsDBNull(reader.GetOrdinal("fone")) ? string.Empty : reader.GetString("fone"),
             email = reader.IsDBNull(reader.GetOrdinal("email")) ? string.Empty : reader.GetString("email"),
             ativo = reader.GetBoolean("ativo"),
+            codUsuario = reader.IsDBNull(reader.GetOrdinal("codUsuario")) ? 0 : reader.GetInt32("codUsuario"),
             criado_em = reader.GetDateTime("criado_em"),
             atualizado_em = reader.GetDateTime("atualizado_em")
         };
@@ -255,6 +274,21 @@ public class TransportadoresController : ControllerBase
                 codEstado = reader.IsDBNull(reader.GetOrdinal("codEstado")) ? 0 : reader.GetInt32("codEstado")
             };
         }
+
+        if (!reader.IsDBNull(reader.GetOrdinal("u_codUsuario")))
+        {
+            dto.Usuario = new UsuarioReadDto
+            {
+                codUsuario = reader.GetInt32("u_codUsuario"),
+                usuario = reader.GetString("u_usuario"),
+                codFuncionario = reader.IsDBNull(reader.GetOrdinal("u_codFuncionario")) ? 0 : reader.GetInt32("u_codFuncionario"),
+                codCargo = reader.IsDBNull(reader.GetOrdinal("u_codCargo")) ? 0 : reader.GetInt32("u_codCargo"),
+                ativo = reader.GetBoolean("u_ativo"),
+                criado_em = reader.GetDateTime("u_criado_em"),
+                atualizado_em = reader.GetDateTime("u_atualizado_em")
+            };
+        }
+
         return dto;
     }
 }

@@ -144,7 +144,7 @@ export default function Estados() {
                           {formatDate(estado.atualizado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-right">
-                          <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="flex items-center justify-end gap-3 transition-opacity">
                             <button 
                               onClick={() => navigate(`/estados/editar/${estado.codEstado}`)}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">

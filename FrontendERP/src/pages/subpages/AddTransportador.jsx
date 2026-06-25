@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Check, Loader2, User, Phone, MapPin, Building, CreditCard, Mail, Globe } from 'lucide-react';
+import { ArrowLeft, Check, Loader2, Phone, MapPin, Building, Mail, Globe, Truck } from 'lucide-react';
 import AnimatedPage from '../AnimatedPage';
-import { fornecedoresService } from '../../services/fornecedoresService';
+import { transportadoresService } from '../../services/transportadoresService';
 import { cidadesService } from '../../services/cidadesService';
 
-import { condicoesPagamentosService } from '../../services/condicoesPagamentosService';
-
-export default function AddFornecedor() {
+export default function AddTransportador() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cidades, setCidades] = useState([]);
-  const [condicoesPagamento, setCondicoesPagamento] = useState([]);
   const [loadingOptions, setLoadingOptions] = useState(true);
 
   const [formData, setFormData] = useState({
-    fornecedor: '',
+    transportador: '',
     apelido_NomeFantasia: '',
     ender: '',
     numero: '',
@@ -26,45 +23,36 @@ export default function AddFornecedor() {
     site: '',
     fone: '',
     email: '',
-    codCondPagamento: '',
-    limiteCredito: '',
-    rg_inscEst: '',
+    inscEstTransp: '',
     tipoPessoa: '',
-    cpf_cnpj: '',
+    cpf_cnpjTransp: '',
+    ativo: true
   });
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    Promise.all([
-      cidadesService.getCidades(token),
-      condicoesPagamentosService.getCondicoesPagamentos(token)
-    ])
-      .then(([cidadesData, condicoesData]) => {
-        setCidades(cidadesData || []);
-        setCondicoesPagamento(condicoesData || []);
-      })
+    cidadesService.getCidades(token)
+      .then(cidadesData => setCidades(cidadesData || []))
       .catch(err => console.error(err))
       .finally(() => setLoadingOptions(false));
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setIsSubmitting(true);
-      await fornecedoresService.createFornecedor({
+      await transportadoresService.createTransportador({
         ...formData,
         codCidade: formData.codCidade ? Number(formData.codCidade) : null,
-        codCondPagamento: formData.codCondPagamento ? Number(formData.codCondPagamento) : null,
-        limiteCredito: formData.limiteCredito ? Number(formData.limiteCredito) : 0,
       });
-      navigate('/Fornecedores');
+      navigate('/Transportadores');
     } catch (error) {
-      console.error('Erro ao criar fornecedor:', error);
+      console.error('Erro ao criar transportador:', error);
       alert(error.message);
     } finally {
       setIsSubmitting(false);
@@ -79,55 +67,57 @@ export default function AddFornecedor() {
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
         <div className="max-w-4xl mx-auto">
 
-          <Link to="/Fornecedores" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors mb-6">
-            <ArrowLeft size={16} /> Voltar para Fornecedores
+          <Link to="/Transportadores" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors mb-6">
+            <ArrowLeft size={16} /> Voltar para Transportadores
           </Link>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-light text-gray-900 tracking-tight">Novo Fornecedor</h1>
-            <p className="text-sm text-gray-500 mt-1">Preencha os dados do novo parceiro ou fornecedor.</p>
+            <h1 className="text-3xl font-light text-gray-900 tracking-tight">Novo Transportador</h1>
+            <p className="text-sm text-gray-500 mt-1">Preencha os dados do novo transportador.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
-         
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider mb-6">
-                <Building size={14} className="text-gray-400" /> Dados Principais
+                <Truck size={14} className="text-gray-400" /> Dados Principais
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Razão Social / Fornecedor <span className="text-red-500">*</span></label>
-                  <input name="fornecedor" required value={formData.fornecedor} onChange={handleChange}
-                    placeholder="Ex: Fornecedor Ltda" className={inputClass} />
+                  <label className="text-sm font-medium text-gray-700">Razão Social / Transportador <span className="text-red-500">*</span></label>
+                  <input name="transportador" required value={formData.transportador} onChange={handleChange}
+                    placeholder="Ex: Transportes Rapidos Ltda" className={inputClass} />
                 </div>
                 <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Nome Fantasia / Apelido</label>
-                  <input name="apelido_NomeFantasia" value={formData.apelido_NomeFantasia} onChange={handleChange}
-                    placeholder="Ex: Fornecedor" className={inputClass} />
+                  <label className="text-sm font-medium text-gray-700">Nome Fantasia / Apelido <span className="text-red-500">*</span></label>
+                  <input name="apelido_NomeFantasia" required value={formData.apelido_NomeFantasia} onChange={handleChange}
+                    placeholder="Ex: Rapido Transp" className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Tipo de Pessoa</label>
-                  <select name="tipoPessoa" value={formData.tipoPessoa} onChange={handleChange} className={selectClass}>
+                  <label className="text-sm font-medium text-gray-700">Tipo de Pessoa <span className="text-red-500">*</span></label>
+                  <select name="tipoPessoa" required value={formData.tipoPessoa} onChange={handleChange} className={selectClass}>
                     <option value="">Selecione</option>
                     <option value="F">Física</option>
                     <option value="J">Jurídica</option>
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><CreditCard size={13} className="text-gray-400" />CPF / CNPJ</label>
-                  <input name="cpf_cnpj" value={formData.cpf_cnpj} onChange={handleChange}
+                  <label className="text-sm font-medium text-gray-700">CPF / CNPJ</label>
+                  <input name="cpf_cnpjTransp" value={formData.cpf_cnpjTransp} onChange={handleChange}
                     placeholder="000.000.000-00 ou 00.000.000/0000-00" className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">RG / Insc. Estadual</label>
-                  <input name="rg_inscEst" value={formData.rg_inscEst} onChange={handleChange}
+                  <label className="text-sm font-medium text-gray-700">Insc. Estadual de Transporte</label>
+                  <input name="inscEstTransp" value={formData.inscEstTransp} onChange={handleChange}
                     placeholder="" className={inputClass} />
+                </div>
+                <div className="flex items-center gap-2 mt-8">
+                  <input type="checkbox" id="ativo" name="ativo" checked={formData.ativo} onChange={handleChange} className="w-4 h-4 text-black focus:ring-black border-gray-300 rounded" />
+                  <label htmlFor="ativo" className="text-sm font-medium text-gray-700">Ativo</label>
                 </div>
               </div>
             </div>
 
-           
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider mb-6">
                 <Phone size={14} className="text-gray-400" /> Contato
@@ -151,7 +141,6 @@ export default function AddFornecedor() {
               </div>
             </div>
 
-            
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider mb-6">
                 <MapPin size={14} className="text-gray-400" /> Endereço
@@ -194,42 +183,14 @@ export default function AddFornecedor() {
               </div>
             </div>
 
-       
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
-              <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider mb-6">
-                <CreditCard size={14} className="text-gray-400" /> Comercial
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Condição de Pagamento</label>
-                  <div className="relative">
-                    <select name="codCondPagamento" value={formData.codCondPagamento} onChange={handleChange}
-                      disabled={loadingOptions}
-                      className={`${selectClass} pr-10 ${loadingOptions ? 'opacity-60 cursor-not-allowed' : ''}`}>
-                      <option value="">{loadingOptions ? 'Carregando...' : 'Selecione uma condição'}</option>
-                      {condicoesPagamento.map(c => <option key={c.codCondPagamento} value={c.codCondPagamento}>{c.condPagamento}</option>)}
-                    </select>
-                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Limite de Crédito</label>
-                  <input type="number" step="0.01" name="limiteCredito" value={formData.limiteCredito} onChange={handleChange} placeholder="0.00" className={inputClass} />
-                </div>
-              </div>
-            </div>
-
-    
             <div className="flex gap-4">
-              <Link to="/Fornecedores" className="px-6 py-3 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors text-center">
+              <Link to="/Transportadores" className="px-6 py-3 border border-gray-200 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors text-center">
                 Cancelar
               </Link>
               <button type="submit" disabled={isSubmitting}
                 className="flex-1 px-6 py-3 bg-black text-white rounded-xl text-sm font-medium hover:bg-gray-900 transition-colors disabled:opacity-70 flex justify-center items-center gap-2">
                 {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
-                {isSubmitting ? 'Salvando...' : 'Cadastrar Fornecedor'}
+                {isSubmitting ? 'Salvando...' : 'Cadastrar Transportador'}
               </button>
             </div>
 
