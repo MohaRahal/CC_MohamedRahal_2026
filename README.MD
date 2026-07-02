@@ -12,6 +12,5 @@ As seguintes funcionalidades permanecem em desenvolvimento e ainda não foram im
 * Produtos vinculados às Notas Fiscais;
 * Movimentações relacionadas às Notas Fiscais;
 * Módulo Financeiro vinculado às Notas Fiscais (Contas a Pagar e Contas a Receber);
-* Sistema de Logs e Auditoria.
 
 O restante das funcionalidades estão implementadas e funcionando perfeitamente.
