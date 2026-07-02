@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Loader2, Edit, Trash2,Truck,ExternalLink } from 'lucide-react';
+import { Search, Plus, Loader2, Edit, Trash2,Truck,ExternalLink,Eye,X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AnimatedPage from './AnimatedPage';
 import { transportadoresService } from '../services/transportadoresService';
@@ -8,6 +8,9 @@ export default function Transportadores() {
   const [transportadores, setTransportadores] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [isDetalhesOpen, setIsDetalhesOpen] = useState(false);
+  const [selectedTransp, setSelectedTransp] = useState(null);
 
   useEffect(() => {
     fetchTransportadores();
@@ -36,6 +39,18 @@ export default function Transportadores() {
       }
     }
   };
+  const formatDate = (dateString) => {
+  if (!dateString) return '-';
+
+  return new Date(dateString).toLocaleString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+};
 
   const filtered = transportadores.filter(t =>
     t.transportador?.toLowerCase().includes(searchTerm.toLowerCase()) 
@@ -55,22 +70,18 @@ export default function Transportadores() {
               <Plus size={16} />
               Novo Transportador
             </Link>
-            <Link to="/Veiculos" className="flex items-center gap-2 bg-red-900 text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
-              <Truck size={16} />
-              Veiculos
-              <ExternalLink size={16} className="ml-3" />
-            </Link>
             
           </div>
 
           <div className="mb-6 relative">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
+              required
               type="text"
               placeholder="Buscar por razão social ou CNPJ..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all shadow-sm"
+              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all shadow-sm "
             />
           </div>
 
@@ -86,18 +97,9 @@ export default function Transportadores() {
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Cód</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Transportador</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Nome Fantasia</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Endereço</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Número</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Complemento</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Bairro</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">CEP</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Cidade</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Site</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Fone</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Email</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Insc. Estadual de Transporte</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Tipo</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">CPF/CNPJ</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Tipo</th>
+                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Insc. Estd Transp</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Ativo</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Usuario</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Criado em</th>
@@ -125,40 +127,13 @@ export default function Transportadores() {
                           {f.apelido_NomeFantasia}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.ender}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.numero}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.complemento}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.bairro}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.cep}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.cidade.cidade}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.site}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.fone}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.email}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.inscEstTransp}
+                          {f.cpf_cnpjTransp}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
                           {f.tipoPessoa}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.cpf_cnpjTransp}
+                          {f.inscEstTransp}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-center">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
@@ -171,10 +146,10 @@ export default function Transportadores() {
                           {f.usuario?.usuario || '-'}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.criado_em ? new Date(f.criado_em).toLocaleDateString('pt-BR') : ''}
+                          {formatDate(f.criado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium whitespace-nowrap">
-                          {f.atualizado_em ? new Date(f.atualizado_em).toLocaleDateString('pt-BR') : ''}
+                          {formatDate(f.atualizado_em)}
                         </td>
                         <td className="py-4 px-6 text-[13px] whitespace-nowrap">
                           <div className="flex gap-2">
@@ -183,6 +158,15 @@ export default function Transportadores() {
                             </Link>
                             <button onClick={() => handleDelete(f.codTransp)} className="p-1.5 text-gray-400 hover:text-red-600 transition-colors">
                               <Trash2 size={16} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                setSelectedTransp(f);
+                                setIsDetalhesOpen(true);
+                              }}
+                              className="p-1.5 text-gray-400 hover:text-blue-600 transition-colors"
+                            >
+                              <Eye size={16} />
                             </button>
                           </div>
                         </td>
@@ -196,6 +180,92 @@ export default function Transportadores() {
 
         </div>
       </div>
+      {selectedTransp && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
+            {/* Header */}
+            <div className="flex justify-between items-start p-6 border-b border-gray-100">
+              <div>
+                <p className="text-xs text-gray-400 font-mono mb-1">#{selectedTransp.codTransp?.toString().padStart(4, '0')}</p>
+                <h2 className="text-xl font-medium text-gray-900">{selectedTransp.transportador}</h2>
+              </div>
+              <button onClick={() => setSelectedTransp(null)} className="cursor-pointer text-gray-400 hover:text-gray-600 transition-colors mt-1">
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-6 grid grid-cols-2 md:grid-cols-3 gap-6">
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Endereço</p>
+                <p className="text-sm font-medium text-gray-800">
+                  {selectedTransp.ender}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Número</p>
+                <p className="text-sm font-medium text-gray-800">
+                  {selectedTransp.numero}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Complemento</p>
+                <p className="text-sm font-medium text-gray-800">
+                  {selectedTransp.complemento}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Bairro</p>
+                <p className="text-sm font-medium text-gray-800">
+                  {selectedTransp.bairro}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Ativo</p>
+                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${
+                  selectedTransp.ativo ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+                }`}>
+                  {selectedTransp.ativo ? 'Ativo' : 'Inativo'}
+                </span>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Cep</p>
+                <p className="text-sm font-medium text-gray-800">{selectedTransp.cep || '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Cidade</p>
+                <p className="text-sm font-mono text-gray-800">{selectedTransp.cidade.cidade || '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Telefone</p>
+                <p className="text-sm font-medium text-gray-800">{selectedTransp.fone != null ? `${selectedTransp.fone}` : '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Email</p>
+                <p className="text-sm font-medium text-gray-800">{selectedTransp.email != null ? `${selectedTransp.email}` : '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Site</p>
+                <p className="text-sm font-medium text-gray-800">{selectedTransp.site != null ? `${selectedTransp.site}` : '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Inscrição Estadual</p>
+                <p className="text-sm font-medium text-gray-800">{selectedTransp.inscEstTransp != null ? `${selectedTransp.inscEstTransp}` : '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Cadastrado por</p>
+                <p className="text-sm font-medium text-gray-800">{selectedTransp.usuario?.usuario || '—'}</p>
+              </div>
+              <div>
+                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Cadastrado em</p>
+                <p className="text-sm font-medium text-gray-800">
+                  {selectedTransp.criado_em ? new Date(selectedTransp.criado_em).toLocaleDateString('pt-BR') : '—'}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AnimatedPage>
   );
 }

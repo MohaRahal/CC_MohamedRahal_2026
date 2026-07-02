@@ -97,17 +97,17 @@ export default function AddFornecedor() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Razão Social / Fornecedor <span className="text-red-500">*</span></label>
+                  <label className="text-sm font-medium text-gray-700">Fornecedor <span className="text-red-500">*</span></label>
                   <input name="fornecedor" required value={formData.fornecedor} onChange={handleChange}
                     placeholder="Ex: Fornecedor Ltda" className={inputClass} />
                 </div>
                 <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Nome Fantasia / Apelido</label>
-                  <input name="apelido_NomeFantasia" value={formData.apelido_NomeFantasia} onChange={handleChange}
+                  <label className="text-sm font-medium text-gray-700">Nome Fantasia<span className="text-red-500">*</span></label>
+                  <input required name="apelido_NomeFantasia" value={formData.apelido_NomeFantasia} onChange={handleChange}
                     placeholder="Ex: Fornecedor" className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Tipo de Pessoa</label>
+                  <label className="text-sm font-medium text-gray-700">Tipo de Pessoa<span className="text-red-500">*</span></label>
                   <select name="tipoPessoa" value={formData.tipoPessoa} onChange={handleChange} className={selectClass}>
                     <option value="">Selecione</option>
                     <option value="F">Física</option>
@@ -115,13 +115,13 @@ export default function AddFornecedor() {
                   </select>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><CreditCard size={13} className="text-gray-400" />CPF / CNPJ</label>
-                  <input name="cpf_cnpj" value={formData.cpf_cnpj} onChange={handleChange}
+                  <label className="text-sm font-medium text-gray-700">CPF / CNPJ<span className="text-red-500">*</span></label>
+                  <input required name="cpf_cnpj" value={formData.cpf_cnpj} onChange={handleChange}
                     placeholder="000.000.000-00 ou 00.000.000/0000-00" className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">RG / Insc. Estadual</label>
-                  <input name="rg_inscEst" value={formData.rg_inscEst} onChange={handleChange}
+                  <label className="text-sm font-medium text-gray-700">RG / Insc. Estadual<span className="text-red-500">*</span></label>
+                  <input required name="rg_inscEst" value={formData.rg_inscEst} onChange={handleChange}
                     placeholder="" className={inputClass} />
                 </div>
               </div>
@@ -134,18 +134,18 @@ export default function AddFornecedor() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Mail size={13} className="text-gray-400" />Email</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleChange}
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Mail size={13} className="text-gray-400" />Email<span className="text-red-500">*</span></label>
+                  <input type="email" required name="email" value={formData.email} onChange={handleChange}
                     placeholder="contato@empresa.com" className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Phone size={13} className="text-gray-400" />Telefone</label>
-                  <input name="fone" value={formData.fone} onChange={handleChange}
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Phone size={13} className="text-gray-400" />Telefone<span className="text-red-500">*</span></label>
+                  <input required name="fone" value={formData.fone} onChange={handleChange}
                     placeholder="(00) 90000-0000" className={inputClass} />
                 </div>
                 <div className="md:col-span-2 flex flex-col gap-2">
                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Globe size={13} className="text-gray-400" />Site</label>
-                  <input name="site" value={formData.site} onChange={handleChange}
+                  <input  name="site" value={formData.site} onChange={handleChange}
                     placeholder="https://www.empresa.com.br" className={inputClass} />
                 </div>
               </div>
@@ -158,29 +158,29 @@ export default function AddFornecedor() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                 <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Logradouro</label>
-                  <input name="ender" value={formData.ender} onChange={handleChange} placeholder="Rua, Av..." className={inputClass} />
+                  <label className="text-sm font-medium text-gray-700">Logradouro<span className="text-red-500">*</span></label>
+                  <input required name="ender" value={formData.ender} onChange={handleChange} placeholder="Rua, Av..." className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-gray-700">Número</label>
-                  <input name="numero" value={formData.numero} onChange={handleChange} placeholder="123" className={inputClass} />
+                  <input required name="numero" value={formData.numero} onChange={handleChange} placeholder="123" className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-gray-700">Complemento</label>
-                  <input name="complemento" value={formData.complemento} onChange={handleChange} placeholder="Apto, Sala..." className={inputClass} />
+                  <input  name="complemento" value={formData.complemento} onChange={handleChange} placeholder="Apto, Sala..." className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Bairro</label>
-                  <input name="bairro" value={formData.bairro} onChange={handleChange} placeholder="Bairro" className={inputClass} />
+                  <label className="text-sm font-medium text-gray-700">Bairro<span className="text-red-500">*</span></label>
+                  <input required name="bairro" value={formData.bairro} onChange={handleChange} placeholder="Bairro" className={inputClass} />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">CEP</label>
-                  <input name="cep" value={formData.cep} onChange={handleChange} placeholder="00000-000" maxLength={9} className={inputClass} />
+                  <label className="text-sm font-medium text-gray-700">CEP<span className="text-red-500">*</span></label>
+                  <input required name="cep" value={formData.cep} onChange={handleChange} placeholder="00000-000" maxLength={9} className={inputClass} />
                 </div>
                 <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Cidade</label>
+                  <label className="text-sm font-medium text-gray-700">Cidade<span className="text-red-500">*</span></label>
                   <div className="relative">
-                    <select name="codCidade" value={formData.codCidade} onChange={handleChange}
+                    <select required name="codCidade" value={formData.codCidade} onChange={handleChange}
                       disabled={loadingOptions}
                       className={`${selectClass} pr-10 ${loadingOptions ? 'opacity-60 cursor-not-allowed' : ''}`}>
                       <option value="">{loadingOptions ? 'Carregando...' : 'Selecione uma cidade'}</option>
@@ -201,9 +201,9 @@ export default function AddFornecedor() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Condição de Pagamento</label>
+                  <label className="text-sm font-medium text-gray-700">Condição de Pagamento<span className="text-red-500">*</span></label>
                   <div className="relative">
-                    <select name="codCondPagamento" value={formData.codCondPagamento} onChange={handleChange}
+                    <select required name="codCondPagamento" value={formData.codCondPagamento} onChange={handleChange}
                       disabled={loadingOptions}
                       className={`${selectClass} pr-10 ${loadingOptions ? 'opacity-60 cursor-not-allowed' : ''}`}>
                       <option value="">{loadingOptions ? 'Carregando...' : 'Selecione uma condição'}</option>
@@ -215,7 +215,7 @@ export default function AddFornecedor() {
                   </div>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Limite de Crédito</label>
+                  <label required className="text-sm font-medium text-gray-700">Limite de Crédito<span className="text-red-500">*</span></label>
                   <input type="number" step="0.01" name="limiteCredito" value={formData.limiteCredito} onChange={handleChange} placeholder="0.00" className={inputClass} />
                 </div>
               </div>

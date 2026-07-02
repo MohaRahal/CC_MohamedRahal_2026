@@ -1,4 +1,4 @@
-namespace Api.Models;
+﻿namespace Api.Models;
 
 public class Fornecedores
 {
@@ -19,8 +19,8 @@ public class Fornecedores
     public string rg_inscEst { get; set; } = string.Empty;
     public string tipoPessoa { get; set; } = string.Empty;
     public string cpf_cnpj { get; set; } = string.Empty;
-    public int codUsuario { get; set; }
 
+    public int codUsuario { get; set; }
     public DateTime criado_em { get; set; }
     public DateTime atualizado_em { get; set; }
 

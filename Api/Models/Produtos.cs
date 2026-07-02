@@ -8,7 +8,6 @@ public class Produtos
     public int codGrupo { get; set; }
     public int codUnidade { get; set; }
     public string codigoBarras { get; set; } = string.Empty;
-    public string undProd { get; set; } = string.Empty;
     public decimal? pesoBruto { get; set; }
     public decimal? pesoLiq { get; set; }
     public decimal? saldoProd { get; set; }

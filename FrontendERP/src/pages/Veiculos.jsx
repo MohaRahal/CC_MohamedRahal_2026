@@ -47,7 +47,8 @@ export default function Veiculos() {
     };
 
     const filteredVeiculos = veiculos.filter(veiculo =>
-        veiculo.placa.toLowerCase().includes(searchTerm.toLowerCase())
+        veiculo.placaVeiculo?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        veiculo.placaMercosul?.toLowerCase().includes(searchTerm.toLowerCase())
     );
     const formatDate = (dateString) => {
         if (!dateString) return '-';
@@ -69,14 +70,14 @@ export default function Veiculos() {
 
                     <div className="flex justify-between items-end mb-8">
                         <div>
-                            <h1 className="text-3xl font-light text-gray-900 tracking-tight">Veiculos</h1>
-                            <p className="text-sm text-gray-500 mt-1">Gerencie os Veiculos cadastrados no sistema</p>
+                            <h1 className="text-3xl font-light text-gray-900 tracking-tight">Veículos</h1>
+                            <p className="text-sm text-gray-500 mt-1">Gerencie os Veículos cadastrados no sistema</p>
                         </div>
                         <button
                             onClick={() => navigate('/veiculos/novo')}
                             className="flex items-center gap-2 bg-ink-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md">
                             <Plus size={16} />
-                            Novo Veiculo
+                            Novo Veículo
                         </button>
                     </div>
                     <div className="mb-6">
@@ -105,11 +106,10 @@ export default function Veiculos() {
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Placa Mercosul</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Chassi</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Modelo</th>
+                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód. Modelo</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">ANTT</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Transportador</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuario</th>
+                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód. Estado</th>
+                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód. Transportador</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
@@ -118,8 +118,8 @@ export default function Veiculos() {
                                     <tbody className="divide-y divide-gray-50">
                                         {filteredVeiculos.length === 0 ? (
                                             <tr>
-                                                <td colSpan="6" className="py-16 text-center text-sm text-gray-500">
-                                                    Nenhum Veiculo encontrado.
+                                                <td colSpan="11" className="py-16 text-center text-sm text-gray-500">
+                                                    Nenhum Veículo encontrado.
                                                 </td>
                                             </tr>
                                         ) : (
@@ -144,19 +144,16 @@ export default function Veiculos() {
                                                         {veiculo.chassi}
                                                     </td>
                                                     <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.modelo}
+                                                        {veiculo.codModelo}
                                                     </td>
                                                     <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.antt}
+                                                        {veiculo.codANTT}
                                                     </td>
                                                     <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.estado.estado}
+                                                        {veiculo.codEstado || '-'}
                                                     </td>
                                                     <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.transportador.transportador}
-                                                    </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.usuario.usuario}
+                                                        {veiculo.codTransportador}
                                                     </td>
                                                     <td className="py-4 px-6 text-[13px] text-gray-600">
                                                         {formatDate(veiculo.criado_em)}

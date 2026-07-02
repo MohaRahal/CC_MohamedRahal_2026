@@ -32,8 +32,8 @@ function FloatingNavbar() {
 
       <div className="flex flex-row gap-1 pl-3">
         <NavItem icon={<LayoutDashboard size={18} strokeWidth={1.5} />} label="Dashboard" isExpanded={isExpanded} to="/dashboard" />
-      {/*  <NavItem icon={<Boxes size={18} strokeWidth={1.5} />} label="Estoque" isExpanded={isExpanded} to="/Estoque" />
-        <NavItem icon={<StickyNoteCheck size={18} strokeWidth={1.5} />} label="Vendas" isExpanded={isExpanded} to="/Vendas" />*/}
+        <NavItem icon={<Boxes size={18} strokeWidth={1.5} />} label="Estoque" isExpanded={isExpanded} to="/Estoque" />
+        {/*  <NavItem icon={<StickyNoteCheck size={18} strokeWidth={1.5} />} label="Vendas" isExpanded={isExpanded} to="/Vendas" />*/}
         <NavItem icon={<Users size={18} strokeWidth={1.5} />} label="Fornecedores" isExpanded={isExpanded} to="/Fornecedores" />
         <NavItem icon={<Truck size={18} strokeWidth={1.5} />} label="Transportadores" isExpanded={isExpanded} to="/Transportadores" />
         <NavItem icon={<UserRoundCheck size={18} strokeWidth={1.5} />} label="Funcionários" isExpanded={isExpanded} to="/funcionarios" />

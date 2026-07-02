@@ -105,12 +105,11 @@ export default function CondicoesPagamento() {
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Condição de Pagamento</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Ativo</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Total de Parcelas</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Juros</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Multa</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Desconto</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
+                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Ativo</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
@@ -138,13 +137,6 @@ export default function CondicoesPagamento() {
                         <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
                           {condicao.condPagamento}
                         </td>
-                       <td className="py-4 px-6 text-[13px] text-center">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                            condicao.ativo ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
-                          }`}>
-                            {condicao.ativo ? 'Ativo' : 'Inativo'}
-                          </span>
-                        </td>
                         <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
                           {condicao.qtdParcelas}
                         </td>
@@ -157,8 +149,12 @@ export default function CondicoesPagamento() {
                         <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
                           {condicao.desconto}%
                         </td>
-                        <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
-                          {condicao.codUsuario}
+                        <td className="py-4 px-6 text-[13px] text-center">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                            condicao.ativo ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
+                          }`}>
+                            {condicao.ativo ? 'Ativo' : 'Inativo'}
+                          </span>
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
                           {formatDate(condicao.criado_em)}

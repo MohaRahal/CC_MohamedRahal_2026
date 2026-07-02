@@ -50,6 +50,7 @@ export default function AddCargo() {
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-gray-700">Nome do Cargo <span className="text-red-500">*</span></label>
               <input 
+                
                 name="cargo" value={formData.cargo} onChange={handleChange} required placeholder="Ex: Administrador"
                 className="w-full px-4 py-2.5 bg-[#fafafa] border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
               />

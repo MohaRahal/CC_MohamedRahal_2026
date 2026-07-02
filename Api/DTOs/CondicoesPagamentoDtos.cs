@@ -25,6 +25,7 @@ public class CondicoesPagamentoCreateDto
     public decimal juros { get; set; }
     public decimal multa { get; set; }
     public decimal desconto { get; set; }
+    public List<CondicaoPagamentoParcelasCreateDto>? parcelas { get; set; }
 }
 
 public class CondicoesPagamentoUpdateDto

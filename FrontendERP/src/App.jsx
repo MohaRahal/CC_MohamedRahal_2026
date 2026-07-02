@@ -32,10 +32,15 @@ import EditFuncionario from './pages/subpages/EditFuncionario';
 import FormasPagamento from './pages/FormasPagamento';
 import AddFormaPagamento from './pages/subpages/AddFormaPagamento';
 import CondicoesPagamento from './pages/CondicoesPagamento';
+import AddCondicaoPagamento from './pages/subpages/AddCondicaoPagamento';
+import EditCondicaoPagamento from './pages/subpages/EditCondicaoPagamento';
 import Transportadores from './pages/Transportadores';
 import AddTransportador from './pages/subpages/AddTransportador';
 import EditTransportador from './pages/subpages/EditTransportador';
 import Veiculos from './pages/Veiculos';
+import AddVeiculo from './pages/subpages/AddVeiculo';
+import EditVeiculo from './pages/subpages/EditVeiculo';
+import AddProduto from './pages/subpages/AddProduto';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -48,6 +53,7 @@ function AnimatedRoutes() {
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/Estoque" element={<Estoque />} />
+          <Route path="/Estoque/novo" element={<AddProduto />} />
           <Route path="/Movimentacoes" element={<Movimentacoes />} />
           <Route path="/Logs" element={<Logs />} />
           <Route path="/Usuarios" element={<Usuarios />} />
@@ -60,6 +66,8 @@ function AnimatedRoutes() {
           <Route path="/Transportadores/novo" element={<AddTransportador />} />
           <Route path="/Transportadores/editar/:id" element={<EditTransportador />} />
           <Route path="/Veiculos" element={<Veiculos />} />
+          <Route path="/veiculos/novo" element={<AddVeiculo />} />
+          <Route path="/veiculos/editar/:id" element={<EditVeiculo />} />
           <Route path="/Financeiro" element={<Financeiro />} />
           <Route path="/paises" element={<Paises />} />
           <Route path="/paises/novo" element={<AddPaises />} />
@@ -80,6 +88,8 @@ function AnimatedRoutes() {
           <Route path="/formas-pagamento/novo" element={<AddFormaPagamento />} />
           
           <Route path="/condicoes-pagamento" element={<CondicoesPagamento />} />
+          <Route path="/condicoes-pagamento/novo" element={<AddCondicaoPagamento />} />
+          <Route path="/condicoes-pagamento/editar/:id" element={<EditCondicaoPagamento />} />
         </Route>
         
         <Route path="*" element={<NotFound />} />

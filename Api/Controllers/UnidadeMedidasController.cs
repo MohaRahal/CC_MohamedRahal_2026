@@ -28,7 +28,7 @@ public class UnidadeMedidasController : ControllerBase
                 unidade,
                 criado_em,
                 atualizado_em
-            FROM unidade_medidas
+            FROM unidades_medidas
             """;
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -50,7 +50,7 @@ public class UnidadeMedidasController : ControllerBase
                 unidade,
                 criado_em,
                 atualizado_em
-            FROM unidade_medidas
+            FROM unidades_medidas
             WHERE codUnidade = @codUnidade
             """;
         command.Parameters.AddWithValue("@codUnidade", codUnidade);
@@ -76,7 +76,7 @@ public class UnidadeMedidasController : ControllerBase
 
         await using var command = _connection.CreateCommand();
         command.CommandText = """
-            INSERT INTO unidade_medidas (unidade, codUsuario)
+            INSERT INTO unidades_medidas (unidade, codUsuario)
             VALUES (@unidade, @codUsuario);
             """;
         command.Parameters.AddWithValue("@unidade", unidadeDto.unidade);
@@ -85,7 +85,8 @@ public class UnidadeMedidasController : ControllerBase
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
         if (rowsAffected > 0)
         {
-            return CreatedAtAction(nameof(BuscarPorCodigo), new { codUnidade = command.LastInsertedId }, null);
+            var codUnidade = command.LastInsertedId;
+            return CreatedAtAction(nameof(BuscarPorCodigo), new { codUnidade = codUnidade }, new { codUnidade = codUnidade, unidade = unidadeDto.unidade });
         }
         else
         {
@@ -107,7 +108,7 @@ public class UnidadeMedidasController : ControllerBase
         }
 
         var updateClause = string.Join(", ", updates);
-        var commandText = $"UPDATE unidade_medidas SET {updateClause} WHERE codUnidade = @codUnidade";
+        var commandText = $"UPDATE unidades_medidas SET {updateClause} WHERE codUnidade = @codUnidade";
 
         await using var command = _connection.CreateCommand();
         command.CommandText = commandText;
@@ -131,7 +132,7 @@ public class UnidadeMedidasController : ControllerBase
         await _connection.OpenAsync(cancellationToken);
 
         await using var command = _connection.CreateCommand();
-        command.CommandText = "DELETE FROM unidade_medidas WHERE codUnidade = @codUnidade";
+        command.CommandText = "DELETE FROM unidades_medidas WHERE codUnidade = @codUnidade";
         command.Parameters.AddWithValue("@codUnidade", codUnidade);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
