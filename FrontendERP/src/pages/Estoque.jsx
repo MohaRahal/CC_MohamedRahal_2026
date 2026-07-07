@@ -44,8 +44,7 @@ export default function Estoque() {
     if (!marcaName.trim()) return;
     setLoadingMarca(true);
     try {
-      const token = localStorage.getItem('token');
-      await marcasService.createMarca(token, { marca: marcaName });
+      await marcasService.createMarca({ marca: marcaName });
       setIsMarcaModalOpen(false);
       setMarcaName('');
       alert("Marca criada com sucesso!");
@@ -62,8 +61,7 @@ export default function Estoque() {
     if (!grupoName.trim()) return;
     setLoadingGrupo(true);
     try {
-      const token = localStorage.getItem('token');
-      await gruposService.createGrupo(token, { grupo: grupoName });
+      await gruposService.createGrupo({ grupo: grupoName });
       setIsGrupoModalOpen(false);
       setGrupoName('');
       alert("Grupo criado com sucesso!");
@@ -92,17 +90,18 @@ export default function Estoque() {
             </div>
             
             <div className="flex flex-wrap gap-2">
+               
               <button 
-                onClick={() => setIsMarcaModalOpen(true)}
-                className="cursor-pointer flex items-center gap-2 bg-white text-gray-800 border border-gray-200 px-4 py-2.5 text-sm rounded hover:bg-gray-50 transition-colors shadow-sm font-medium"
+                onClick={() => navigate('/Marcas')}
+                className="cursor-pointer flex items-center gap-2 bg-white text-red px-5 py-2.5 text-sm rounded hover:bg-white-800 transition-colors shadow-sm font-medium"
               >
-                <Plus size={16} /> Marca
+                <Plus size={16} /> Nova Marca
               </button>
               <button 
-                onClick={() => setIsGrupoModalOpen(true)}
-                className="cursor-pointer flex items-center gap-2 bg-white text-gray-800 border border-gray-200 px-4 py-2.5 text-sm rounded hover:bg-gray-50 transition-colors shadow-sm font-medium"
+                onClick={() => navigate('/Grupos')}
+                className="cursor-pointer flex items-center gap-2 bg-white text-green px-5 py-2.5 text-sm rounded hover:bg-white-800 transition-colors shadow-sm font-medium"
               >
-                <Plus size={16} /> Grupo
+                <Plus size={16} /> Novo Grupo
               </button>
               <button 
                 onClick={() => navigate('/Estoque/novo')}
@@ -187,7 +186,14 @@ export default function Estoque() {
                               <Edit size={16} />
                             </button>
                             <button
-                              onClick={() => navigate(`/Estoque/editar/${produto.codProd}`)}
+                              onClick={() => {
+                                if (window.confirm("Tem certeza que deseja deletar este produto?")) {
+                                  produtosService.deleteProduto(produto.codProd).then(() => {
+                                    fetchProdutos();
+                                    alert("Produto deletado com sucesso!");
+                                  }).catch(() => alert("Erro ao deletar produto."));
+                                }
+                              }}
                               className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                               title="Excluir"
                             >

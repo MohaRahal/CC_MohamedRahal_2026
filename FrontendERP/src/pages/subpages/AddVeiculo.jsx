@@ -67,7 +67,7 @@ export default function AddVeiculo() {
       
       let finalCodMarca = formData.codMarca;
       if (showNovaMarca && formData.novaMarca) {
-        const marcaRes = await marcasService.createMarca(token, { marca: formData.novaMarca });
+        const marcaRes = await marcasService.createMarca({ marca: formData.novaMarca });
         finalCodMarca = marcaRes.codMarca;
       }
 
@@ -78,7 +78,7 @@ export default function AddVeiculo() {
           setLoading(false);
           return;
         }
-        const modeloRes = await modelosService.createModelo(token, { modelo: formData.novoModelo, codMarca: finalCodMarca });
+        const modeloRes = await modelosService.createModelo({ modelo: formData.novoModelo, codMarca: finalCodMarca });
         finalCodModelo = modeloRes.codModelo;
       }
 

@@ -2,6 +2,7 @@ using Api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Microsoft.AspNetCore.Authorization;
+
 namespace Api.Controllers;
 
 [ApiController]
@@ -67,10 +68,55 @@ public class CondicoesPagamentoController : ControllerBase
             """;
         command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
 
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-        if (await reader.ReadAsync(cancellationToken))
+        CondicoesPagamentoReadDto? condicaoDto = null;
+
+        await using (var reader = await command.ExecuteReaderAsync(cancellationToken))
         {
-            return Ok(MapearCondicaoPagamento(reader));
+            if (await reader.ReadAsync(cancellationToken))
+            {
+                condicaoDto = MapearCondicaoPagamento(reader);
+            }
+        }
+
+        if (condicaoDto != null)
+        {
+            var parcelas = new List<CondicaoPagamentoParcelasReadDto>();
+            await using (var parcelasCommand = _connection.CreateCommand())
+            {
+                parcelasCommand.CommandText = """
+                    SELECT
+                        codCondPagamento,
+                        numeroParcela,
+                        diasVencimento,
+                        codFormaPagamento,
+                        percentual,
+                        criado_em,
+                        atualizado_em
+                    FROM condicoes_pagamentos_parcelas
+                    WHERE codCondPagamento = @codCondPagamento
+                    ORDER BY numeroParcela
+                    """;
+                parcelasCommand.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+
+                await using (var pReader = await parcelasCommand.ExecuteReaderAsync(cancellationToken))
+                {
+                    while (await pReader.ReadAsync(cancellationToken))
+                    {
+                        parcelas.Add(new CondicaoPagamentoParcelasReadDto
+                        {
+                            codCondPagamento = pReader.GetInt32("codCondPagamento"),
+                            numeroParcela = pReader.GetInt32("numeroParcela"),
+                            diasVencimento = pReader.GetInt32("diasVencimento"),
+                            codFormaPagamento = pReader.GetInt32("codFormaPagamento"),
+                            percentual = pReader.GetDecimal("percentual"),
+                            criado_em = pReader.GetDateTime("criado_em"),
+                            atualizado_em = pReader.GetDateTime("atualizado_em")
+                        });
+                    }
+                }
+            }
+            condicaoDto.parcelas = parcelas;
+            return Ok(condicaoDto);
         }
         else
         {
@@ -114,7 +160,6 @@ public class CondicoesPagamentoController : ControllerBase
                     var p = condicaoDto.parcelas[i];
                     await using var parcelaCommand = _connection.CreateCommand();
                     parcelaCommand.Transaction = transaction;
-                    // Certificando de usar o nome correto da tabela conforme o CondicaoPagamentoParcelasController
                     parcelaCommand.CommandText = """
                         INSERT INTO condicoes_pagamentos_parcelas 
                         (codCondPagamento, numeroParcela, diasVencimento, codFormaPagamento, percentual, codUsuario)
@@ -154,32 +199,76 @@ public class CondicoesPagamentoController : ControllerBase
         if (condicaoDto.multa.HasValue) updates.Add("multa = @multa");
         if (condicaoDto.desconto.HasValue) updates.Add("desconto = @desconto");
 
-        if (updates.Count == 0)
+        if (updates.Count == 0 && condicaoDto.parcelas == null)
         {
             return BadRequest("Nenhum campo para atualizar.");
         }
 
-        var updateClause = string.Join(", ", updates);
-        var commandText = $"UPDATE condicoes_pagamento SET {updateClause} WHERE codCondPagamento = @codCondPagamento";
+        var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var idUserLogado = string.IsNullOrEmpty(userIdClaim) ? 0 : int.Parse(userIdClaim);
 
-        await using var command = _connection.CreateCommand();
-        command.CommandText = commandText;
-        command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
-        if (condicaoDto.condPagamento != null) command.Parameters.AddWithValue("@condPagamento", condicaoDto.condPagamento);
-        if (condicaoDto.qtdParcelas.HasValue) command.Parameters.AddWithValue("@qtdParcelas", condicaoDto.qtdParcelas.Value);
-        if (condicaoDto.ativo.HasValue) command.Parameters.AddWithValue("@ativo", condicaoDto.ativo.Value);
-        if (condicaoDto.juros.HasValue) command.Parameters.AddWithValue("@juros", condicaoDto.juros.Value);
-        if (condicaoDto.multa.HasValue) command.Parameters.AddWithValue("@multa", condicaoDto.multa.Value);
-        if (condicaoDto.desconto.HasValue) command.Parameters.AddWithValue("@desconto", condicaoDto.desconto.Value);
-
-        var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
-        if (rowsAffected > 0)
+        await using var transaction = await _connection.BeginTransactionAsync(cancellationToken);
+        try
         {
+            if (updates.Count > 0)
+            {
+                var updateClause = string.Join(", ", updates);
+                var commandText = $"UPDATE condicoes_pagamento SET {updateClause} WHERE codCondPagamento = @codCondPagamento";
+
+                await using var command = _connection.CreateCommand();
+                command.Transaction = transaction;
+                command.CommandText = commandText;
+                command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+                if (condicaoDto.condPagamento != null) command.Parameters.AddWithValue("@condPagamento", condicaoDto.condPagamento);
+                if (condicaoDto.qtdParcelas.HasValue) command.Parameters.AddWithValue("@qtdParcelas", condicaoDto.qtdParcelas.Value);
+                if (condicaoDto.ativo.HasValue) command.Parameters.AddWithValue("@ativo", condicaoDto.ativo.Value);
+                if (condicaoDto.juros.HasValue) command.Parameters.AddWithValue("@juros", condicaoDto.juros.Value);
+                if (condicaoDto.multa.HasValue) command.Parameters.AddWithValue("@multa", condicaoDto.multa.Value);
+                if (condicaoDto.desconto.HasValue) command.Parameters.AddWithValue("@desconto", condicaoDto.desconto.Value);
+
+                await command.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            if (condicaoDto.parcelas != null)
+            {
+                // Exclui primeiro as parcelas antigas
+                await using (var deleteCmd = _connection.CreateCommand())
+                {
+                    deleteCmd.Transaction = transaction;
+                    deleteCmd.CommandText = "DELETE FROM condicoes_pagamentos_parcelas WHERE codCondPagamento = @codCondPagamento";
+                    deleteCmd.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+                    await deleteCmd.ExecuteNonQueryAsync(cancellationToken);
+                }
+
+                // Insere as novas parcelas
+                for (int i = 0; i < condicaoDto.parcelas.Count; i++)
+                {
+                    var p = condicaoDto.parcelas[i];
+                    await using var parcelaCommand = _connection.CreateCommand();
+                    parcelaCommand.Transaction = transaction;
+                    parcelaCommand.CommandText = """
+                        INSERT INTO condicoes_pagamentos_parcelas 
+                        (codCondPagamento, numeroParcela, diasVencimento, codFormaPagamento, percentual, codUsuario)
+                        VALUES (@codCondPagamento, @numeroParcela, @diasVencimento, @codFormaPagamento, @percentual, @codUsuario);
+                        """;
+                    parcelaCommand.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+                    parcelaCommand.Parameters.AddWithValue("@numeroParcela", i + 1);
+                    parcelaCommand.Parameters.AddWithValue("@diasVencimento", p.diasVencimento);
+                    parcelaCommand.Parameters.AddWithValue("@codFormaPagamento", p.codFormaPagamento);
+                    parcelaCommand.Parameters.AddWithValue("@percentual", p.percentual ?? 0);
+                    parcelaCommand.Parameters.AddWithValue("@codUsuario", idUserLogado);
+
+                    await parcelaCommand.ExecuteNonQueryAsync(cancellationToken);
+                }
+            }
+
+            await transaction.CommitAsync(cancellationToken);
             return NoContent();
         }
-        else
+        catch (Exception ex)
         {
-            return NotFound();
+            await transaction.RollbackAsync(cancellationToken);
+            return StatusCode(500, "Ocorreu um erro ao atualizar a condicao de pagamento: " + ex.Message);
         }
     }
 ////[Authorize]
@@ -188,18 +277,47 @@ public class CondicoesPagamentoController : ControllerBase
     {
         await _connection.OpenAsync(cancellationToken);
 
-        await using var command = _connection.CreateCommand();
-        command.CommandText = "DELETE FROM condicoes_pagamento WHERE codCondPagamento = @codCondPagamento";
-        command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+        await using var transaction = await _connection.BeginTransactionAsync(cancellationToken);
 
-        var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
-        if (rowsAffected > 0)
+        try
         {
-            return NoContent();
+            // Exclui primeiro as parcelas
+            await using (var command = _connection.CreateCommand())
+            {
+                command.Transaction = transaction;
+                command.CommandText = @"
+                    DELETE FROM condicoes_pagamentos_parcelas
+                    WHERE codCondPagamento = @codCondPagamento";
+
+                command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+
+                await command.ExecuteNonQueryAsync(cancellationToken);
+            }
+
+            // Depois exclui a condição de pagamento
+            await using (var command = _connection.CreateCommand())
+            {
+                command.Transaction = transaction;
+                command.CommandText = @"
+                    DELETE FROM condicoes_pagamento
+                    WHERE codCondPagamento = @codCondPagamento";
+
+                command.Parameters.AddWithValue("@codCondPagamento", codCondPagamento);
+
+                var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
+
+                await transaction.CommitAsync(cancellationToken);
+
+                if (rowsAffected > 0)
+                    return NoContent();
+
+                return NotFound();
+            }
         }
-        else
+        catch
         {
-            return NotFound();
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
         }
     }
 

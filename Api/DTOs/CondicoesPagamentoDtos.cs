@@ -13,6 +13,7 @@ public class CondicoesPagamentoReadDto
     public decimal desconto { get; set; }
     public int codUsuario { get; set; }
     public UsuarioReadDto? Usuario { get; set; }
+    public List<CondicaoPagamentoParcelasReadDto>? parcelas { get; set; }
     public DateTime criado_em { get; set; }
     public DateTime atualizado_em { get; set; }
 }
@@ -36,5 +37,5 @@ public class CondicoesPagamentoUpdateDto
     public decimal? juros { get; set; }
     public decimal? multa { get; set; }
     public decimal? desconto { get; set; }
+    public List<CondicaoPagamentoParcelasCreateDto>? parcelas { get; set; }
 }
-

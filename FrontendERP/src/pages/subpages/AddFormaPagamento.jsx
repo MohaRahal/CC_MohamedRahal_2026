@@ -68,7 +68,7 @@ export default function AddFormasPagamento() {
                   name="ativo" value={formData.ativo} onChange={handleChange}
                   className="w-full px-4 py-2.5 bg-[#fafafa] border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
                 >
-                  <option value="">Selecione...</option>
+                 
                   <option value="true">Ativo</option>
                   <option value="false">Inativo</option>
                 </select>   

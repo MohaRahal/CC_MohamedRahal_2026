@@ -27,5 +27,21 @@ export const unidadeMedidasService = {
         } catch {
             return { unidade: data.unidade };
         }
+    },
+
+    async updateUnidade(token, id, data) {
+        const response = await fetch(`${API_BASE_URL}/api/UnidadeMedidas/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders(token).headers
+            },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) throw new Error("Erro ao atualizar unidade de medida");
+        if (response.status === 204 || response.headers.get('content-length') === '0') {
+            return { success: true };
+        }
+        return response.json();
     }
 };

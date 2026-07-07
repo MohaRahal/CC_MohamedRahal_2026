@@ -37,10 +37,21 @@ import EditCondicaoPagamento from './pages/subpages/EditCondicaoPagamento';
 import Transportadores from './pages/Transportadores';
 import AddTransportador from './pages/subpages/AddTransportador';
 import EditTransportador from './pages/subpages/EditTransportador';
+import Clientes from './pages/Clientes';
+import AddCliente from './pages/subpages/AddCliente';
+import EditCliente from './pages/subpages/EditCliente';
 import Veiculos from './pages/Veiculos';
 import AddVeiculo from './pages/subpages/AddVeiculo';
 import EditVeiculo from './pages/subpages/EditVeiculo';
 import AddProduto from './pages/subpages/AddProduto';
+import EditProduto from './pages/subpages/EditProduto';
+import Marcas from './pages/Marcas';
+import AddMarca from './pages/subpages/AddMarca';
+import EditMarca from './pages/subpages/EditMarca';
+import Grupos from './pages/Grupos';
+import AddGrupo from './pages/subpages/AddGrupo';
+import EditFormaPagamento from './pages/subpages/EditFormaPagamento';
+import EditGrupo from './pages/subpages/EditGrupo';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -54,9 +65,13 @@ function AnimatedRoutes() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/Estoque" element={<Estoque />} />
           <Route path="/Estoque/novo" element={<AddProduto />} />
+          <Route path="/Estoque/editar/:id" element={<EditProduto />} />
           <Route path="/Movimentacoes" element={<Movimentacoes />} />
           <Route path="/Logs" element={<Logs />} />
           <Route path="/Usuarios" element={<Usuarios />} />
+          <Route path="/Clientes" element={<Clientes />} />
+          <Route path="/Clientes/novo" element={<AddCliente />} />
+          <Route path="/Clientes/editar/:id" element={<EditCliente />} />
           <Route path="/Usuarios/AddUser" element={<AddUser />} />
           <Route path="/Usuarios/editar/:id" element={<EditUser />} />
           <Route path="/Fornecedores" element={<Fornecedores />} />
@@ -68,6 +83,12 @@ function AnimatedRoutes() {
           <Route path="/Veiculos" element={<Veiculos />} />
           <Route path="/veiculos/novo" element={<AddVeiculo />} />
           <Route path="/veiculos/editar/:id" element={<EditVeiculo />} />
+          <Route path="/Marcas" element={<Marcas />} />
+          <Route path="/Marcas/novo" element={<AddMarca />} />
+          <Route path="/Marcas/editar/:id" element={<EditMarca />} />
+          <Route path="/Grupos" element={<Grupos />} />
+          <Route path="/Grupos/novo" element={<AddGrupo />} />
+          <Route path="/Grupos/editar/:id" element={<EditGrupo />} />
           <Route path="/Financeiro" element={<Financeiro />} />
           <Route path="/paises" element={<Paises />} />
           <Route path="/paises/novo" element={<AddPaises />} />
@@ -86,7 +107,7 @@ function AnimatedRoutes() {
           <Route path="/funcionarios/editar/:id" element={<EditFuncionario />} />
           <Route path="/formas-pagamento" element={<FormasPagamento />} />
           <Route path="/formas-pagamento/novo" element={<AddFormaPagamento />} />
-          
+          <Route path="/formas-pagamento/editar/:id" element={<EditFormaPagamento />} />
           <Route path="/condicoes-pagamento" element={<CondicoesPagamento />} />
           <Route path="/condicoes-pagamento/novo" element={<AddCondicaoPagamento />} />
           <Route path="/condicoes-pagamento/editar/:id" element={<EditCondicaoPagamento />} />

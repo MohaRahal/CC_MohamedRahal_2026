@@ -66,11 +66,12 @@ export default function Transportadores() {
               <h1 className="text-3xl font-light text-gray-900 tracking-tight">Transportadores</h1>
               <p className="text-sm text-gray-500 mt-1">Gerencie seus transportadores</p>
             </div>
-            <Link to="/Transportadores/novo" className="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
-              <Plus size={16} />
-              Novo Transportador
-            </Link>
-            
+            <div className="flex gap-2">
+              <Link to="/Transportadores/novo" className="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
+                <Plus size={16} />
+                Novo Transportador
+              </Link>
+            </div>
           </div>
 
           <div className="mb-6 relative">

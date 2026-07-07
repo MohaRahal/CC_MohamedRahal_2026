@@ -36,42 +36,82 @@ export default function AddCondicaoPagamento() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleAddParcela = () => {
-    const novasParcelas = [...parcelas, { diasVencimento: '', formaPagamentoId: '', percentual: '' }];
+  const recalculatePercentages = (listaParcelas) => {
+    if (listaParcelas.length === 0) return;
     
-    // Calcula automaticamente o percentual igual para todas
-    if (novasParcelas.length > 0) {
-      const per = (100 / novasParcelas.length).toFixed(2);
-      novasParcelas.forEach(p => {
-        // Apenas substitui se não tiver sido modificado manualmente para um valor específico
-        // Mas para simplificar e garantir 100%, vamos recalcular todos sempre que adicionar/remover
-        p.percentual = per;
+    // Count how many are manually edited and their total percentage
+    const manuallyEditedParcelas = listaParcelas.filter(p => p.manuallyEdited);
+    const nonEditedCount = listaParcelas.length - manuallyEditedParcelas.length;
+    
+    const totalManuallyEdited = manuallyEditedParcelas.reduce((acc, p) => acc + (parseFloat(p.percentual) || 0), 0);
+    const remainingPercent = Math.max(0, 100 - totalManuallyEdited);
+    
+    if (nonEditedCount > 0) {
+      const per = (remainingPercent / nonEditedCount).toFixed(2);
+      listaParcelas.forEach(p => {
+        if (!p.manuallyEdited) {
+          p.percentual = per;
+        }
       });
     }
-    
+  };
+
+  const handleAddParcela = () => {
+    const novasParcelas = [...parcelas, { diasVencimento: '', formaPagamentoId: '', percentual: '', manuallyEdited: false }];
+    recalculatePercentages(novasParcelas);
     setParcelas(novasParcelas);
   };
 
   const handleParcelaChange = (index, field, value) => {
     const novasParcelas = [...parcelas];
     novasParcelas[index][field] = value;
+    if (field === 'percentual') {
+      novasParcelas[index].manuallyEdited = true;
+    }
     setParcelas(novasParcelas);
   };
 
   const handleRemoveParcela = (index) => {
     const novasParcelas = parcelas.filter((_, i) => i !== index);
-    
-    if (novasParcelas.length > 0) {
-      const per = (100 / novasParcelas.length).toFixed(2);
-      novasParcelas.forEach(p => p.percentual = per);
-    }
-    
+    recalculatePercentages(novasParcelas);
     setParcelas(novasParcelas);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (parcelas.length === 0) {
+      alert("Adicione pelo menos uma parcela para a condição de pagamento.");
+      setLoading(false);
+      return;
+    }
+
+    const totalPercentual = parcelas.reduce((acc, p) => acc + (parseFloat(p.percentual) || 0), 0);
+    if (Math.abs(totalPercentual - 100) >= 0.01) {
+      alert(`A soma dos percentuais das parcelas deve ser exatamente 100%. O total atual é ${totalPercentual.toFixed(2)}%.`);
+      setLoading(false);
+      return;
+    }
+
+    // Validar se os dias de vencimento são crescentes
+    for (let i = 1; i < parcelas.length; i++) {
+      const diasAtual = parseInt(parcelas[i].diasVencimento, 10);
+      const diasAnterior = parseInt(parcelas[i - 1].diasVencimento, 10);
+      
+      if (isNaN(diasAtual) || isNaN(diasAnterior)) {
+        alert("Preencha todos os campos de dias para vencimento.");
+        setLoading(false);
+        return;
+      }
+      
+      if (diasAtual <= diasAnterior) {
+        alert(`O prazo de vencimento da parcela ${i + 1} (${diasAtual} dias) não pode ser menor ou igual ao da parcela ${i} (${diasAnterior} dias).`);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
       const token = localStorage.getItem('token');
       
@@ -99,13 +139,16 @@ export default function AddCondicaoPagamento() {
     }
   };
 
+  const totalPercentual = parcelas.reduce((acc, p) => acc + (parseFloat(p.percentual) || 0), 0);
+
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
         <div className="max-w-3xl mx-auto">
           <button 
+            type="button"
             onClick={() => navigate('/condicoes-pagamento')}
-            className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors mb-6"
+            className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors mb-6 cursor-pointer"
           >
             <ArrowLeft size={16} /> Voltar para Condições de Pagamento
           </button>
@@ -124,25 +167,6 @@ export default function AddCondicaoPagamento() {
                   name="condPagamento" value={formData.condPagamento} onChange={handleChange} required placeholder="Ex: 30/60/90 Dias"
                   className="w-full px-4 py-2.5 bg-[#fafafa] border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
                 />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-gray-700">Qtd de Parcelas</label>
-                <input 
-                  type="number" value={parcelas.length} readOnly disabled
-                  className="w-full px-4 py-2.5 bg-gray-100 border border-gray-200 rounded-lg text-sm text-gray-500 cursor-not-allowed"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium text-gray-700">Ativo</label>
-                <select 
-                  name="ativo" value={formData.ativo} onChange={handleChange}
-                  className="w-full px-4 py-2.5 bg-[#fafafa] border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
-                >
-                  <option value="true">Ativo</option>
-                  <option value="false">Inativo</option>
-                </select>   
               </div>
 
               <div className="flex flex-col gap-2">
@@ -178,7 +202,7 @@ export default function AddCondicaoPagamento() {
                 <button 
                   type="button" 
                   onClick={handleAddParcela}
-                  className="flex items-center gap-2 bg-gray-100 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-all"
+                  className="flex items-center gap-2 bg-gray-100 text-gray-800 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 transition-all cursor-pointer"
                 >
                   <Plus size={16} /> Nova Parcela
                 </button>
@@ -240,13 +264,22 @@ export default function AddCondicaoPagamento() {
                       <button 
                         type="button"
                         onClick={() => handleRemoveParcela(idx)}
-                        className="p-2.5 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex-shrink-0 mb-px"
+                        className="p-2.5 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-colors flex-shrink-0 mb-px cursor-pointer"
                         title="Remover Parcela"
                       >
                         <Trash2 size={18} />
                       </button>
                     </div>
                   ))}
+
+                  {/* Resumo da soma dos percentuais */}
+                  <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm mt-2">
+                    <span className="font-medium text-gray-700">Total dos Percentuais:</span>
+                    <span className={`font-semibold text-base ${Math.abs(totalPercentual - 100) < 0.01 ? 'text-green-600' : 'text-amber-600'}`}>
+                      {totalPercentual.toFixed(2)}% {Math.abs(totalPercentual - 100) >= 0.01 && '(Deve somar 100.00%)'}
+                    </span>
+                  </div>
+
                 </div>
               )}
             </div>
@@ -254,7 +287,7 @@ export default function AddCondicaoPagamento() {
             <div className="mt-2 flex justify-end pt-6">
               <button 
                 type="submit" disabled={loading}
-                className="flex items-center gap-2 bg-ink-black text-white px-6 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md disabled:opacity-50"
+                className="flex items-center gap-2 bg-ink-black text-white px-6 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md disabled:opacity-50 cursor-pointer"
               >
                 <Save size={16} /> {loading ? 'Salvando...' : 'Salvar Condição de Pagamento'}
               </button>
@@ -265,4 +298,3 @@ export default function AddCondicaoPagamento() {
     </AnimatedPage>
   );
 }
-

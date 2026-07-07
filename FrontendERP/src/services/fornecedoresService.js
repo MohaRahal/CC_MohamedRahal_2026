@@ -42,7 +42,7 @@ export const fornecedoresService = {
     },
     updateFornecedor: async (id, data) => {
         const response = await fetch(`${API_URL}/api/fornecedores/${id}`, {
-            method: "PUT",
+            method: "Patch",
             headers: getAuthHeaders(),
             body: JSON.stringify(data)
         });

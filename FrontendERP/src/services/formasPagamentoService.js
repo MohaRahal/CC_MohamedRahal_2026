@@ -11,6 +11,17 @@ export const formasPagamentoService = {
         });
         return response.json();
     },
+    getFormaPagamentoById: async (id) => {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`${API_BASE_URL}/api/FormasPagamento/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    return response.json();
+},
     createFormaPagamento: async (token, data) => {
         const response = await fetch(`${API_BASE_URL}/api/FormasPagamento`, {
             method: "POST",
@@ -35,7 +46,7 @@ export const formasPagamentoService = {
     },
     updateFormaPagamento: async (token, id, data) => {
         const response = await fetch(`${API_BASE_URL}/api/FormasPagamento/${id}`, {
-            method: "PUT",
+            method: "PATCH",
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"

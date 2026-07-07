@@ -130,7 +130,7 @@ export default function EditTransportador() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Razão Social / Transportador <span className="text-red-500">*</span></label>
+                  <label className="text-sm font-medium text-gray-700">Transportador <span className="text-red-500">*</span></label>
                   <input name="transportador" required value={formData.transportador} onChange={handleChange}
                     placeholder="Ex: Transportes Rapidos Ltda" className={inputClass} />
                 </div>

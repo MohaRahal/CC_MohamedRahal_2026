@@ -30,7 +30,7 @@ export default function CondicoesPagamento() {
   };
 
   const handleDeleteClick = async (id, nome) => {
-    const confirmou = window.confirm(`Tem certeza que deseja excluir a forma de pagamento "${nome}"?`);
+    const confirmou = window.confirm(`Tem certeza que deseja excluir a condicao de pagamento "${nome}"?`);
     if (confirmou) {
       try {
         setDeletingId(id);

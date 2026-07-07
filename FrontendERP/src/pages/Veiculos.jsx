@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
+import { Search, Loader2, Plus, Edit2, Trash2, Eye, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedPage from './AnimatedPage';
 import { veiculosService } from '../services/veiculosService';
@@ -11,6 +11,7 @@ export default function Veiculos() {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [deletingId, setDeletingId] = useState(null);
+    const [selectedVeiculo, setSelectedVeiculo] = useState(null);
 
     useEffect(() => {
         fetchVeiculos();
@@ -50,9 +51,9 @@ export default function Veiculos() {
         veiculo.placaVeiculo?.toLowerCase().includes(searchTerm.toLowerCase()) || 
         veiculo.placaMercosul?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
     const formatDate = (dateString) => {
         if (!dateString) return '-';
-
         return new Date(dateString).toLocaleString('pt-BR', {
             day: '2-digit',
             month: '2-digit',
@@ -66,7 +67,7 @@ export default function Veiculos() {
     return (
         <AnimatedPage>
             <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-                <div className="max-w-9xl mx-auto">
+                <div className="max-w-6xl mx-auto">
 
                     <div className="flex justify-between items-end mb-8">
                         <div>
@@ -75,13 +76,13 @@ export default function Veiculos() {
                         </div>
                         <button
                             onClick={() => navigate('/veiculos/novo')}
-                            className="flex items-center gap-2 bg-ink-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md">
+                            className="flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors shadow-sm">
                             <Plus size={16} />
                             Novo Veículo
                         </button>
                     </div>
                     <div className="mb-6">
-                        <div className="relative w-full md:w-2/3">
+                        <div className="relative">
                             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                             <input
                                 type="text"
@@ -99,26 +100,22 @@ export default function Veiculos() {
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
-                                <table className="w-full text-left border-collapse min-w-max">
+                                <table className="w-full text-left border-collapse">
                                     <thead>
                                         <tr className="border-b border-gray-100 bg-gray-50/50">
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Placa Mercosul</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Chassi</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód. Modelo</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">ANTT</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód. Estado</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód. Transportador</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
+                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Modelo</th>
+                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Transportador</th>
+                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-center w-32">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50">
                                         {filteredVeiculos.length === 0 ? (
                                             <tr>
-                                                <td colSpan="11" className="py-16 text-center text-sm text-gray-500">
+                                                <td colSpan="7" className="py-16 text-center text-sm text-gray-500">
                                                     Nenhum Veículo encontrado.
                                                 </td>
                                             </tr>
@@ -131,48 +128,46 @@ export default function Veiculos() {
                                                     key={veiculo.codVeiculo}
                                                     className="hover:bg-gray-50/80 transition-colors group"
                                                 >
-                                                    <td className="py-4 px-6 text-[13px] text-gray-500 font-medium">
+                                                    <td className="py-4 px-6 text-sm text-gray-500 font-mono">
                                                         #{veiculo.codVeiculo}
                                                     </td>
-                                                    <td className="py-4 px-6 text-[14px] text-gray-800 font-medium">
+                                                    <td className="py-4 px-6 text-sm text-gray-800 font-medium">
                                                         {veiculo.placaVeiculo}
                                                     </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.placaMercosul}
+                                                    <td className="py-4 px-6 text-sm text-gray-600">
+                                                        {veiculo.placaMercosul || '—'}
                                                     </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
+                                                    <td className="py-4 px-6 text-sm text-gray-600">
                                                         {veiculo.chassi}
                                                     </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.codModelo}
+                                                    <td className="py-4 px-6 text-sm text-gray-600">
+                                                        {veiculo.modelo?.modelo || '—'}
                                                     </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.codANTT}
+                                                    <td className="py-4 px-6 text-sm text-gray-600">
+                                                        {veiculo.transportador?.transportador || '—'}
                                                     </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.codEstado || '-'}
-                                                    </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {veiculo.codTransportador}
-                                                    </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {formatDate(veiculo.criado_em)}
-                                                    </td>
-                                                    <td className="py-4 px-6 text-[13px] text-gray-600">
-                                                        {formatDate(veiculo.atualizado_em)}
-                                                    </td>
-                                                    <td className="py-4 px-6 text-[13px] text-right">
-                                                        <div className="flex items-center justify-end gap-3 transition-opacity">
+                                                    <td className="py-4 px-6 text-center">
+                                                        <div className="flex items-center justify-center gap-2">
+                                                            <button
+                                                                onClick={() => setSelectedVeiculo(veiculo)}
+                                                                className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                                                                title="Ver detalhes"
+                                                            >
+                                                                <Eye size={16} />
+                                                            </button>
                                                             <button
                                                                 onClick={() => navigate(`/veiculos/editar/${veiculo.codVeiculo}`)}
-                                                                className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">
+                                                                className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                                                                title="Editar"
+                                                            >
                                                                 <Edit2 size={16} />
                                                             </button>
                                                             <button
-                                                                onClick={() => handleDeleteClick(veiculo.codVeiculo, veiculo.veiculo)}
+                                                                onClick={() => handleDeleteClick(veiculo.codVeiculo, veiculo.placaVeiculo)}
                                                                 disabled={deletingId === veiculo.codVeiculo}
-                                                                className={`transition-colors cursor-pointer ${deletingId === veiculo.codVeiculo ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`}
-                                                                title="Excluir">
+                                                                className={`inline-flex items-center justify-center p-2 rounded-lg transition-colors cursor-pointer ${deletingId === veiculo.codVeiculo ? 'text-gray-300' : 'text-gray-400 hover:text-red-600 hover:bg-red-50'}`}
+                                                                title="Excluir"
+                                                            >
                                                                 {deletingId === veiculo.codVeiculo ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
                                                             </button>
                                                         </div>
@@ -188,6 +183,104 @@ export default function Veiculos() {
 
                 </div>
             </div>
+
+            {/* Modal de Detalhes */}
+            {selectedVeiculo && (
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" style={{ minHeight: '100vh' }}>
+                    <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+                        {/* Header modal */}
+                        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50 sticky top-0">
+                            <div>
+                                <p className="text-xs text-gray-400 font-mono mb-1">#{selectedVeiculo.codVeiculo?.toString().padStart(4, '0')}</p>
+                                <h3 className="text-xl font-medium text-gray-900">{selectedVeiculo.placaVeiculo}</h3>
+                            </div>
+                            <button
+                                onClick={() => setSelectedVeiculo(null)}
+                                className="cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-1.5 rounded transition-colors shrink-0"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-6">
+                            {/* Informações Básicas */}
+                            <div>
+                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Informações Básicas</h4>
+                                <div className="grid grid-cols-1 gap-3 text-sm">
+                                    {[
+                                        { label: 'Placa Antiga', value: selectedVeiculo.placaVeiculo },
+                                        { label: 'Placa Mercosul', value: selectedVeiculo.placaMercosul },
+                                        { label: 'Chassi', value: selectedVeiculo.chassi },
+                                        { label: 'Código ANTT', value: selectedVeiculo.codANTT },
+                                    ].map(({ label, value }) => (
+                                        <div key={label} className="p-3 bg-gray-50 rounded-lg">
+                                            <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
+                                            <div className="text-gray-800 break-words">{value || '—'}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Modelo e Marca */}
+                            <div>
+                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Modelo e Marca</h4>
+                                <div className="grid grid-cols-1 gap-3 text-sm">
+                                    {[
+                                        { label: 'Marca', value: selectedVeiculo.modelo?.marca?.marca },
+                                        { label: 'Modelo', value: selectedVeiculo.modelo?.modelo },
+                                    ].map(({ label, value }) => (
+                                        <div key={label} className="p-3 bg-gray-50 rounded-lg">
+                                            <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
+                                            <div className="text-gray-800 break-words">{value || '—'}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Localização */}
+                            <div>
+                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Localização</h4>
+                                <div className="grid grid-cols-1 gap-3 text-sm">
+                                    {[
+                                        { label: 'Estado', value: selectedVeiculo.estado?.estado },
+                                        { label: 'Transportador', value: selectedVeiculo.transportador?.transportador },
+                                    ].map(({ label, value }) => (
+                                        <div key={label} className="p-3 bg-gray-50 rounded-lg">
+                                            <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
+                                            <div className="text-gray-800 break-words">{value || '—'}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Sistema */}
+                            <div>
+                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Sistema</h4>
+                                <div className="grid grid-cols-1 gap-3 text-sm">
+                                    {[
+                                        { label: 'Cadastrado em', value: formatDate(selectedVeiculo.criado_em) },
+                                        { label: 'Atualizado em', value: formatDate(selectedVeiculo.atualizado_em) },
+                                    ].map(({ label, value }) => (
+                                        <div key={label} className="p-3 bg-gray-50 rounded-lg">
+                                            <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
+                                            <div className="text-gray-800 break-words">{value || '—'}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end px-6 py-6 border-t border-gray-100 bg-gray-50/50 sticky bottom-0">
+                            <button
+                                onClick={() => setSelectedVeiculo(null)}
+                                className="cursor-pointer px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                            >
+                                Fechar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </AnimatedPage>
     );
 }
