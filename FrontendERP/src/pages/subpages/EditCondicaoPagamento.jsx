@@ -353,7 +353,7 @@ export default function EditCondicaoPagamento() {
                     <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm mt-2">
                       <span className="font-medium text-gray-700">Total dos Percentuais:</span>
                       <span className={`font-semibold text-base ${Math.abs(totalPercentual - 100) < 0.01 ? 'text-green-600' : 'text-amber-600'}`}>
-                        {totalPercentual.toFixed(2)}% {Math.abs(totalPercentual - 100) >= 0.01 && '(Deve somar 100.00%)'}
+                        {totalPercentual.toFixed(2)}% {Math.abs(totalPercentual - 100) >= 0.01 && '(Deve ser maior que 99.00%)'}
                       </span>
                     </div>
 

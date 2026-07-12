@@ -270,11 +270,17 @@ export default function AddCliente() {
       return;
     }
 
-    const totalPercentual = condicaoParcelas.reduce((acc, p) => acc + (parseFloat(p.percentual) || 0), 0);
-    if (Math.abs(totalPercentual - 100) >= 0.01) {
-      alert(`A soma dos percentuais das parcelas deve ser exatamente 100%. O total atual é ${totalPercentual.toFixed(2)}%.`);
-      return;
-    }
+   const totalPercentual = condicaoParcelas.reduce(
+  (acc, p) => acc + (parseFloat(p.percentual) || 0),
+  0
+);
+
+if (totalPercentual < 99) {
+  alert(
+    `A soma dos percentuais das parcelas deve ser maior ou igual a 99%. O total atual é ${totalPercentual.toFixed(2)}%.`
+  );
+  return;
+}
 
     // Validar se os dias de vencimento são crescentes
     for (let i = 1; i < condicaoParcelas.length; i++) {
@@ -787,7 +793,7 @@ export default function AddCliente() {
                       <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm mt-2">
                         <span className="font-medium text-gray-700">Total dos Percentuais:</span>
                         <span className={`font-semibold text-base ${Math.abs(totalPercentualCalc - 100) < 0.01 ? 'text-green-600' : 'text-amber-600'}`}>
-                          {totalPercentualCalc.toFixed(2)}% {Math.abs(totalPercentualCalc - 100) >= 0.01 && '(Deve somar 100.00%)'}
+                          {totalPercentualCalc.toFixed(2)}% {Math.abs(totalPercentualCalc - 100) >= 0.01 && '(Deve somar  mais que 99.00%)'}
                         </span>
                       </div>
                     </div>

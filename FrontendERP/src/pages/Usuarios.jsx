@@ -102,7 +102,7 @@ export default function Usuarios() {
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">ID</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Funcionário</th>
+                   
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Status</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Cadastrado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Atualizado em</th>
@@ -128,9 +128,7 @@ export default function Usuarios() {
                         <td className="py-4 px-6 text-[13px] text-gray-600">
                           {cargos[usuario.codCargo] ?? `#${usuario.codCargo}`}
                         </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {usuario.codFuncionario}
-                        </td>
+                      
                         <td className="py-4 px-6 text-[13px] text-center">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                             usuario.ativo ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'

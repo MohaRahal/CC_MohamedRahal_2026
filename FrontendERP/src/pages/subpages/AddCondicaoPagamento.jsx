@@ -87,12 +87,18 @@ export default function AddCondicaoPagamento() {
       return;
     }
 
-    const totalPercentual = parcelas.reduce((acc, p) => acc + (parseFloat(p.percentual) || 0), 0);
-    if (Math.abs(totalPercentual - 100) >= 0.01) {
-      alert(`A soma dos percentuais das parcelas deve ser exatamente 100%. O total atual é ${totalPercentual.toFixed(2)}%.`);
-      setLoading(false);
-      return;
-    }
+   const totalPercentual = parcelas.reduce(
+  (acc, p) => acc + (parseFloat(p.percentual) || 0),
+  0
+);
+
+if (totalPercentual < 99) {
+  alert(
+    `A soma dos percentuais das parcelas deve ser maior ou igual a 99%. O total atual é ${totalPercentual.toFixed(2)}%.`
+  );
+  setLoading(false);
+  return;
+}
 
     // Validar se os dias de vencimento são crescentes
     for (let i = 1; i < parcelas.length; i++) {
@@ -273,12 +279,20 @@ export default function AddCondicaoPagamento() {
                   ))}
 
                   {/* Resumo da soma dos percentuais */}
-                  <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm mt-2">
-                    <span className="font-medium text-gray-700">Total dos Percentuais:</span>
-                    <span className={`font-semibold text-base ${Math.abs(totalPercentual - 100) < 0.01 ? 'text-green-600' : 'text-amber-600'}`}>
-                      {totalPercentual.toFixed(2)}% {Math.abs(totalPercentual - 100) >= 0.01 && '(Deve somar 100.00%)'}
-                    </span>
-                  </div>
+                 <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-100 text-sm mt-2">
+  <span className="font-medium text-gray-700">
+    Total dos Percentuais:
+  </span>
+
+  <span
+    className={`font-semibold text-base ${
+      totalPercentual >= 99 ? 'text-green-600' : 'text-amber-600'
+    }`}
+  >
+    {totalPercentual.toFixed(2)}%
+    {totalPercentual < 99 && ' (Deve ser maior ou igual a 99.00%)'}
+  </span>
+</div>
 
                 </div>
               )}
