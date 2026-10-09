@@ -1,5 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Estoque from './pages/Estoque';
@@ -52,13 +51,13 @@ import Grupos from './pages/Grupos';
 import AddGrupo from './pages/subpages/AddGrupo';
 import EditFormaPagamento from './pages/subpages/EditFormaPagamento';
 import EditGrupo from './pages/subpages/EditGrupo';
+import Compras from './pages/Compras';
+import AddCompra from './pages/subpages/AddCompra';
+import FeedbackProvider from './components/FeedbackProvider';
 
 function AnimatedRoutes() {
-  const location = useLocation();
-
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+      <Routes>
         <Route path="/" element={<Login />} />
 
         <Route element={<Layout />}>
@@ -90,6 +89,8 @@ function AnimatedRoutes() {
           <Route path="/Grupos/novo" element={<AddGrupo />} />
           <Route path="/Grupos/editar/:id" element={<EditGrupo />} />
           <Route path="/Financeiro" element={<Financeiro />} />
+          <Route path="/compras" element={<Compras />} />
+          <Route path="/compras/nova" element={<AddCompra />} />
           <Route path="/paises" element={<Paises />} />
           <Route path="/paises/novo" element={<AddPaises />} />
           <Route path="/paises/editar/:id" element={<EditPais />} />
@@ -115,15 +116,16 @@ function AnimatedRoutes() {
         
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </AnimatePresence>
   );
 }
 
 function App() {
   return (
-    <BrowserRouter>
-      <AnimatedRoutes />
-    </BrowserRouter>
+    <FeedbackProvider>
+      <BrowserRouter>
+        <AnimatedRoutes />
+      </BrowserRouter>
+    </FeedbackProvider>
   );
 }
 

@@ -139,7 +139,7 @@ export default function EditVeiculo() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto">
           <button 
             onClick={() => navigate('/veiculos')}
             className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors mb-6"

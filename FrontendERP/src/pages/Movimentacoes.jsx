@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { Search, Plus, Loader2 } from 'lucide-react';
 import AnimatedPage from './AnimatedPage';
+import EntityDetailsModal from '../components/EntityDetailsModal';
 import { movimentacoesService } from '../services/movimentacoesService';
 
 export default function Movimentacoes() {
   const [movimentacoes, setMovimentacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMovimentacao, setSelectedMovimentacao] = useState(null);
 
   useEffect(() => {
+    // Initial request only; the loader is also reused after mutations.
+    // eslint-disable-next-line react-hooks/immutability
     fetchMovimentacoes();
   }, []);
 
@@ -32,13 +36,9 @@ export default function Movimentacoes() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-6xl mx-auto">
+        <div className="w-full">
           
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Movimentações de Estoque</h1>
-              <p className="text-sm text-gray-500 mt-1">Histórico completo de entradas e saídas de produtos</p>
-            </div>
+          <div className="mb-8 flex justify-end">
             <button className="flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm">
               <Plus size={16} />
               Ajuste Manual
@@ -56,7 +56,7 @@ export default function Movimentacoes() {
             />
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             {loading ? (
               <div className="flex justify-center items-center py-20">
                 <Loader2 className="animate-spin text-gray-400" size={24} />
@@ -67,32 +67,25 @@ export default function Movimentacoes() {
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Tipo</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Qtd</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">S. Anterior</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">S. Atual</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Motivo</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filteredMovimentacoes.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="py-16 text-center text-sm text-gray-500">
+                      <td colSpan="4" className="py-16 text-center text-sm text-gray-500">
                         Nenhuma movimentação encontrada.
                       </td>
                     </tr>
                   ) : (
                     filteredMovimentacoes.map(mov => (
-                      <tr key={mov.id} className="hover:bg-gray-50/50 transition-colors group">
+                      <tr key={mov.id} onClick={() => setSelectedMovimentacao(mov)} className="hover:bg-gray-50/50 transition-colors group cursor-pointer">
                         <td className="py-4 px-6 text-[13px] text-gray-500 whitespace-nowrap">
                           {new Date(mov.createdAt).toLocaleString('pt-BR')}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-800 font-medium">
                           {mov.produtoNome}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {mov.userName}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-center">
                           <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
@@ -104,15 +97,6 @@ export default function Movimentacoes() {
                         <td className="py-4 px-6 text-[13px] text-gray-800 text-right font-medium">
                           {mov.tipo === 'Entrada' ? '+' : '-'}{mov.quantidade}
                         </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-500 text-right">
-                          {mov.saldoAnterior}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-800 text-right font-semibold">
-                          {mov.saldoAtual}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-500 max-w-[150px] truncate" title={mov.motivo}>
-                          {mov.motivo}
-                        </td>
                       </tr>
                     ))
                   )}
@@ -123,6 +107,26 @@ export default function Movimentacoes() {
 
         </div>
       </div>
+      {selectedMovimentacao && (
+        <EntityDetailsModal
+          title={selectedMovimentacao.produtoNome}
+          subtitle="Detalhes da movimentação"
+          onClose={() => setSelectedMovimentacao(null)}
+          fields={[
+            { label: 'Código', value: `#${selectedMovimentacao.id}` },
+            { label: 'Data', value: new Date(selectedMovimentacao.createdAt).toLocaleString('pt-BR') },
+            { label: 'Produto', value: selectedMovimentacao.produtoNome },
+            { label: 'Usuário', value: selectedMovimentacao.userName },
+            { label: 'Tipo', value: selectedMovimentacao.tipo },
+            { label: 'Quantidade', value: selectedMovimentacao.quantidade },
+            { label: 'Saldo anterior', value: selectedMovimentacao.saldoAnterior },
+            { label: 'Saldo atual', value: selectedMovimentacao.saldoAtual },
+            { label: 'Motivo', value: selectedMovimentacao.motivo, fullWidth: true },
+            { label: 'Nota fiscal', value: selectedMovimentacao.numNfe },
+            { label: 'Série / Modelo', value: [selectedMovimentacao.serie, selectedMovimentacao.modelo].filter(Boolean).join(' / ') || null },
+          ]}
+        />
+      )}
     </AnimatedPage>
   );
 }

@@ -161,7 +161,7 @@ export default function EditEstado() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-2xl mx-auto">
+        <div className="w-full max-w-3xl mx-auto">
           <button 
             type="button"
             onClick={() => navigate('/estados')}

@@ -58,6 +58,7 @@ public class MarcasController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Criar([FromBody] MarcaCreateDto marcaDto, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(marcaDto.marca)) return BadRequest("O nome da marca é obrigatório.");
         await _connection.OpenAsync(cancellationToken);
 
         var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -65,7 +66,7 @@ public class MarcasController : ControllerBase
 
         await using var command = _connection.CreateCommand();
         command.CommandText = "INSERT INTO marcas (marca, codUsuario) VALUES (@marca, @codUsuario)";
-        command.Parameters.AddWithValue("@marca", marcaDto.marca);
+        command.Parameters.AddWithValue("@marca", marcaDto.marca.Trim());
         command.Parameters.AddWithValue("@codUsuario", idUserLogado);
 
         var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
@@ -79,32 +80,54 @@ public class MarcasController : ControllerBase
     public async Task<ActionResult> Excluir(int codMarca, CancellationToken cancellationToken)
     {
         await _connection.OpenAsync(cancellationToken);
-        await using var command = _connection.CreateCommand();
-        command.CommandText = "DELETE FROM marcas WHERE codMarca = @codMarca";
-        command.Parameters.AddWithValue("@codMarca", codMarca);
-        var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
-        if (rowsAffected > 0)
+        try
         {
-            return Ok();
+            await using (var vinculos = _connection.CreateCommand())
+            {
+                vinculos.CommandText = """
+                    SELECT
+                        (SELECT COUNT(*) FROM modelos WHERE codMarca = @codMarca) +
+                        (SELECT COUNT(*) FROM produtos WHERE codMarca = @codMarca)
+                    """;
+                vinculos.Parameters.AddWithValue("@codMarca", codMarca);
+                var totalVinculos = Convert.ToInt64(await vinculos.ExecuteScalarAsync(cancellationToken));
+                if (totalVinculos > 0)
+                {
+                    return Conflict("Esta marca está sendo usada em modelos ou produtos e não pode ser excluída.");
+                }
+            }
+
+            await using var command = _connection.CreateCommand();
+            command.CommandText = "DELETE FROM marcas WHERE codMarca = @codMarca";
+            command.Parameters.AddWithValue("@codMarca", codMarca);
+            return await command.ExecuteNonQueryAsync(cancellationToken) > 0
+                ? NoContent()
+                : NotFound("Marca não encontrada.");
         }
-        return StatusCode(500, "Erro ao excluir marca.");
+        catch (MySqlException ex) when (
+            ex.Number == 1451 || ex.SqlState == "23000" ||
+            ex.Message.Contains("foreign key constraint", StringComparison.OrdinalIgnoreCase))
+        {
+            return Conflict("Esta marca está sendo usada por outro cadastro e não pode ser excluída.");
+        }
     }
     [HttpPatch("{codMarca}")]
     public async Task<ActionResult> Atualizar(int codMarca, [FromBody] MarcaUpdateDto marcaDto, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(marcaDto.marca)) return BadRequest("O nome da marca é obrigatório.");
         await _connection.OpenAsync(cancellationToken);
         try
         {
             await using var command = _connection.CreateCommand();
             command.CommandText = "UPDATE marcas SET marca = @marca WHERE codMarca = @codMarca";
-            command.Parameters.AddWithValue("@marca", marcaDto.marca);
+            command.Parameters.AddWithValue("@marca", marcaDto.marca.Trim());
             command.Parameters.AddWithValue("@codMarca", codMarca);
             var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
             if (rowsAffected > 0)
             {
-                return Ok();
+                return NoContent();
             }
-            return StatusCode(500, "Erro ao atualizar marca.");
+            return NotFound("Marca não encontrada.");
         }
         finally
         {

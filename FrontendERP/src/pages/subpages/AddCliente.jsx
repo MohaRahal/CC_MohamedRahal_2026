@@ -340,7 +340,7 @@ if (totalPercentual < 99) {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto">
           <Link to="/Clientes" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors mb-6">
             <ArrowLeft size={16} /> Voltar para Clientes
           </Link>
@@ -356,10 +356,6 @@ if (totalPercentual < 99) {
                 <User size={14} className="text-gray-400" /> Dados Principais
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Cliente <span className="text-red-500">*</span></label>
-                  <input name="cliente" required value={formData.cliente} onChange={handleChange} placeholder="Ex: João Silva ou Empresa Ltda" className={inputClass} />
-                </div>
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-gray-700">Tipo de Pessoa <span className="text-red-500">*</span></label>
                   <div className="relative">
@@ -373,6 +369,12 @@ if (totalPercentual < 99) {
                     </div>
                   </div>
                 </div>
+      
+                <div className="md:col-span-2 flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700">Cliente <span className="text-red-500">*</span></label>
+                  <input name="cliente" required value={formData.cliente} onChange={handleChange} placeholder="Ex: João Silva ou Empresa Ltda" className={inputClass} />
+                </div>
+          
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-gray-700">CPF / CNPJ <span className="text-red-500">*</span></label>
                   <input required name="cpf_cnpj" value={formData.cpf_cnpj} onChange={handleChange} placeholder="000.000.000-00 ou 00.000.000/0000-00" className={inputClass} />
@@ -383,27 +385,6 @@ if (totalPercentual < 99) {
                 </div>
               </div>
             </div>
-
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
-              <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider mb-6">
-                <Phone size={14} className="text-gray-400" /> Contato
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Mail size={13} className="text-gray-400" /> Email <span className="text-red-500">*</span></label>
-                  <input type="email" required name="email" value={formData.email} onChange={handleChange} placeholder="contato@cliente.com" className={inputClass} />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Phone size={13} className="text-gray-400" /> Telefone <span className="text-red-500">*</span></label>
-                  <input required name="fone" value={formData.fone} onChange={handleChange} placeholder="(00) 90000-0000" className={inputClass} />
-                </div>
-                <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Globe size={13} className="text-gray-400" /> Site</label>
-                  <input name="site" value={formData.site} onChange={handleChange} placeholder="https://www.cliente.com.br" className={inputClass} />
-                </div>
-              </div>
-            </div>
-
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider mb-6">
                 <MapPin size={14} className="text-gray-400" /> Endereço
@@ -443,8 +424,27 @@ if (totalPercentual < 99) {
                   </div>
                 </div>
               </div>
+              
             </div>
-
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
+              <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider mb-6">
+                <Phone size={14} className="text-gray-400" /> Contato
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Mail size={13} className="text-gray-400" /> Email <span className="text-red-500">*</span></label>
+                  <input type="email" required name="email" value={formData.email} onChange={handleChange} placeholder="contato@cliente.com" className={inputClass} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Phone size={13} className="text-gray-400" /> Telefone <span className="text-red-500">*</span></label>
+                  <input required name="fone" value={formData.fone} onChange={handleChange} placeholder="(00) 90000-0000" className={inputClass} />
+                </div>
+                <div className="md:col-span-2 flex flex-col gap-2">
+                  <label className="flex items-center gap-2 text-sm font-medium text-gray-700"><Globe size={13} className="text-gray-400" /> Site</label>
+                  <input name="site" value={formData.site} onChange={handleChange} placeholder="https://www.cliente.com.br" className={inputClass} />
+                </div>
+              </div>
+            </div>
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
               <h2 className="flex items-center gap-2 text-sm font-semibold text-gray-700 uppercase tracking-wider mb-6">
                 <CreditCard size={14} className="text-gray-400" /> Comercial

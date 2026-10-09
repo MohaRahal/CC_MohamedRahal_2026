@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Loader2, Edit, Trash2, Eye, X } from 'lucide-react';
+import { Search, Plus, Loader2, Edit, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AnimatedPage from './AnimatedPage';
+import EntityDetailsModal from '../components/EntityDetailsModal';
+import Toast from '../components/Toast';
+import { confirmAction } from '../components/feedback';
 import { gruposService } from '../services/gruposService';
 
 export default function Grupos() {
@@ -9,8 +12,11 @@ export default function Grupos() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGrupo, setSelectedGrupo] = useState(null);
+  const [toast, setToast] = useState(null);
 
   useEffect(() => {
+    // Initial request only; the loader is also reused after mutations.
+    // eslint-disable-next-line react-hooks/immutability
     fetchGrupos();
   }, []);
 
@@ -22,19 +28,25 @@ export default function Grupos() {
       setGrupos(data || []);
     } catch (error) {
       console.error("Erro ao carregar grupos:", error);
+      setToast({ type: 'error', message: error.message || 'Não foi possível carregar os grupos.' });
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir este grupo?")) {
+    if (await confirmAction("Tem certeza que deseja excluir este grupo?")) {
       try {
         await gruposService.deleteGrupo(id);
-        setGrupos(grupos.filter(g => g.codGrupo !== id));
+        setGrupos((atuais) => atuais.filter(g => g.codGrupo !== id));
+        setSelectedGrupo(null);
+        setToast({ type: 'success', message: 'Grupo excluído com sucesso.' });
       } catch (error) {
         console.error("Erro ao excluir grupo:", error);
-        alert("Erro ao excluir grupo.");
+        setToast({
+          type: 'error',
+          message: error.message || 'Este grupo não pode ser excluído porque está sendo usado em outro cadastro.',
+        });
       }
     }
   };
@@ -46,14 +58,9 @@ export default function Grupos() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-2 sm:px-4 text-gray-800 font-sans">
-        <div className="w-full max-w-full mx-auto">
+        <div className="w-full">
 
-          {/* Header */}
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Grupos</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie os grupos de produtos</p>
-            </div>
+          <div className="mb-8 flex justify-end">
             <Link
               to="/Grupos/novo"
               className="cursor-pointer flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm"
@@ -75,7 +82,7 @@ export default function Grupos() {
           </div>
 
           {/* Table */}
-          <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
             {loading ? (
               <div className="flex justify-center items-center py-20">
                 <Loader2 className="animate-spin text-gray-400" size={24} />
@@ -98,7 +105,7 @@ export default function Grupos() {
                     </tr>
                   ) : (
                     filtered.map(g => (
-                      <tr key={g.codGrupo} className="hover:bg-gray-50/50 transition-colors group">
+                      <tr key={g.codGrupo} onClick={() => setSelectedGrupo(g)} className="hover:bg-gray-50/50 transition-colors group cursor-pointer">
                         <td className="py-4 px-6 text-[13px] text-gray-400 font-mono">
                           #{g.codGrupo?.toString().padStart(4, '0')}
                         </td>
@@ -107,22 +114,16 @@ export default function Grupos() {
                         </td>
                         <td className="py-4 px-6 text-[13px] whitespace-nowrap">
                           <div className="flex gap-2">
-                            <button
-                              onClick={() => setSelectedGrupo(g)}
-                              className="cursor-pointer p-1.5 text-gray-400 hover:text-black hover:bg-gray-100 rounded transition-colors"
-                              title="Visualizar detalhes"
-                            >
-                              <Eye size={16} />
-                            </button>
                             <Link
                               to={`/Grupos/editar/${g.codGrupo}`}
+                              onClick={(event) => event.stopPropagation()}
                               className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                               title="Editar"
                             >
                               <Edit size={16} />
                             </Link>
                             <button
-                              onClick={() => handleDelete(g.codGrupo)}
+                              onClick={(event) => { event.stopPropagation(); handleDelete(g.codGrupo); }}
                               className="cursor-pointer p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                               title="Excluir"
                             >
@@ -140,41 +141,19 @@ export default function Grupos() {
         </div>
       </div>
 
-      {/* Modal de Detalhes */}
       {selectedGrupo && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl w-full max-w-2xl shadow-2xl">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50">
-              <div>
-                <p className="text-xs text-gray-400 font-mono mb-1">#{selectedGrupo.codGrupo?.toString().padStart(4, '0')}</p>
-                <h3 className="text-xl font-medium text-gray-900">{selectedGrupo.grupo}</h3>
-              </div>
-              <button
-                onClick={() => setSelectedGrupo(null)}
-                className="cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-1.5 rounded transition-colors"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4">
-              <div className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg">
-                <div className="w-32 text-gray-500 text-sm font-medium">Grupo:</div>
-                <div className="text-gray-800 font-medium">{selectedGrupo.grupo}</div>
-              </div>
-            </div>
-
-            <div className="flex justify-end px-6 pb-6">
-              <button
-                onClick={() => setSelectedGrupo(null)}
-                className="cursor-pointer px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        </div>
+        <EntityDetailsModal
+          title={selectedGrupo.grupo}
+          subtitle="Detalhes do grupo"
+          onClose={() => setSelectedGrupo(null)}
+          fields={[
+            { label: 'Código', value: `#${selectedGrupo.codGrupo}` },
+            { label: 'Grupo', value: selectedGrupo.grupo },
+          ]}
+        />
       )}
+
+      {toast && <Toast {...toast} onClose={() => setToast(null)} />}
     </AnimatedPage>
   );
 }

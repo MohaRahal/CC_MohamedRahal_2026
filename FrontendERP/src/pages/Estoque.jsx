@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Loader2, X, Save, Eye, Edit,Trash } from 'lucide-react';
+import { Search, Plus, Loader2, X, Save, Edit, Trash } from 'lucide-react';
 import AnimatedPage from './AnimatedPage';
+import EntityDetailsModal from '../components/EntityDetailsModal';
 import { produtosService } from '../services/produtosService';
 import { marcasService } from '../services/marcasService';
 import { gruposService } from '../services/gruposService';
+import { confirmAction } from '../components/feedback';
 
 export default function Estoque() {
   const navigate = useNavigate();
@@ -24,6 +26,8 @@ export default function Estoque() {
   const [selectedProduto, setSelectedProduto] = useState(null);
 
   useEffect(() => {
+    // Initial request only; the loader is also reused after mutations.
+    // eslint-disable-next-line react-hooks/immutability
     fetchProdutos();
   }, []);
 
@@ -81,28 +85,10 @@ export default function Estoque() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-5xl mx-auto">
+        <div className="w-full">
           
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Estoque</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie seus produtos e acompanhe os saldos</p>
-            </div>
-            
+          <div className="mb-8 flex justify-end">
             <div className="flex flex-wrap gap-2">
-               
-              <button 
-                onClick={() => navigate('/Marcas')}
-                className="cursor-pointer flex items-center gap-2 bg-white text-red px-5 py-2.5 text-sm rounded hover:bg-white-800 transition-colors shadow-sm font-medium"
-              >
-                <Plus size={16} /> Nova Marca
-              </button>
-              <button 
-                onClick={() => navigate('/Grupos')}
-                className="cursor-pointer flex items-center gap-2 bg-white text-green px-5 py-2.5 text-sm rounded hover:bg-white-800 transition-colors shadow-sm font-medium"
-              >
-                <Plus size={16} /> Novo Grupo
-              </button>
               <button 
                 onClick={() => navigate('/Estoque/novo')}
                 className="cursor-pointer flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm font-medium"
@@ -123,7 +109,7 @@ export default function Estoque() {
             />
           </div>
 
-          <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             {loading ? (
               <div className="flex justify-center items-center py-20">
                 <Loader2 className="animate-spin text-gray-400" size={24} />
@@ -143,13 +129,13 @@ export default function Estoque() {
                 <tbody className="divide-y divide-gray-50">
                   {filteredProdutos.length === 0 ? (
                     <tr>
-                      <td colSpan="5" className="py-16 text-center text-sm text-gray-500">
+                      <td colSpan="6" className="py-16 text-center text-sm text-gray-500">
                         Nenhum produto encontrado.
                       </td>
                     </tr>
                   ) : (
                     filteredProdutos.map(produto => (
-                      <tr key={produto.codProd} className="hover:bg-gray-50/50 transition-colors group">
+                      <tr key={produto.codProd} onClick={() => setSelectedProduto(produto)} className="hover:bg-gray-50/50 transition-colors group cursor-pointer">
                         <td className="py-4 px-6 text-sm text-gray-400 font-mono">
                           #{produto.codProd?.toString().padStart(4, '0')}
                         </td>
@@ -172,22 +158,16 @@ export default function Estoque() {
                         <td className="py-4 px-6 text-center">
                           <div className="flex items-center justify-center gap-1">
                             <button
-                              onClick={() => setSelectedProduto(produto)}
-                              className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-black hover:bg-gray-100 transition-colors cursor-pointer"
-                              title="Ver detalhes"
-                            >
-                              <Eye size={16} />
-                            </button>
-                            <button
-                              onClick={() => navigate(`/Estoque/editar/${produto.codProd}`)}
+                              onClick={(event) => { event.stopPropagation(); navigate(`/Estoque/editar/${produto.codProd}`); }}
                               className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
                               title="Editar"
                             >
                               <Edit size={16} />
                             </button>
                             <button
-                              onClick={() => {
-                                if (window.confirm("Tem certeza que deseja deletar este produto?")) {
+                              onClick={async (event) => {
+                                event.stopPropagation();
+                                if (await confirmAction("Tem certeza que deseja excluir este produto?")) {
                                   produtosService.deleteProduto(produto.codProd).then(() => {
                                     fetchProdutos();
                                     alert("Produto deletado com sucesso!");
@@ -285,88 +265,29 @@ export default function Estoque() {
           </div>
         </div>
       )}
-      {/* Modal Detalhes do Produto */}
       {selectedProduto && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
-            {/* Header */}
-            <div className="flex justify-between items-start p-6 border-b border-gray-100">
-              <div>
-                <p className="text-xs text-gray-400 font-mono mb-1">#{selectedProduto.codProd?.toString().padStart(4, '0')}</p>
-                <h2 className="text-xl font-medium text-gray-900">{selectedProduto.produto}</h2>
-              </div>
-              <button onClick={() => setSelectedProduto(null)} className="cursor-pointer text-gray-400 hover:text-gray-600 transition-colors mt-1">
-                <X size={20} />
-              </button>
-            </div>
-
-            {/* Body */}
-            <div className="p-6 grid grid-cols-2 md:grid-cols-3 gap-6">
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Preço de Compra</p>
-                <p className="text-sm font-medium text-gray-800">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedProduto.precoCompra || 0)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Preço de Venda</p>
-                <p className="text-sm font-medium text-gray-800">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedProduto.precoVenda || 0)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Custo Médio</p>
-                <p className="text-sm font-medium text-gray-800">
-                  {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedProduto.custoMedioProd || 0)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Saldo em Estoque</p>
-                <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold tracking-wide ${
-                  (selectedProduto.saldoProd || 0) > 0 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-600'
-                }`}>
-                  {selectedProduto.saldoProd || 0} {selectedProduto.unidade?.unidade || 'un'}
-                </span>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Unidade</p>
-                <p className="text-sm font-medium text-gray-800">{selectedProduto.unidade?.unidade || '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Cód. Barras</p>
-                <p className="text-sm font-mono text-gray-800">{selectedProduto.codigoBarras || '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Peso Bruto</p>
-                <p className="text-sm font-medium text-gray-800">{selectedProduto.pesoBruto != null ? `${selectedProduto.pesoBruto} kg` : '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Peso Líquido</p>
-                <p className="text-sm font-medium text-gray-800">{selectedProduto.pesoLiq != null ? `${selectedProduto.pesoLiq} kg` : '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Marca</p>
-                <p className="text-sm font-medium text-gray-800">{selectedProduto.marca?.marca || '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Grupo</p>
-                <p className="text-sm font-medium text-gray-800">{selectedProduto.grupo?.grupo || '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Cadastrado por</p>
-                <p className="text-sm font-medium text-gray-800">{selectedProduto.usuario?.usuario || '—'}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-400 uppercase tracking-wider mb-1">Cadastrado em</p>
-                <p className="text-sm font-medium text-gray-800">
-                  {selectedProduto.criado_em ? new Date(selectedProduto.criado_em).toLocaleDateString('pt-BR') : '—'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <EntityDetailsModal
+          title={selectedProduto.produto}
+          subtitle="Detalhes do produto"
+          onClose={() => setSelectedProduto(null)}
+          onEdit={() => navigate(`/Estoque/editar/${selectedProduto.codProd}`)}
+          fields={[
+            { label: 'Código', value: `#${selectedProduto.codProd?.toString().padStart(4, '0')}` },
+            { label: 'Código de barras', value: selectedProduto.codigoBarras },
+            { label: 'Marca', value: selectedProduto.marca?.marca },
+            { label: 'Grupo', value: selectedProduto.grupo?.grupo },
+            { label: 'Preço de compra', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedProduto.precoCompra || 0) },
+            { label: 'Preço de venda', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedProduto.precoVenda || 0) },
+            { label: 'Custo médio', value: new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedProduto.custoMedioProd || 0) },
+            { label: 'Saldo em estoque', value: `${selectedProduto.saldoProd || 0} ${selectedProduto.unidade?.unidade || 'un'}` },
+            { label: 'Unidade', value: selectedProduto.unidade?.unidade },
+            { label: 'Peso bruto', value: selectedProduto.pesoBruto != null ? `${selectedProduto.pesoBruto} kg` : null },
+            { label: 'Peso líquido', value: selectedProduto.pesoLiq != null ? `${selectedProduto.pesoLiq} kg` : null },
+            { label: 'Cadastrado por', value: selectedProduto.usuario?.usuario },
+            { label: 'Cadastrado em', value: selectedProduto.criado_em ? new Date(selectedProduto.criado_em).toLocaleDateString('pt-BR') : null, fullWidth: true },
+          ]}
+        />
       )}
     </AnimatedPage>
   );
 }
-

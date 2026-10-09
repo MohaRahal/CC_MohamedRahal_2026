@@ -119,7 +119,7 @@ export default function EditCliente() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto">
 
           <Link to="/Clientes" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors mb-6">
             <ArrowLeft size={16} /> Voltar para Clientes
@@ -139,7 +139,7 @@ export default function EditCliente() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="md:col-span-2 flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Razão Social <span className="text-red-500">*</span></label>
+                  <label className="text-sm font-medium text-gray-700">Nome/Razão Social <span className="text-red-500">*</span></label>
                   <input
                     name="cliente" required value={formData.cliente} onChange={handleChange}
                     placeholder="Ex: João Silva ou Empresa Ltda"

@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedPage from './AnimatedPage';
+import EntityDetailsModal from '../components/EntityDetailsModal';
 import { cidadesService } from '../services/cidadesService';
+import { confirmAction } from '../components/feedback';
 
 export default function Cidades() {
   const navigate = useNavigate();
@@ -11,8 +13,11 @@ export default function Cidades() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedCidade, setSelectedCidade] = useState(null);
 
   useEffect(() => {
+    // Initial request only; the loader is also reused after mutations.
+    // eslint-disable-next-line react-hooks/immutability
     fetchCidades();
   }, []);
 
@@ -30,7 +35,7 @@ export default function Cidades() {
   };
 
   const handleDeleteClick = async (id, nome) => {
-    const confirmou = window.confirm(`Tem certeza que deseja excluir a cidade "${nome}"?`);
+    const confirmou = await confirmAction(`Tem certeza que deseja excluir a cidade "${nome}"?`);
     if (confirmou) {
       try {
         setDeletingId(id);
@@ -63,14 +68,9 @@ export default function Cidades() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-5xl mx-auto">
+        <div className="w-full">
           
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Cidades</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie as cidades cadastradas no sistema</p>
-            </div>
-            
+          <div className="mb-8 flex justify-end">
             <button 
               onClick={() => navigate('/cidades/novo')}
               className="flex items-center gap-2 bg-ink-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md">
@@ -104,16 +104,13 @@ export default function Cidades() {
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Estado / UF</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filteredCidades.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="py-16 text-center text-sm text-gray-500">
+                      <td colSpan="4" className="py-16 text-center text-sm text-gray-500">
                         Nenhuma cidade encontrada.
                       </td>
                     </tr>
@@ -124,7 +121,8 @@ export default function Cidades() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
                         key={cidade.codCidade} 
-                        className="hover:bg-gray-50/80 transition-colors group"
+                        onClick={() => setSelectedCidade(cidade)}
+                        className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
                       >
                         <td className="py-4 px-6 text-[13px] text-gray-500 font-medium">
                           #{cidade.codCidade}
@@ -133,26 +131,17 @@ export default function Cidades() {
                           {cidade.cidade}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {cidade.estado.estado} ({cidade.estado.uf})
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {cidade.usuario.usuario}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {formatDate(cidade.criado_em)}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {formatDate(cidade.atualizado_em)}
+                          {cidade.estado ? `${cidade.estado.estado} (${cidade.estado.uf})` : '—'}
                         </td>
                         <td className="py-4 px-6 text-[13px] text-right">
                           <div className="flex items-center justify-end gap-3 transition-opacity">
                             <button 
-                              onClick={() => navigate(`/cidades/editar/${cidade.codCidade}`)}
+                              onClick={(event) => { event.stopPropagation(); navigate(`/cidades/editar/${cidade.codCidade}`); }}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">
                               <Edit2 size={16} />
                             </button>
                             <button 
-                              onClick={() => handleDeleteClick(cidade.codCidade, cidade.cidade)}
+                              onClick={(event) => { event.stopPropagation(); handleDeleteClick(cidade.codCidade, cidade.cidade); }}
                               disabled={deletingId === cidade.codCidade}
                               className={`transition-colors cursor-pointer ${deletingId === cidade.codCidade ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`} 
                               title="Excluir">
@@ -170,6 +159,24 @@ export default function Cidades() {
 
         </div>
       </div>
+      {selectedCidade && (
+        <EntityDetailsModal
+          title={selectedCidade.cidade}
+          subtitle="Detalhes da cidade"
+          onClose={() => setSelectedCidade(null)}
+          onEdit={() => navigate(`/cidades/editar/${selectedCidade.codCidade}`)}
+          fields={[
+            { label: 'Código', value: `#${selectedCidade.codCidade}` },
+            { label: 'Cidade', value: selectedCidade.cidade },
+            { label: 'Estado', value: selectedCidade.estado?.estado },
+            { label: 'UF', value: selectedCidade.estado?.uf },
+            { label: 'País', value: selectedCidade.estado?.pais?.pais },
+            { label: 'Cadastrado por', value: selectedCidade.usuario?.usuario },
+            { label: 'Criado em', value: formatDate(selectedCidade.criado_em) },
+            { label: 'Atualizado em', value: formatDate(selectedCidade.atualizado_em) },
+          ]}
+        />
+      )}
     </AnimatedPage>
   );
 }

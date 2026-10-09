@@ -1,4 +1,4 @@
-import { Search, Plus, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { Plus, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import AnimatedPage from './AnimatedPage';
 
 export default function Financeiro() {
@@ -12,13 +12,9 @@ export default function Financeiro() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-5xl mx-auto">
+        <div className="w-full">
           
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Financeiro</h1>
-              <p className="text-sm text-gray-500 mt-1">Contas a pagar, a receber e fluxo de caixa</p>
-            </div>
+          <div className="mb-8 flex justify-end">
             <div className="flex gap-3">
               <button className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 px-5 py-2.5 text-sm rounded hover:bg-gray-50 transition-colors shadow-sm">
                 Nova Despesa

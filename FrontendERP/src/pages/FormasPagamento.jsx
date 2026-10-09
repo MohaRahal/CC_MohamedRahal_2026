@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedPage from './AnimatedPage';
+import EntityDetailsModal from '../components/EntityDetailsModal';
 import { formasPagamentoService } from '../services/formasPagamentoService';
+import { confirmAction } from '../components/feedback';
 
 export default function FormasPagamento() {
   const navigate = useNavigate();
@@ -11,8 +13,11 @@ export default function FormasPagamento() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedForma, setSelectedForma] = useState(null);
 
   useEffect(() => {
+    // Initial request only; the loader is also reused after mutations.
+    // eslint-disable-next-line react-hooks/immutability
     fetchFormasPagamento();
   }, []);
 
@@ -30,7 +35,7 @@ export default function FormasPagamento() {
   };
 
   const handleDeleteClick = async (id, nome) => {
-    const confirmou = window.confirm(`Tem certeza que deseja excluir a forma de pagamento "${nome}"?`);
+    const confirmou = await confirmAction(`Tem certeza que deseja excluir a forma de pagamento "${nome}"?`);
     if (confirmou) {
       try {
         setDeletingId(id);
@@ -65,14 +70,9 @@ export default function FormasPagamento() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-5xl mx-auto">
+        <div className="w-full">
           
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Formas de Pagamento</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie as formas de pagamento cadastradas no sistema</p>
-            </div>
-            
+          <div className="mb-8 flex justify-end">
             <button 
               onClick={() => navigate('/formas-pagamento/novo')}
               className="flex items-center gap-2 bg-ink-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md">
@@ -106,15 +106,13 @@ export default function FormasPagamento() {
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Forma de Pagamento</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Ativo</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Criado em</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Atualizado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filteredFormasPagamento.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="py-16 text-center text-sm text-gray-500">
+                      <td colSpan="4" className="py-16 text-center text-sm text-gray-500">
                         Nenhuma forma de pagamento encontrada.
                       </td>
                     </tr>
@@ -125,7 +123,8 @@ export default function FormasPagamento() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
                         key={forma.codFormaPagamento} 
-                        className="hover:bg-gray-50/80 transition-colors group"
+                        onClick={() => setSelectedForma(forma)}
+                        className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
                       >
                         <td className="py-4 px-6 text-[13px] text-gray-500 font-medium">
                           #{forma.codFormaPagamento}
@@ -140,21 +139,15 @@ export default function FormasPagamento() {
                             {forma.ativo ? 'Ativo' : 'Inativo'}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {formatDate(forma.criado_em)}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600">
-                          {formatDate(forma.atualizado_em)}
-                        </td>
                         <td className="py-4 px-6 text-[13px] text-right">
                           <div className="flex items-center justify-end gap-3 transition-opacity">
                             <button 
-                              onClick={() => navigate(`/formas-pagamento/editar/${forma.codFormaPagamento}`)}
+                              onClick={(event) => { event.stopPropagation(); navigate(`/formas-pagamento/editar/${forma.codFormaPagamento}`); }}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">
                               <Edit2 size={16} />
                             </button>
                             <button 
-                              onClick={() => handleDeleteClick(forma.codFormaPagamento, forma.nome)}
+                              onClick={(event) => { event.stopPropagation(); handleDeleteClick(forma.codFormaPagamento, forma.formaPagamento); }}
                               disabled={deletingId === forma.codFormaPagamento}
                               className={`transition-colors cursor-pointer ${deletingId === forma.codFormaPagamento ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`} 
                               title="Excluir">
@@ -172,6 +165,21 @@ export default function FormasPagamento() {
 
         </div>
       </div>
+      {selectedForma && (
+        <EntityDetailsModal
+          title={selectedForma.formaPagamento}
+          subtitle="Detalhes da forma de pagamento"
+          onClose={() => setSelectedForma(null)}
+          onEdit={() => navigate(`/formas-pagamento/editar/${selectedForma.codFormaPagamento}`)}
+          fields={[
+            { label: 'Código', value: `#${selectedForma.codFormaPagamento}` },
+            { label: 'Forma de pagamento', value: selectedForma.formaPagamento },
+            { label: 'Status', value: selectedForma.ativo ? 'Ativo' : 'Inativo' },
+            { label: 'Criado em', value: formatDate(selectedForma.criado_em) },
+            { label: 'Atualizado em', value: formatDate(selectedForma.atualizado_em), fullWidth: true },
+          ]}
+        />
+      )}
     </AnimatedPage>
   );
 }

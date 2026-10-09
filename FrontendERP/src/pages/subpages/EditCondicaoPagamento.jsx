@@ -198,7 +198,7 @@ export default function EditCondicaoPagamento() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-3xl mx-auto">
+        <div className="w-full max-w-5xl mx-auto">
           <button
             onClick={() => navigate('/condicoes-pagamento')}
             className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors mb-6 cursor-pointer"
@@ -333,6 +333,7 @@ export default function EditCondicaoPagamento() {
                             required
                             min="0"
                             max="100"
+                            disabled
                             placeholder="33.33"
                             className="w-full px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-1 focus:ring-black focus:border-black transition-all"
                           />

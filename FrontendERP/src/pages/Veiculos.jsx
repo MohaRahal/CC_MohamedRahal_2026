@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Loader2, Plus, Edit2, Trash2, Eye, X } from 'lucide-react';
+import { Search, Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AnimatedPage from './AnimatedPage';
+import EntityDetailsModal from '../components/EntityDetailsModal';
 import { veiculosService } from '../services/veiculosService';
+import { confirmAction } from '../components/feedback';
 
 export default function Veiculos() {
     const navigate = useNavigate();
@@ -14,6 +16,8 @@ export default function Veiculos() {
     const [selectedVeiculo, setSelectedVeiculo] = useState(null);
 
     useEffect(() => {
+        // Initial request only; the loader is also reused after mutations.
+        // eslint-disable-next-line react-hooks/immutability
         fetchVeiculos();
     }, []);
 
@@ -31,7 +35,7 @@ export default function Veiculos() {
     };
 
     const handleDeleteClick = async (id, nome) => {
-        const confirmou = window.confirm(`Tem certeza que deseja excluir o veiculo "${nome}"?`);
+        const confirmou = await confirmAction(`Tem certeza que deseja excluir o veículo "${nome}"?`);
         if (confirmou) {
             try {
                 setDeletingId(id);
@@ -67,13 +71,9 @@ export default function Veiculos() {
     return (
         <AnimatedPage>
             <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-                <div className="max-w-6xl mx-auto">
+                <div className="w-full">
 
-                    <div className="flex justify-between items-end mb-8">
-                        <div>
-                            <h1 className="text-3xl font-light text-gray-900 tracking-tight">Veículos</h1>
-                            <p className="text-sm text-gray-500 mt-1">Gerencie os Veículos cadastrados no sistema</p>
-                        </div>
+                    <div className="mb-8 flex justify-end">
                         <button
                             onClick={() => navigate('/veiculos/novo')}
                             className="flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors shadow-sm">
@@ -106,16 +106,14 @@ export default function Veiculos() {
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cód</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Placa Mercosul</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Chassi</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Modelo</th>
-                                            <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Transportador</th>
                                             <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-center w-32">Ações</th>
                                         </tr>
                                     </thead>
                                     <tbody className="divide-y divide-gray-50">
                                         {filteredVeiculos.length === 0 ? (
                                             <tr>
-                                                <td colSpan="7" className="py-16 text-center text-sm text-gray-500">
+                                                <td colSpan="5" className="py-16 text-center text-sm text-gray-500">
                                                     Nenhum Veículo encontrado.
                                                 </td>
                                             </tr>
@@ -126,7 +124,8 @@ export default function Veiculos() {
                                                     animate={{ opacity: 1, y: 0 }}
                                                     transition={{ delay: idx * 0.05 }}
                                                     key={veiculo.codVeiculo}
-                                                    className="hover:bg-gray-50/80 transition-colors group"
+                                                    onClick={() => setSelectedVeiculo(veiculo)}
+                                                    className="hover:bg-gray-50/80 transition-colors group cursor-pointer"
                                                 >
                                                     <td className="py-4 px-6 text-sm text-gray-500 font-mono">
                                                         #{veiculo.codVeiculo}
@@ -138,32 +137,19 @@ export default function Veiculos() {
                                                         {veiculo.placaMercosul || '—'}
                                                     </td>
                                                     <td className="py-4 px-6 text-sm text-gray-600">
-                                                        {veiculo.chassi}
-                                                    </td>
-                                                    <td className="py-4 px-6 text-sm text-gray-600">
                                                         {veiculo.modelo?.modelo || '—'}
-                                                    </td>
-                                                    <td className="py-4 px-6 text-sm text-gray-600">
-                                                        {veiculo.transportador?.transportador || '—'}
                                                     </td>
                                                     <td className="py-4 px-6 text-center">
                                                         <div className="flex items-center justify-center gap-2">
                                                             <button
-                                                                onClick={() => setSelectedVeiculo(veiculo)}
-                                                                className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
-                                                                title="Ver detalhes"
-                                                            >
-                                                                <Eye size={16} />
-                                                            </button>
-                                                            <button
-                                                                onClick={() => navigate(`/veiculos/editar/${veiculo.codVeiculo}`)}
+                                                                onClick={(event) => { event.stopPropagation(); navigate(`/veiculos/editar/${veiculo.codVeiculo}`); }}
                                                                 className="inline-flex items-center justify-center p-2 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
                                                                 title="Editar"
                                                             >
                                                                 <Edit2 size={16} />
                                                             </button>
                                                             <button
-                                                                onClick={() => handleDeleteClick(veiculo.codVeiculo, veiculo.placaVeiculo)}
+                                                                onClick={(event) => { event.stopPropagation(); handleDeleteClick(veiculo.codVeiculo, veiculo.placaVeiculo); }}
                                                                 disabled={deletingId === veiculo.codVeiculo}
                                                                 className={`inline-flex items-center justify-center p-2 rounded-lg transition-colors cursor-pointer ${deletingId === veiculo.codVeiculo ? 'text-gray-300' : 'text-gray-400 hover:text-red-600 hover:bg-red-50'}`}
                                                                 title="Excluir"
@@ -184,102 +170,26 @@ export default function Veiculos() {
                 </div>
             </div>
 
-            {/* Modal de Detalhes */}
             {selectedVeiculo && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" style={{ minHeight: '100vh' }}>
-                    <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-                        {/* Header modal */}
-                        <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50 sticky top-0">
-                            <div>
-                                <p className="text-xs text-gray-400 font-mono mb-1">#{selectedVeiculo.codVeiculo?.toString().padStart(4, '0')}</p>
-                                <h3 className="text-xl font-medium text-gray-900">{selectedVeiculo.placaVeiculo}</h3>
-                            </div>
-                            <button
-                                onClick={() => setSelectedVeiculo(null)}
-                                className="cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-1.5 rounded transition-colors shrink-0"
-                            >
-                                <X size={20} />
-                            </button>
-                        </div>
-
-                        <div className="p-6 space-y-6">
-                            {/* Informações Básicas */}
-                            <div>
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Informações Básicas</h4>
-                                <div className="grid grid-cols-1 gap-3 text-sm">
-                                    {[
-                                        { label: 'Placa Antiga', value: selectedVeiculo.placaVeiculo },
-                                        { label: 'Placa Mercosul', value: selectedVeiculo.placaMercosul },
-                                        { label: 'Chassi', value: selectedVeiculo.chassi },
-                                        { label: 'Código ANTT', value: selectedVeiculo.codANTT },
-                                    ].map(({ label, value }) => (
-                                        <div key={label} className="p-3 bg-gray-50 rounded-lg">
-                                            <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
-                                            <div className="text-gray-800 break-words">{value || '—'}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Modelo e Marca */}
-                            <div>
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Modelo e Marca</h4>
-                                <div className="grid grid-cols-1 gap-3 text-sm">
-                                    {[
-                                        { label: 'Marca', value: selectedVeiculo.modelo?.marca?.marca },
-                                        { label: 'Modelo', value: selectedVeiculo.modelo?.modelo },
-                                    ].map(({ label, value }) => (
-                                        <div key={label} className="p-3 bg-gray-50 rounded-lg">
-                                            <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
-                                            <div className="text-gray-800 break-words">{value || '—'}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Localização */}
-                            <div>
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Localização</h4>
-                                <div className="grid grid-cols-1 gap-3 text-sm">
-                                    {[
-                                        { label: 'Estado', value: selectedVeiculo.estado?.estado },
-                                        { label: 'Transportador', value: selectedVeiculo.transportador?.transportador },
-                                    ].map(({ label, value }) => (
-                                        <div key={label} className="p-3 bg-gray-50 rounded-lg">
-                                            <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
-                                            <div className="text-gray-800 break-words">{value || '—'}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* Sistema */}
-                            <div>
-                                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Sistema</h4>
-                                <div className="grid grid-cols-1 gap-3 text-sm">
-                                    {[
-                                        { label: 'Cadastrado em', value: formatDate(selectedVeiculo.criado_em) },
-                                        { label: 'Atualizado em', value: formatDate(selectedVeiculo.atualizado_em) },
-                                    ].map(({ label, value }) => (
-                                        <div key={label} className="p-3 bg-gray-50 rounded-lg">
-                                            <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
-                                            <div className="text-gray-800 break-words">{value || '—'}</div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex justify-end px-6 py-6 border-t border-gray-100 bg-gray-50/50 sticky bottom-0">
-                            <button
-                                onClick={() => setSelectedVeiculo(null)}
-                                className="cursor-pointer px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                                Fechar
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <EntityDetailsModal
+                    title={selectedVeiculo.placaMercosul || selectedVeiculo.placaVeiculo}
+                    subtitle="Detalhes do veículo"
+                    onClose={() => setSelectedVeiculo(null)}
+                    onEdit={() => navigate(`/veiculos/editar/${selectedVeiculo.codVeiculo}`)}
+                    fields={[
+                        { label: 'Código', value: `#${selectedVeiculo.codVeiculo?.toString().padStart(4, '0')}` },
+                        { label: 'Placa antiga', value: selectedVeiculo.placaVeiculo },
+                        { label: 'Placa Mercosul', value: selectedVeiculo.placaMercosul },
+                        { label: 'Chassi', value: selectedVeiculo.chassi },
+                        { label: 'Código ANTT', value: selectedVeiculo.codANTT },
+                        { label: 'Marca', value: selectedVeiculo.modelo?.marca?.marca },
+                        { label: 'Modelo', value: selectedVeiculo.modelo?.modelo },
+                        { label: 'Estado', value: selectedVeiculo.estado?.estado },
+                        { label: 'Transportador', value: selectedVeiculo.transportador?.transportador },
+                        { label: 'Cadastrado em', value: formatDate(selectedVeiculo.criado_em) },
+                        { label: 'Atualizado em', value: formatDate(selectedVeiculo.atualizado_em), fullWidth: true },
+                    ]}
+                />
             )}
         </AnimatedPage>
     );

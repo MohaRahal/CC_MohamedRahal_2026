@@ -1,207 +1,205 @@
-# monopo saigon — Style Reference
-> cinematic darkroom with floating white type — gallery walls that alternate between pure white editorial space and immersive black frames holding organic 3D forms.
+# MindMarket — Style Reference
+> Warm storybook on cream paper — a friendly editorial canvas where oversized Inter headlines and paper-cut characters share a sunlit, sticker-soft surface.
 
-**Theme:** mixed
+**Theme:** light
 
-Monopo Saigon operates a cinematic editorial canvas: pure monochrome architecture (white, ink, and a staircase of grays) interrupted by full-bleed dark atmospheric frames carrying 3D organic imagery. The system is fundamentally light and structural, with dark sections acting as immersive gallery walls rather than primary surface mode. Typography does the emotional work — a single custom geometric sans (Roobert) stretched across an extreme scale from 9px micro-labels to 225px hero statements, creating tension between whisper-fine UI and monumental display. Components are minimal and confident: pill-shaped controls, hairline borders, ghost navigation, and almost no decorative chrome. Color is nearly absent from the system itself — the brand voice lives in scale, space, and atmospheric photography rather than in chromatic identity.
+Source measurements are normalized; roles and recommendations are interpreted. Font summary lists are independent, not paired by position. HTML examples are reconstructions, not source components.
+
+MindMarket is a warm, illustrated editorial system built on a cream-paper canvas rather than stark white, with massive Inter display type that fills the frame and a single vivid green accent that anchors the brand across navigation strokes, borders, and hero fills. The visual language borrows from paper-cut storybook illustration — flat, vibrant character art sits directly on warm neutral backgrounds, never on photographic or gradient surfaces, and the UI chrome is deliberately minimal so the artwork leads. Components are generously rounded (50–64px radii on cards and nav), creating a soft, sticker-like quality. Color behaves decoratively rather than functionally: the green, blue, red, and yellow accents repeat across illustrations and are used sparingly in UI as borders, icon accents, and surface highlights rather than as a strict semantic state system. The overall density is breathable and confident — few elements per screen, enormous type, wide margins, and the cream canvas doing the structural work that shadow systems usually handle in product UIs.
 
 ## Tokens — Colors
 
 | Name | Value | Token | Role |
 |------|-------|-------|------|
-| Paper White | `#ffffff` | `--color-paper-white` | Primary canvas, card surfaces, text on dark frames, hairline borders — the default ground state for all structural sections |
-| Ink Black | `#000000` | `--color-ink-black` | Primary text, dark surface backgrounds for hero/feature frames, icon strokes — anchors all legible content |
-| Carbon | `#181818` | `--color-carbon` | Secondary dark for footer text, subtle dark borders, icon fills — slightly softer than pure ink for layered depth |
-| Ash | `#6d6d6d` | `--color-ash` | Muted body text, hairline borders on light surfaces, secondary metadata |
-| Smoke | `#9a9a9a` | `--color-smoke` | Tertiary surface tone for de-emphasized cards, placeholder fills, disabled states |
-| Pewter | `#808080` | `--color-pewter` | Mid-neutral for utility backgrounds, subtle dividers between tonal sections |
-| Graphite | `#636363` | `--color-graphite` | Solid fill for compact utility buttons (cookie accept, dismiss) — the only non-black action surface |
-| Mercury Flow | `linear-gradient(90deg, rgb(160, 224, 171), rgb(255, 172, 46) 50%, rgb(165, 45, 37))` | `--color-mercury-flow` | Atmospheric gradient terminus — organic color appearing only in hero 3D renders and brand film stills, not a UI token |
+| Fresh Grass | `#8ed462` | `--color-fresh-grass` | Primary brand accent — navigation strokes, card borders, decorative highlights. The single chromatic anchor that ties the cream canvas to the brand identity |
+| Cream Paper | `#f5f1e4` | `--color-cream-paper` | Dominant page background and soft card surface. Warm off-white that replaces stark white as the structural canvas |
+| Ink Black | `#2c2e2a` | `--color-ink-black` | Primary text, icons, nav borders, and the dominant hairline border color. Warm near-black that reads softer than pure black on cream |
+| Pure White | `#ffffff` | `--color-pure-white` | Elevated card surfaces, floating nav background, text on dark illustrations. The highest surface level in the stack |
+| Sandstone | `#e0dbce` | `--color-sandstone` | Secondary surface tone for inset or recessed card states. Slightly deeper than the cream canvas |
+| Stone Gray | `#80827f` | `--color-stone-gray` | Muted body text and secondary link borders. The only true mid-gray for de-emphasized content |
+| Hairline Mist | `#d5d5d4` | `--color-hairline-mist` | Subtle nav dividers and low-contrast borders. Barely visible structural lines |
+| Pure Ink | `#000000` | `--color-pure-ink` | Icon fills, body text on light surfaces, and high-contrast borders. Used where maximum contrast is needed against the cream |
+| Sky Pop | `#2ba0ff` | `--color-sky-pop` | Decorative illustration accent and card border accent. Vivid blue used illustratively and as a small functional punctuation in icon dots |
+| Coral Pop | `#ff705d` | `--color-coral-pop` | Red outline accent for tags, dividers, and focused UI edges. Do not promote it to the primary CTA color |
+| Sunshine Pop | `#f5e211` | `--color-sunshine-pop` | Footer highlight and decorative illustration accent. Bright yellow used sparingly for warmth and playfulness |
 
 ## Tokens — Typography
 
-### Roobert — Sole display and UI typeface across every role. The 225px hero scale (weight 300) creates whisper-weight monumentality — authority through restraint, not volume. Weight 300 is the signature headline weight; weight 400 carries body and navigation; weight 600 is reserved for emphasis. Substitutes: Inter, DM Sans, or Suisse Int'l as geometric neo-grotesque alternatives. · `--font-roobert`
-- **Substitute:** Inter
-- **Weights:** 300, 400, 600
-- **Sizes:** 11px, 12px, 16px, 18px, 29px, 30px, 39px, 45px, 54px, 78px, 94px, 225px
-- **Line height:** 0.70, 0.76, 1.10, 1.15, 1.19, 1.21, 1.22, 1.24, 1.25, 1.36, 1.39, 1.58, 1.82
-- **Role:** Sole display and UI typeface across every role. The 225px hero scale (weight 300) creates whisper-weight monumentality — authority through restraint, not volume. Weight 300 is the signature headline weight; weight 400 carries body and navigation; weight 600 is reserved for emphasis. Substitutes: Inter, DM Sans, or Suisse Int'l as geometric neo-grotesque alternatives.
-
-### Raleway — Secondary display presence at the 54px tier — likely used for editorial subhead or pull-quote contrast against Roobert headlines. Substitutes: Montserrat, Poppins. · `--font-raleway`
-- **Weights:** 400
-- **Sizes:** 54px
-- **Line height:** 1.39
-- **Role:** Secondary display presence at the 54px tier — likely used for editorial subhead or pull-quote contrast against Roobert headlines. Substitutes: Montserrat, Poppins.
-
-### system-ui — Fallback for cookie banner, legal micro-copy, and system-level utility text where custom font loading is unnecessary. · `--font-system-ui`
-- **Weights:** 400
-- **Sizes:** 9px, 16px
-- **Line height:** 1.15, 1.32
-- **Role:** Fallback for cookie banner, legal micro-copy, and system-level utility text where custom font loading is unnecessary.
+### Inter — Single-family system: Inter carries everything from 9px micro-labels to 144px display headlines. The use of Inter at display scale is a signature choice — most editorial systems reach for a serif or custom display face; MindMarket trusts Inter's geometric clarity at extreme sizes, relying on tight letter-spacing (-0.06em at 140px+) and aggressive line-height compression (0.95–1.15) to create visual weight without switching families. · `--font-inter`
+- **Substitute:** Inter (Google Fonts) — no substitute needed
+- **Weights:** 400, 500
+- **Sizes:** 9px, 15px, 17px, 18px, 20px, 30px, 53px, 81px, 140px, 144px
+- **Line height:** 0.95–2.00 (display 0.95–1.20, body 1.50)
+- **Letter spacing:** -0.06em at 81px and above, -0.04em at 53px, normal at body sizes
+- **Role:** Single-family system: Inter carries everything from 9px micro-labels to 144px display headlines. The use of Inter at display scale is a signature choice — most editorial systems reach for a serif or custom display face; MindMarket trusts Inter's geometric clarity at extreme sizes, relying on tight letter-spacing (-0.06em at 140px+) and aggressive line-height compression (0.95–1.15) to create visual weight without switching families.
 
 ### Type Scale
 
-| Role | Size | Line Height | Letter Spacing | Token |
-|------|------|-------------|----------------|-------|
-| body | 16px | 1.39 | — | `--text-body` |
-| body-lg | 18px | 1.36 | — | `--text-body-lg` |
-| subheading | 30px | 1.25 | — | `--text-subheading` |
-| heading-sm | 45px | 1.22 | — | `--text-heading-sm` |
-| heading | 54px | 1.21 | — | `--text-heading` |
-| heading-lg | 78px | 1.15 | — | `--text-heading-lg` |
-| display | 94px | 1.1 | — | `--text-display` |
-| hero | 225px | 0.76 | — | `--text-hero` |
+| Role | Family | Weight | Size | Line Height | Letter Spacing | Token |
+|------|--------|--------|------|-------------|----------------|-------|
+| body-sm | — | — | 15px | 1.5 | — | `--text-body-sm` |
+| body-lg | — | — | 18px | 1.5 | — | `--text-body-lg` |
+| subheading | — | — | 20px | 1.25 | — | `--text-subheading` |
+| heading-sm | — | — | 30px | 1.2 | — | `--text-heading-sm` |
+| heading | — | — | 53px | 1.15 | -2.12px | `--text-heading` |
+| heading-lg | — | — | 81px | 1.2 | -4.86px | `--text-heading-lg` |
+| display | — | — | 140px | 0.95 | -8.4px | `--text-display` |
+| display-lg | — | — | 144px | 0.95 | -8.64px | `--text-display-lg` |
 
 ## Tokens — Spacing & Shapes
 
 **Base unit:** 4px
 
-**Density:** spacious
+**Density:** comfortable
 
 ### Spacing Scale
 
 | Name | Value | Token |
 |------|-------|-------|
-| 8 | 8px | `--spacing-8` |
-| 12 | 12px | `--spacing-12` |
-| 28 | 28px | `--spacing-28` |
-| 40 | 40px | `--spacing-40` |
-| 48 | 48px | `--spacing-48` |
-| 64 | 64px | `--spacing-64` |
-| 68 | 68px | `--spacing-68` |
-| 152 | 152px | `--spacing-152` |
+| 4 | 4px | `--spacing-4` |
+| 20 | 20px | `--spacing-20` |
+| 60 | 60px | `--spacing-60` |
+| 136 | 136px | `--spacing-136` |
+| 216 | 216px | `--spacing-216` |
 
 ### Border Radius
 
 | Element | Value |
 |---------|-------|
-| cards | 0px |
-| badges | 75px |
-| inputs | 0px |
-| buttons | 75px |
+| nav | 50px |
+| cards | 50px |
+| small | 10px |
+| buttons | 50px |
+| illustration-containers | 63.75px |
 
 ### Layout
 
-- **Page max-width:** 1440px
+- **Page max-width:** 1200px
 - **Section gap:** 80-120px
-- **Card padding:** 32-40px
-- **Element gap:** 14-24px
+- **Card padding:** 20-21px
+- **Element gap:** 17-21px
 
 ## Components
 
-### Top Navigation Bar
-**Role:** Primary site navigation fixed across viewport
+### Floating Pill Navigation Bar
+**Role:** Primary site navigation container
 
-Transparent over hero, switches to white (#ffffff) on scroll. Logo 'monopo saigon' left-aligned in 12px Roobert weight 400, white or #181818 depending on surface. Right cluster: language toggle (EN, 中文, 한국어) as inline links at 11px, followed by vertical menu stack (WORK, MANIFESTO, SAIGON BOLD, TEAM, CONTACT) at 12px uppercase. No background fill, no shadow — floats on the canvas.
+White (#ffffff) pill-shaped bar with 50px border-radius, floating over the cream canvas with generous margins. Contains brand logo container (rounded square, ~40px), nav links at 15px Inter 500 in #2c2e2a with 17–20px horizontal padding, a circular green menu icon button, and a CTA. The entire bar reads as a single soft pill, not a rectangular header.
 
-### Hero Centered Statement
-**Role:** Full-viewport title overlay on dark immersive imagery
+### Brand Logo Container
+**Role:** Brand mark housing
 
-Massive centered text at 225px Roobert weight 300, line-height 0.76, color #ffffff, letter-spacing normal. Sits centered both axes over a full-bleed 3D organic render. The extreme tight line-height (0.76) allows multi-line hero text to stack without loose gaps — critical when the type IS the composition.
+Small rounded square (10–20px radius) containing the MindMarket mark, paired with the wordmark in 15–17px Inter 500 #2c2e2a. Sits at the left edge of the nav pill.
 
-### Pill Button
-**Role:** Primary and secondary action control
+### Primary CTA Button
+**Role:** Main action trigger (no distinct CTA background color)
 
-Border-radius 75px (fully rounded). Padding 1px vertical, 6px horizontal — extremely compact. Background #636363 (Graphite) for utility actions, #ffffff for primary CTAs. Text at 11-12px Roobert weight 400, color inverted from fill. No shadow, no border, no hover elevation — the pill shape IS the affordance.
+Light/white pill button with 50px radius, ~11px vertical and 20px horizontal padding, 15px Inter 500 #2c2e2a text reading 'Get a quote'. Features a small circular icon accent (blue #2ba0ff or similar) embedded at the right edge as a visual action indicator. The button is a ghost/light style — not a filled chromatic action.
 
-### Ghost Navigation Link
-**Role:** Menu items and language toggles in top bar
+### Menu Toggle Button
+**Role:** Navigation menu trigger
 
-Text-only, no underline, no background. 11-12px Roobert weight 400, uppercase for menu items, mixed case for language codes. Color #ffffff on dark surfaces, #181818 on light surfaces. Spacing between items: 15px gap.
+Circular button (~40px diameter) with #8ed462 green fill and a dark menu icon. Sits at the right edge of the nav pill, before the CTA.
 
-### Scroll Indicator
-**Role:** Bottom-left scroll prompt on hero
+### Content Card
+**Role:** Feature/service content container
 
-Circular text path reading 'SCROLL TO EXPLORE' at 9px system-ui, color #ffffff, positioned absolute bottom-left. Functions as both affordance and atmospheric detail — turns navigation into ornament.
+White (#ffffff) surface with 50–64px border-radius, 21px internal padding. Contains a heading, body text, and a CTA. Hairline border optional. Used for 'No more chaos' type messaging blocks and service descriptions.
 
-### Cookie Consent Banner
-**Role:** GDPR compliance overlay
+### Service Card Link
+**Role:** Navigable service entry
 
-Fixed bottom-right card. Background #ffffff, no visible border or shadow (or extremely soft). Body text 12px Roobert weight 400 #181818 explaining cookie usage with 'Privacy policy' as inline link. Compact 'Accept' pill button (Graphite #636363 fill, white text, 75px radius) and 'X' dismiss icon to the right.
+White card with a #ff705d coral filled button (pill shape, 50px radius) as the action trigger. The coral fill is the most prominent chromatic action surface on the site and is reserved for service-level CTAs rather than global actions.
 
-### Dark Immersive Frame
-**Role:** Full-bleed hero and feature work sections
+### Hero Display Block
+**Role:** Above-the-fold headline area
 
-Full-viewport #000000 or #181818 background carrying organic 3D renders, film stills, or atmospheric photography. Content sits overlaid in #ffffff. No card containers, no padding — the image IS the surface. Used to break the white editorial flow with cinematic contrast.
+Full-bleed cream canvas section. Headline at 140–144px Inter weight 500, #2c2e2a, letter-spacing -0.06em, line-height 0.95. Subheadline at 17–20px weight 400. The headline is the dominant visual element — no competing imagery above the fold except the illustration bleeding from below.
 
-### Editorial Content Section
-**Role:** Light structural sections between dark frames
+### Illustration Hero Panel
+**Role:** Decorative character art section
 
-White (#ffffff) background, generous 80-120px vertical padding, content max-width 1440px centered. Headlines at 78-94px Roobert weight 300, body at 18px weight 400 #181818. No card chrome, no borders — text breathes directly on the white surface. Section rhythm: 2-column text+image, 3-column work grid, or full-width statement.
+Paper-cut style character illustrations with flat color fills in green, blue, coral, yellow, purple, and white. Characters are dynamic, overlapping, and sit directly on the cream canvas. No frames, no rounded clipping — the art is the container. Used as hero and section dividers.
+
+### Inline Text Link
+**Role:** Navigable text link
+
+#2c2e2a or #80827f text with an underline or hairline border in matching color. 15–18px Inter 400. Links carry a #80827f border-bottom as their visual affordance, not a chromatic color change.
+
+### Footer Accent Block
+**Role:** Footer highlight surface
+
+#f5e211 yellow fill section at the page bottom. Solid vivid yellow as a warm closing band. Contrasts sharply with the cream canvas above.
 
 ## Do's and Don'ts
 
 ### Do
-- Use Roobert weight 300 for all display and headline text — the whisper-weight is the signature; never substitute bold for impact at scale
-- Apply the 75px pill radius exclusively to buttons and tags — this is the only curved element in the system and its rarity is the point
-- Alternate between #ffffff editorial surfaces and #000000 immersive frames for section rhythm — the contrast between white structure and black atmosphere is the page's visual beat
-- Set hero and display text at line-height 0.70-0.76 to allow massive type to stack tightly without losing density
-- Reserve color for the hero imagery and 3D renders — never add chromatic accents to UI chrome, buttons, or text; the system is intentionally achromatic
-- Use #636363 (Graphite) only for compact utility actions like cookie consent; never as a primary CTA background — primary actions use #ffffff or remain ghost
-- Keep body text at 18px minimum (never below 16px) and apply generous line-height (1.36-1.58) — the system values breathing room over information density
+- Use #f5f1e4 cream as the page canvas — never #ffffff as the primary background. White is reserved for elevated cards and the floating nav.
+- Set border-radius to 50px for all cards, buttons, and nav containers. Use 63.75px for illustration containers and 10px for inline micro-elements like tag chips.
+- Set display headlines at 140–144px Inter weight 500 with letter-spacing -0.06em and line-height 0.95. This is the system's signature scale — shrinking to 53–81px for section headings.
+- Use #8ed462 green as the only brand-structural accent in UI chrome (nav strokes, borders, toggle fills). Never use it for body text or large surface fills.
+- Use #2c2e2a for all primary text, borders, and icons. Never use pure #000000 for large body text on cream — it creates harsh contrast against the warm canvas.
+- Embed a small chromatic circle icon (blue, green, or coral) inside CTA buttons as the action affordance, rather than relying on background fill to signal interactivity.
+- Float the navigation as a single white pill bar with 50px radius, centered or full-width with generous margin, rather than as a traditional rectangular header bar.
 
 ### Don't
-- Do not introduce brand accent colors, gradients, or chromatic buttons — the system is monochrome by design and adding color breaks the editorial discipline
-- Do not use border-radius values other than 75px (buttons/tags) or 0px (cards/inputs) — no 4px, 8px, or 12px soft rounds; the system is sharp or fully pill
-- Do not apply shadows, glows, or elevation effects to cards or surfaces — surfaces are flat; depth comes from tonal contrast between white and black frames
-- Do not use Roobert weight 600 for headlines — reserve 600 for inline emphasis only; headlines must stay at 300 to maintain the whisper-tone signature
-- Do not constrain hero text to standard heading sizes (54-78px) — the system commits to 94-225px display; smaller dilutes the cinematic intent
-- Do not fill the full viewport with white-on-white content without a dark immersive break — pages need the black frame interlude to maintain rhythm
-- Do not use colored borders, tinted backgrounds, or pastel surfaces for tags, badges, or status indicators — keep all metadata neutral (#6d6d6d or #181818)
+- Don't introduce a second typeface for display headings — Inter at extreme sizes with tight tracking is the system's defining choice.
+- Don't use the accent colors (blue, coral, yellow) as functional states for success/error/warning — they are decorative illustration accents only.
+- Don't use sharp corners (0–4px radius) on cards or buttons — the system reads as sticker-soft and relies on generous rounding for its identity.
+- Don't place white cards directly on white backgrounds — always separate card surfaces from the cream canvas with either the white-on-cream elevation contrast or a hairline border.
+- Don't use shadows or gradients for elevation — the cream-to-white surface stack and generous radii handle depth without shadow.
+- Don't use more than one chromatic accent per UI component — buttons are either green-structural, coral-action, or light-ghost with a single icon dot, never multicolor.
+- Don't reduce display type below 53px for primary page headings — the system's authority comes from extreme scale, and shrinking it collapses the editorial feel.
 
 ## Surfaces
 
 | Level | Name | Value | Purpose |
 |-------|------|-------|---------|
-| 1 | Paper White | `#ffffff` | Default canvas for all structural editorial sections, card surfaces, and light-mode content |
-| 2 | Smoke | `#9a9a9a` | De-emphasized surface for placeholder content, disabled states, and subtle tonal separation |
-| 3 | Pewter | `#808080` | Mid-neutral utility background for compact UI elements and divider zones |
-| 4 | Graphite | `#636363` | Solid action surface for utility buttons (cookie accept, dismiss controls) |
-| 5 | Carbon | `#181818` | Secondary dark surface for footer zones, icon containers, and dark UI elements within light sections |
-| 6 | Ink Black | `#000000` | Full-bleed immersive surface for hero frames, feature work showcases, and cinematic dark sections |
+| 0 | Cream Paper | `#f5f1e4` | Page canvas — the dominant warm background |
+| 1 | Pure White | `#ffffff` | Elevated cards, floating navigation, inset content blocks |
+| 2 | Sandstone | `#e0dbce` | Recessed or secondary surface tone |
 
 ## Elevation
 
-The system deliberately avoids box-shadows and drop-shadows. Depth is created through tonal contrast between flat white editorial surfaces and flat black immersive frames, not through elevation. Components are flush to their surfaces — pills sit on white, text sits on imagery, cards are invisible containers defined only by content boundaries and generous whitespace.
+MindMarket uses a cream-to-white surface stack and generous border-radii instead of box-shadows for elevation. The floating nav pill sits on the cream canvas without a shadow — its elevation is communicated by the white-on-cream color shift alone. Cards are differentiated from the canvas by surface color, not by drop shadow. This creates a flat, editorial, paper-like feel where everything feels printed rather than digitally raised.
 
 ## Imagery
 
-Atmospheric 3D organic renders dominate the visual language — flowing, liquid forms in dark greens, amber/gold, warm copper, and deep oxblood tones. These are not product photography or lifestyle imagery; they are abstract sculptural compositions that function as cinematic backdrops. Imagery is always full-bleed, always edge-to-edge, always carrying the hero or feature section. No rounded corners on imagery, no contained thumbnails — every visual is immersive and borderless. Photography (when present) follows the same full-bleed treatment with high contrast and moody lighting. Iconography is minimal: text-based labels and a single circular scroll indicator.
+Illustration-only visual language. No photography, no product screenshots, no 3D renders. All visuals are flat paper-cut style character illustrations with bold outlines and vivid flat color fills (green, blue, coral, yellow, purple, white). Characters are dynamic and overlapping, with limbs and props extending beyond implied boundaries. Illustrations sit directly on the cream canvas without frames, masks, or rounded clipping containers. The art style is editorial and storybook — human figures with exaggerated proportions, playful poses, and bright personality. Icons are minimal: simple geometric shapes (circles for menu toggles, small dots for CTA affordances) rather than a dedicated icon set. Imagery is decorative atmosphere rather than explanatory — it sets emotional tone for a market research brand that talks about 'real human insights.'
 
 ## Layout
 
-Max-width 1440px centered with generous gutters, but hero and feature sections break to full-bleed. The page rhythm alternates between full-viewport dark immersive frames (hero with centered statement overlaid) and white editorial bands (content sections with left-aligned headlines, 2-column text+image splits, or 3-column work grids). Navigation is a minimal floating top bar — no sticky shadow, no background fill, just text floating on whatever surface is beneath. Vertical spacing is spacious: 80-120px between sections, 32-40px internal padding. Content is overwhelmingly text-dominant; imagery serves as atmosphere rather than information. The layout reads as an editorial magazine spread — generous whitespace, monumental type, cinematic black breaks.
+Full-bleed sections on a cream canvas, with no fixed max-width grid constraining the illustrations. Content cards (white, 50–64px radius) float within sections and are constrained to ~600–700px width for readability. The hero is a centered headline stack at 140–144px with the illustration bleeding from the bottom edge into the next section. Navigation is a single floating white pill bar, horizontally centered or full-width, sitting above all content. Section rhythm alternates between illustration-led sections (art takes ~60% of the width) and text-card sections (white cards at ~50% width with generous surrounding cream). The page reads top-to-bottom as: floating nav → giant headline hero → illustration panel → text card section → illustration+card split. Vertical spacing between sections is generous (80–120px). No sidebar, no multi-column product grids, no pricing tables — the layout is editorial and single-column in its reading flow, with illustrations providing lateral visual interest.
 
 ## Agent Prompt Guide
 
-## Quick Color Reference
-- Background (light): #ffffff
-- Background (dark/immersive): #000000
-- Primary text: #181818
-- Text on dark: #ffffff
-- Muted text/borders: #6d6d6d
-- Utility button fill: #636363
+**Quick Color Reference**
+- text: #2c2e2a
+- background: #f5f1e4 (cream canvas)
+- surface: #ffffff (elevated cards, floating nav)
+- border: #2c2e2a or #80827f
+- accent: #8ed462 (green — structural accent only)
 - primary action: no distinct CTA color
 
-## Example Component Prompts
+**Example Component Prompts**
 
-1. **Cinematic Hero Section**: Full-viewport #000000 background. Centered title at 94px Roobert weight 300, #ffffff, line-height 0.76, letter-spacing normal. Title sits at exact vertical and horizontal center. No navigation background, no card, no border — the dark frame IS the container.
+1. *Create a hero headline section:* Cream background (#f5f1e4). Headline at 140px Inter weight 500, #2c2e2a, letter-spacing -8.4px, line-height 0.95. Subheadline at 20px weight 400, #2c2e2a, centered or left-aligned. No card wrapper — text sits directly on cream canvas.
 
-2. **Pill Cookie Button**: Background #636363, text #ffffff at 12px Roobert weight 400, border-radius 75px, padding 1px vertical / 6px horizontal. No border, no shadow, no hover state. Pair with a 9px system-ui dismiss 'X' icon at 9px margin-left.
+No distinct primary action color was observed; use the extracted neutral button treatments instead of inventing a filled CTA color.
 
-3. **Editorial Work Grid Section**: White #ffffff background, 1440px max-width centered, 80px vertical padding. Section title at 78px Roobert weight 300, #181818, line-height 1.15. Below: 3-column grid of full-bleed dark work thumbnails (#000000 background with white overlay text at 18px). 24px gap between grid items. No card borders, no padding inside cells — thumbnails sit flush.
+3. *Create a content card:* White (#ffffff) surface, 50px border-radius, 21px padding. Heading at 30px Inter weight 500 #2c2e2a, body text at 17px weight 400 #2c2e2a. No shadow, no border. The card sits on the cream (#f5f1e4) canvas.
 
-4. **Ghost Navigation Link**: Text only, 12px Roobert weight 400, #ffffff on dark surfaces, #181818 on light. Uppercase, letter-spacing normal. 15px margin-right between items. No underline, no background, no border. Wraps in a right-aligned flex cluster.
+4. *Create a service action card:* White card (50px radius, 21px padding) containing a coral (#ff705d) pill button (50px radius, 11px vertical and 20px horizontal padding, 15px Inter 500 white text, small white circle icon at right). This is the most prominent chromatic action on the site.
 
-5. **Immersive 3D Frame Section**: Full-viewport #000000 background with a centered abstract organic 3D render (dark green/amber/copper palette). Overlaid bottom-left: circular 'SCROLL TO EXPLORE' text path at 9px system-ui, #ffffff. No additional UI chrome — the frame is self-contained.
+5. *Create a footer accent band:* Full-width #f5e211 yellow section at the page bottom, 50px+ padding, serving as a warm closing visual.
 
 ## Similar Brands
 
-- **Unseen Studio (unseen.co)** — Same cinematic darkroom aesthetic with floating white type, full-bleed dark frames, and achromatic UI that lets 3D atmospheric imagery carry the brand voice
-- **Resn (resn.co.nz)** — Extreme type scale stretching from micro-labels to monument-size hero text, paired with dark immersive sections and editorial whitespace — the same gallery-wall sensibility
-- **Locomotive (locomotive.ca)** — Editorial agency aesthetic with white structural sections breaking into dark atmospheric frames, whisper-weight headlines, and achromatic discipline
-- **Pentagram (pentagram.com)** — Monochrome editorial canvas, generous whitespace, monumental type at display scale, and minimal UI chrome that defers to content rhythm
-- **Active Theory (activetheory.net)** — Full-bleed dark immersive frames with 3D/webGL organic forms overlaid with white type — same cinematic-black-box gallery metaphor
+- **Duolingo** — Same playful illustrated character art on warm neutral backgrounds, with flat color fills and paper-cut aesthetic
+- **Headspace** — Similar warm cream canvas, oversized friendly type, and generous rounded radii creating a soft approachable feel
+- **Mailchimp** — Same editorial illustration-led approach with vivid accent colors used decoratively rather than as strict UI states
+- **Figma Config** — Same floating pill navigation pattern and cream/warm-white surface treatment with oversized display type
+- **Notion** — Similar light, breathable layout with minimal UI chrome letting content and illustration lead
 
 ## Quick Start
 
@@ -210,78 +208,79 @@ Max-width 1440px centered with generous gutters, but hero and feature sections b
 ```css
 :root {
   /* Colors */
-  --color-paper-white: #ffffff;
-  --color-ink-black: #000000;
-  --color-carbon: #181818;
-  --color-ash: #6d6d6d;
-  --color-smoke: #9a9a9a;
-  --color-pewter: #808080;
-  --color-graphite: #636363;
-  --color-mercury-flow: #a0e0ab;
-  --gradient-mercury-flow: linear-gradient(90deg, rgb(160, 224, 171), rgb(255, 172, 46) 50%, rgb(165, 45, 37));
+  --color-fresh-grass: #8ed462;
+  --color-cream-paper: #f5f1e4;
+  --color-ink-black: #2c2e2a;
+  --color-pure-white: #ffffff;
+  --color-sandstone: #e0dbce;
+  --color-stone-gray: #80827f;
+  --color-hairline-mist: #d5d5d4;
+  --color-pure-ink: #000000;
+  --color-sky-pop: #2ba0ff;
+  --color-coral-pop: #ff705d;
+  --color-sunshine-pop: #f5e211;
 
   /* Typography — Font Families */
-  --font-roobert: 'Roobert', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-raleway: 'Raleway', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-system-ui: 'system-ui', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
-  --text-body: 16px;
-  --leading-body: 1.39;
+  --text-body-sm: 15px;
+  --leading-body-sm: 1.5;
   --text-body-lg: 18px;
-  --leading-body-lg: 1.36;
-  --text-subheading: 30px;
+  --leading-body-lg: 1.5;
+  --text-subheading: 20px;
   --leading-subheading: 1.25;
-  --text-heading-sm: 45px;
-  --leading-heading-sm: 1.22;
-  --text-heading: 54px;
-  --leading-heading: 1.21;
-  --text-heading-lg: 78px;
-  --leading-heading-lg: 1.15;
-  --text-display: 94px;
-  --leading-display: 1.1;
-  --text-hero: 225px;
-  --leading-hero: 0.76;
+  --text-heading-sm: 30px;
+  --leading-heading-sm: 1.2;
+  --text-heading: 53px;
+  --leading-heading: 1.15;
+  --tracking-heading: -2.12px;
+  --text-heading-lg: 81px;
+  --leading-heading-lg: 1.2;
+  --tracking-heading-lg: -4.86px;
+  --text-display: 140px;
+  --leading-display: 0.95;
+  --tracking-display: -8.4px;
+  --text-display-lg: 144px;
+  --leading-display-lg: 0.95;
+  --tracking-display-lg: -8.64px;
 
   /* Typography — Weights */
-  --font-weight-light: 300;
   --font-weight-regular: 400;
-  --font-weight-semibold: 600;
+  --font-weight-medium: 500;
 
   /* Spacing */
   --spacing-unit: 4px;
-  --spacing-8: 8px;
-  --spacing-12: 12px;
-  --spacing-28: 28px;
-  --spacing-40: 40px;
-  --spacing-48: 48px;
-  --spacing-64: 64px;
-  --spacing-68: 68px;
-  --spacing-152: 152px;
+  --spacing-4: 4px;
+  --spacing-20: 20px;
+  --spacing-60: 60px;
+  --spacing-136: 136px;
+  --spacing-216: 216px;
 
   /* Layout */
-  --page-max-width: 1440px;
+  --page-max-width: 1200px;
   --section-gap: 80-120px;
-  --card-padding: 32-40px;
-  --element-gap: 14-24px;
+  --card-padding: 20-21px;
+  --element-gap: 17-21px;
 
   /* Border Radius */
   --radius-lg: 10px;
-  --radius-full: 75.024px;
+  --radius-2xl: 20px;
+  --radius-3xl: 25.5px;
+  --radius-full: 50px;
+  --radius-full-2: 63.75px;
 
   /* Named Radii */
-  --radius-cards: 0px;
-  --radius-badges: 75px;
-  --radius-inputs: 0px;
-  --radius-buttons: 75px;
+  --radius-nav: 50px;
+  --radius-cards: 50px;
+  --radius-small: 10px;
+  --radius-buttons: 50px;
+  --radius-illustration-containers: 63.75px;
 
   /* Surfaces */
-  --surface-paper-white: #ffffff;
-  --surface-smoke: #9a9a9a;
-  --surface-pewter: #808080;
-  --surface-graphite: #636363;
-  --surface-carbon: #181818;
-  --surface-ink-black: #000000;
+  --surface-cream-paper: #f5f1e4;
+  --surface-pure-white: #ffffff;
+  --surface-sandstone: #e0dbce;
 }
 ```
 
@@ -290,50 +289,55 @@ Max-width 1440px centered with generous gutters, but hero and feature sections b
 ```css
 @theme {
   /* Colors */
-  --color-paper-white: #ffffff;
-  --color-ink-black: #000000;
-  --color-carbon: #181818;
-  --color-ash: #6d6d6d;
-  --color-smoke: #9a9a9a;
-  --color-pewter: #808080;
-  --color-graphite: #636363;
-  --color-mercury-flow: #a0e0ab;
+  --color-fresh-grass: #8ed462;
+  --color-cream-paper: #f5f1e4;
+  --color-ink-black: #2c2e2a;
+  --color-pure-white: #ffffff;
+  --color-sandstone: #e0dbce;
+  --color-stone-gray: #80827f;
+  --color-hairline-mist: #d5d5d4;
+  --color-pure-ink: #000000;
+  --color-sky-pop: #2ba0ff;
+  --color-coral-pop: #ff705d;
+  --color-sunshine-pop: #f5e211;
 
   /* Typography */
-  --font-roobert: 'Roobert', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-raleway: 'Raleway', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-system-ui: 'system-ui', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-inter: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   /* Typography — Scale */
-  --text-body: 16px;
-  --leading-body: 1.39;
+  --text-body-sm: 15px;
+  --leading-body-sm: 1.5;
   --text-body-lg: 18px;
-  --leading-body-lg: 1.36;
-  --text-subheading: 30px;
+  --leading-body-lg: 1.5;
+  --text-subheading: 20px;
   --leading-subheading: 1.25;
-  --text-heading-sm: 45px;
-  --leading-heading-sm: 1.22;
-  --text-heading: 54px;
-  --leading-heading: 1.21;
-  --text-heading-lg: 78px;
-  --leading-heading-lg: 1.15;
-  --text-display: 94px;
-  --leading-display: 1.1;
-  --text-hero: 225px;
-  --leading-hero: 0.76;
+  --text-heading-sm: 30px;
+  --leading-heading-sm: 1.2;
+  --text-heading: 53px;
+  --leading-heading: 1.15;
+  --tracking-heading: -2.12px;
+  --text-heading-lg: 81px;
+  --leading-heading-lg: 1.2;
+  --tracking-heading-lg: -4.86px;
+  --text-display: 140px;
+  --leading-display: 0.95;
+  --tracking-display: -8.4px;
+  --text-display-lg: 144px;
+  --leading-display-lg: 0.95;
+  --tracking-display-lg: -8.64px;
 
   /* Spacing */
-  --spacing-8: 8px;
-  --spacing-12: 12px;
-  --spacing-28: 28px;
-  --spacing-40: 40px;
-  --spacing-48: 48px;
-  --spacing-64: 64px;
-  --spacing-68: 68px;
-  --spacing-152: 152px;
+  --spacing-4: 4px;
+  --spacing-20: 20px;
+  --spacing-60: 60px;
+  --spacing-136: 136px;
+  --spacing-216: 216px;
 
   /* Border Radius */
   --radius-lg: 10px;
-  --radius-full: 75.024px;
+  --radius-2xl: 20px;
+  --radius-3xl: 25.5px;
+  --radius-full: 50px;
+  --radius-full-2: 63.75px;
 }
 ```

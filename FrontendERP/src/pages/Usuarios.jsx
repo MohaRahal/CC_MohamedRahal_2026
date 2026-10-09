@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Search, Plus, Loader2, Edit2, Trash2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import AnimatedPage from './AnimatedPage';
+import EntityDetailsModal from '../components/EntityDetailsModal';
 import { usersService } from '../services/usersService';
+import { confirmAction } from '../components/feedback';
 import { cargosService } from '../services/cargosService';
 
 export default function Usuarios() {
@@ -12,9 +14,13 @@ export default function Usuarios() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedUsuario, setSelectedUsuario] = useState(null);
 
   useEffect(() => {
+    // Initial requests only; both loaders are also reused independently.
+    // eslint-disable-next-line react-hooks/immutability
     fetchUsuarios();
+    // eslint-disable-next-line react-hooks/immutability
     fetchCargos();
   }, []);
 
@@ -44,7 +50,7 @@ export default function Usuarios() {
   };
 
   const handleDeleteClick = async (id, nome) => {
-    const confirmou = window.confirm(`Tem certeza que deseja excluir o usuário "${nome}"?`);
+    const confirmou = await confirmAction(`Tem certeza que deseja excluir o usuário "${nome}"?`);
     if (confirmou) {
       try {
         setDeletingId(id);
@@ -66,13 +72,9 @@ export default function Usuarios() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-5xl mx-auto">
+        <div className="w-full">
           
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Usuários</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie os acessos, senhas e permissões da equipe</p>
-            </div>
+          <div className="mb-8 flex justify-end">
             <Link to="/Usuarios/AddUser" className="flex items-center gap-2 bg-ink-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:scale-105 hover:bg-carbon transition-all shadow-md">
               <Plus size={16} />
               Novo Usuário
@@ -104,21 +106,19 @@ export default function Usuarios() {
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
                    
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-center">Status</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Cadastrado em</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Atualizado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filteredUsuarios.length === 0 ? (
                     <tr>
-                      <td colSpan="8" className="py-16 text-center text-sm text-gray-500">
+                      <td colSpan="5" className="py-16 text-center text-sm text-gray-500">
                         Nenhum usuário encontrado.
                       </td>
                     </tr>
                   ) : (
                     filteredUsuarios.map(usuario => (
-                      <tr key={usuario.codUsuario} className="hover:bg-gray-50/50 transition-colors group">
+                      <tr key={usuario.codUsuario} onClick={() => setSelectedUsuario(usuario)} className="hover:bg-gray-50/50 transition-colors group cursor-pointer">
                         <td className="py-4 px-6 text-[13px] text-gray-400 font-mono">
                           #{usuario.codUsuario.toString().padStart(3, '0')}
                         </td>
@@ -136,21 +136,15 @@ export default function Usuarios() {
                             {usuario.ativo ? 'Ativo' : 'Inativo'}
                           </span>
                         </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-500 text-right">
-                          {new Date(usuario.criado_em).toLocaleDateString('pt-BR')}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-500 text-right">
-                          {new Date(usuario.atualizado_em).toLocaleDateString('pt-BR')}
-                        </td>
                         <td className="py-4 px-6 text-[13px] text-right">
                           <div className="flex items-center justify-end gap-3 transition-opacity">
                             <button 
-                              onClick={() => navigate(`/Usuarios/editar/${usuario.codUsuario}`)}
+                              onClick={(event) => { event.stopPropagation(); navigate(`/Usuarios/editar/${usuario.codUsuario}`); }}
                               className="text-gray-400 hover:text-blue-600 transition-colors cursor-pointer" title="Editar">
                               <Edit2 size={16} />
                             </button>
                             <button 
-                              onClick={() => handleDeleteClick(usuario.codUsuario, usuario.usuario)}
+                              onClick={(event) => { event.stopPropagation(); handleDeleteClick(usuario.codUsuario, usuario.usuario); }}
                               disabled={deletingId === usuario.codUsuario}
                               className={`transition-colors cursor-pointer ${deletingId === usuario.codUsuario ? 'text-gray-300' : 'text-gray-400 hover:text-red-600'}`} 
                               title="Excluir">
@@ -168,6 +162,22 @@ export default function Usuarios() {
 
         </div>
       </div>
+      {selectedUsuario && (
+        <EntityDetailsModal
+          title={selectedUsuario.usuario}
+          subtitle="Detalhes do usuário"
+          onClose={() => setSelectedUsuario(null)}
+          onEdit={() => navigate(`/Usuarios/editar/${selectedUsuario.codUsuario}`)}
+          fields={[
+            { label: 'Código', value: `#${selectedUsuario.codUsuario}` },
+            { label: 'Usuário', value: selectedUsuario.usuario },
+            { label: 'Cargo', value: cargos[selectedUsuario.codCargo] || `#${selectedUsuario.codCargo}` },
+            { label: 'Status', value: selectedUsuario.ativo ? 'Ativo' : 'Inativo' },
+            { label: 'Criado em', value: selectedUsuario.criado_em ? new Date(selectedUsuario.criado_em).toLocaleString('pt-BR') : 'Não informado' },
+            { label: 'Atualizado em', value: selectedUsuario.atualizado_em ? new Date(selectedUsuario.atualizado_em).toLocaleString('pt-BR') : 'Não informado' },
+          ]}
+        />
+      )}
     </AnimatedPage>
   );
 }

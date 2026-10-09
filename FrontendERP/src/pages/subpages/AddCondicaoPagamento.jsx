@@ -150,7 +150,7 @@ if (totalPercentual < 99) {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-3xl mx-auto">
+        <div className="w-full max-w-5xl mx-auto">
           <button 
             type="button"
             onClick={() => navigate('/condicoes-pagamento')}

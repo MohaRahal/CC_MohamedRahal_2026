@@ -1,60 +1,43 @@
+import { data } from "react-router-dom";
+
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-const getAuthHeaders = (token) => ({
+const requestOptions = (method = 'GET', data) => ({
+    method,
     headers: {
-        'Authorization': `Bearer ${token}`
-    }
+        Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
+        ...(data ? { 'Content-Type': 'application/json' } : {}),
+    },
+    ...(data ? { body: JSON.stringify(data) } : {}),
 });
 
-export const gruposService = {
-    async getGrupos(token) {
-        const response = await fetch(`${API_BASE_URL}/api/Grupos`, getAuthHeaders(token));
-        if (!response.ok) throw new Error("Erro ao buscar grupos");
-        return response.json();
-    },
-
-    async getGrupoById(id) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/api/Grupos/${id}`, getAuthHeaders(token));
-        if (!response.ok) throw new Error("Erro ao buscar grupo");
-        return response.json();
-    },
-
-    async createGrupo(data) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/api/Grupos`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...getAuthHeaders(token).headers
-            },
-            body: JSON.stringify(data)
-        });
-        if (!response.ok) throw new Error("Erro ao criar grupo");
-        return response.json();
-    },
-
-    async updateGrupo(id, data) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/api/Grupos/${id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                ...getAuthHeaders(token).headers
-            },
-            body: JSON.stringify(data)
-        });
-        if (!response.ok) throw new Error("Erro ao atualizar grupo");
-        return response.json();
-    },
-
-    async deleteGrupo(id) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/api/Grupos/${id}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders(token).headers
-        });
-        if (!response.ok) throw new Error("Erro ao deletar grupo");
-        return true;
+const ensureOk = async (response, fallback) => {
+    if (!response.ok) {
+        const message = await response.text();
+        if (response.status === 409 || /foreign key|constraint fails|parent row/i.test(message)) {
+            throw new Error('Este grupo está sendo usado em produtos e não pode ser excluído.');
+        }
+        throw new Error(message?.replace(/^"|"$/g, '') || fallback);
     }
+    if (response.status === 204) return null;
+    return response.json().catch(() => null);
+};
+
+export const gruposService = {
+    async getGrupos() {
+        return ensureOk(await fetch(`${API_BASE_URL}/api/Grupos`, requestOptions()), 'Erro ao buscar grupos.');
+    },
+    async getGrupoById(id) {
+        return ensureOk(await fetch(`${API_BASE_URL}/api/Grupos/${id}`, requestOptions()), 'Erro ao buscar grupo.');
+    },
+    async createGrupo(data) {
+        return ensureOk(await fetch(`${API_BASE_URL}/api/Grupos`, requestOptions('POST', data)), 'Erro ao criar grupo.');
+    },
+    async updateGrupo(id, data) {
+        return ensureOk(await fetch(`${API_BASE_URL}/api/Grupos/${id}`, requestOptions('PATCH', data)), 'Erro ao atualizar grupo.');
+    },
+    async deleteGrupo(id) {
+        await ensureOk(await fetch(`${API_BASE_URL}/api/Grupos/${id}`, requestOptions('DELETE', data)), 'Erro ao excluir grupo.');
+        return true;
+    },
 };

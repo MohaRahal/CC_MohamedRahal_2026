@@ -1,64 +1,41 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-const getAuthHeaders = (token) => ({
+const requestOptions = (method = 'GET', data) => ({
+    method,
     headers: {
-        'Authorization': `Bearer ${token}`
-    }
+        Authorization: localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : '',
+        ...(data ? { 'Content-Type': 'application/json' } : {}),
+    },
+    ...(data ? { body: JSON.stringify(data) } : {}),
 });
 
-export const marcasService = {
-    async getMarcas(token) {
-        const response = await fetch(`${API_BASE_URL}/api/Marcas`, getAuthHeaders(token));
-        if (!response.ok) throw new Error("Erro ao buscar marcas");
-        return response.json();
-    },
-
-    async getMarcaById(id) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/api/Marcas/${id}`, getAuthHeaders(token));
-        if (!response.ok) throw new Error("Erro ao buscar marca");
-        return response.json();
-    },
-
-    async createMarca(data) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/api/Marcas`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...getAuthHeaders(token).headers
-            },
-            body: JSON.stringify(data)
-        });
-        if (!response.ok) throw new Error("Erro ao criar marca");
-        return response.json();
-    },
-
-    async updateMarca(id, data) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/api/Marcas/${id}`, {
-            method: 'PATCH',
-            headers: {
-                'Content-Type': 'application/json',
-                ...getAuthHeaders(token).headers
-            },
-            body: JSON.stringify(data)
-        });
-        if (!response.ok) throw new Error("Erro ao atualizar marca");
-        // Verifica se a resposta tem conteúdo antes de fazer json()
-        if (response.status === 204 || response.headers.get('content-length') === '0') {
-            return { success: true };
+const ensureOk = async (response, fallback) => {
+    if (!response.ok) {
+        const message = await response.text();
+        if (response.status === 409 || /foreign key|constraint fails|parent row/i.test(message)) {
+            throw new Error('Esta marca está sendo usada em modelos ou produtos e não pode ser excluída.');
         }
-        return response.json();
-    },
-
-    async deleteMarca(id) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`${API_BASE_URL}/api/Marcas/${id}`, {
-            method: 'DELETE',
-            headers: getAuthHeaders(token).headers
-        });
-        if (!response.ok) throw new Error("Erro ao deletar marca");
-        return true;
+        throw new Error(message?.replace(/^"|"$/g, '') || fallback);
     }
+    if (response.status === 204) return null;
+    return response.json().catch(() => null);
+};
+
+export const marcasService = {
+    async getMarcas() {
+        return ensureOk(await fetch(`${API_BASE_URL}/api/Marcas`, requestOptions()), 'Erro ao buscar marcas.');
+    },
+    async getMarcaById(id) {
+        return ensureOk(await fetch(`${API_BASE_URL}/api/Marcas/${id}`, requestOptions()), 'Erro ao buscar marca.');
+    },
+    async createMarca(data) {
+        return ensureOk(await fetch(`${API_BASE_URL}/api/Marcas`, requestOptions('POST', data)), 'Erro ao criar marca.');
+    },
+    async updateMarca(id, data) {
+        return ensureOk(await fetch(`${API_BASE_URL}/api/Marcas/${id}`, requestOptions('PATCH', data)), 'Erro ao atualizar marca.');
+    },
+    async deleteMarca(id) {
+        await ensureOk(await fetch(`${API_BASE_URL}/api/Marcas/${id}`, requestOptions('DELETE')), 'Erro ao excluir marca.');
+        return true;
+    },
 };

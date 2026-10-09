@@ -1,36 +1,41 @@
 import { useState, useEffect } from 'react';
-import { Search, Plus, Loader2, Edit, Trash2, Eye, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Search, Plus, Loader2, Edit, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import AnimatedPage from './AnimatedPage';
+import EntityDetailsModal from '../components/EntityDetailsModal';
 import { clientesService } from '../services/clientesService';
+import { confirmAction } from '../components/feedback';
 
 export default function Clientes() {
+  const navigate = useNavigate();
   const [clientes, setClientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCliente, setSelectedCliente] = useState(null);
 
   useEffect(() => {
-    fetchClientes();
+    let isActive = true;
+
+    const loadClientes = async () => {
+      try {
+        const data = await clientesService.getClientes();
+        if (isActive) setClientes(data || []);
+      } catch (error) {
+        console.error("Erro ao carregar clientes:", error);
+      } finally {
+        if (isActive) setLoading(false);
+      }
+    };
+
+    loadClientes();
+    return () => { isActive = false; };
   }, []);
 
-  const fetchClientes = async () => {
-    try {
-      setLoading(true);
-      const data = await clientesService.getClientes();
-      setClientes(data || []);
-    } catch (error) {
-      console.error("Erro ao carregar clientes:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleDelete = async (id) => {
-    if (window.confirm("Tem certeza que deseja excluir este cliente?")) {
+    if (await confirmAction("Tem certeza que deseja excluir este cliente?")) {
       try {
         await clientesService.deleteCliente(id);
-        setClientes(clientes.filter(c => c.codCliente !== id));
+        setClientes((atuais) => atuais.filter(c => c.codCliente !== id));
       } catch (error) {
         console.error("Erro ao excluir cliente:", error);
         alert("Erro ao excluir cliente.");
@@ -48,21 +53,16 @@ export default function Clientes() {
 
   const filtered = clientes.filter(c =>
     c.cliente?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.CpfCnpj?.includes(searchTerm) ||
-    c.Email?.toLowerCase().includes(searchTerm.toLowerCase())
+    c.cpf_cnpj?.includes(searchTerm) ||
+    c.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-2 sm:px-4 text-gray-800 font-sans">
-        <div className="w-full max-w-full mx-auto">
+        <div className="w-full">
 
-          {/* Header */}
-          <div className="flex justify-between items-end mb-8">
-            <div>
-              <h1 className="text-3xl font-light text-gray-900 tracking-tight">Clientes</h1>
-              <p className="text-sm text-gray-500 mt-1">Gerencie seus clientes e histórico comercial</p>
-            </div>
+          <div className="mb-8 flex justify-end">
             <Link
               to="/Clientes/novo"
               className="cursor-pointer flex items-center gap-2 bg-black text-white px-5 py-2.5 text-sm rounded hover:bg-gray-800 transition-colors shadow-sm"
@@ -84,7 +84,7 @@ export default function Clientes() {
           </div>
 
           {/* Table */}
-          <div className="bg-white rounded-lg border border-gray-100 shadow-sm overflow-x-auto">
+          <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-x-auto">
             {loading ? (
               <div className="flex justify-center items-center py-20">
                 <Loader2 className="animate-spin text-gray-400" size={24} />
@@ -97,25 +97,19 @@ export default function Clientes() {
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Cliente</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Tipo</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">CPF/CNPJ</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Telefone</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Email</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Cidade</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Cond. Pagamento</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Lim. Crédito</th>
-                    <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Cadastrado em</th>
                     <th className="py-4 px-6 text-xs font-medium text-gray-500 uppercase tracking-wider w-24">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {filtered.length === 0 ? (
                     <tr>
-                      <td colSpan="11" className="py-16 text-center text-sm text-gray-500">
+                      <td colSpan="5" className="py-16 text-center text-sm text-gray-500">
                         Nenhum cliente encontrado.
                       </td>
                     </tr>
                   ) : (
                     filtered.map(c => (
-                      <tr key={c.codCliente} className="hover:bg-gray-50/50 transition-colors group">
+                      <tr key={c.codCliente} onClick={() => setSelectedCliente(c)} className="hover:bg-gray-50/50 transition-colors group cursor-pointer">
                         <td className="py-4 px-6 text-[13px] text-gray-400 font-mono">
                           #{c.codCliente?.toString().padStart(4, '0')}
                         </td>
@@ -128,42 +122,18 @@ export default function Clientes() {
                         <td className="py-4 px-6 text-[13px] text-gray-600 whitespace-nowrap font-mono">
                           {c.cpf_cnpj || '—'}
                         </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600 whitespace-nowrap">
-                          {c.fone }
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600 whitespace-nowrap">
-                          {c.email || '—'}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600 whitespace-nowrap">
-                          {c.cidade.cidade}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600 whitespace-nowrap">
-                          {c.condicaoPagamento?.condPagamento}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600 whitespace-nowrap font-mono">
-                          {formatCurrency(c.limiteCredito)}
-                        </td>
-                        <td className="py-4 px-6 text-[13px] text-gray-600 whitespace-nowrap">
-                          {formatDate(c.criado_em)}
-                        </td>
                         <td className="py-4 px-6 text-[13px] whitespace-nowrap">
                           <div className="flex gap-2">
-                            <button
-                              onClick={() => setSelectedCliente(c)}
-                              className="cursor-pointer p-1.5 text-gray-400 hover:text-black hover:bg-gray-100 rounded transition-colors"
-                              title="Visualizar detalhes"
-                            >
-                              <Eye size={16} />
-                            </button>
                             <Link
                               to={`/Clientes/editar/${c.codCliente}`}
+                              onClick={(event) => event.stopPropagation()}
                               className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded transition-colors"
                               title="Editar"
                             >
                               <Edit size={16} />
                             </Link>
                             <button
-                              onClick={() => handleDelete(c.codCliente)}
+                              onClick={(event) => { event.stopPropagation(); handleDelete(c.codCliente); }}
                               className="cursor-pointer p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
                               title="Excluir"
                             >
@@ -181,119 +151,30 @@ export default function Clientes() {
         </div>
       </div>
 
-      {/* Modal de Detalhes */}
       {selectedCliente && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" style={{ minHeight: '100vh' }}>
-          <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            {/* Header modal */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-100 bg-gray-50/50 sticky top-0">
-              <div>
-                <p className="text-xs text-gray-400 font-mono mb-1">#{selectedCliente.codCliente?.toString().padStart(4, '0')}</p>
-                <h3 className="text-xl font-medium text-gray-900">{selectedCliente.cliente}</h3>
-              </div>
-              <button
-                onClick={() => setSelectedCliente(null)}
-                className="cursor-pointer text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-1.5 rounded transition-colors shrink-0"
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-6">
-              {/* Dados Pessoais */}
-              <div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Dados Pessoais</h4>
-                <div className="grid grid-cols-1 gap-3 text-sm">
-                  {[
-                    { label: 'Tipo', value: selectedCliente.tipoPessoa},
-                    { label: 'CPF/CNPJ', value: selectedCliente.cpf_cnpj },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
-                      <div className="text-gray-800 font-medium break-words">{value || '—'}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Contato */}
-              <div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Contato</h4>
-                <div className="grid grid-cols-1 gap-3 text-sm">
-                  {[
-                    { label: 'Telefone', value: selectedCliente.fone },
-                    { label: 'Email', value: selectedCliente.email },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
-                      <div className="text-gray-800 break-words">{value || '—'}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Endereço */}
-              <div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Endereço</h4>
-                <div className="grid grid-cols-1 gap-3 text-sm">
-                  {[
-                    { label: 'Logradouro', value: selectedCliente.ender },
-                    { label: 'Número', value: selectedCliente.numero },
-                    { label: 'Complemento', value: selectedCliente.complemento },
-                    { label: 'Bairro', value: selectedCliente.bairro },
-                    { label: 'Cidade', value: selectedCliente.cidade?.cidade },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
-                      <div className="text-gray-800 break-words">{value || 'n/a'}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Financeiro */}
-              <div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Financeiro</h4>
-                <div className="grid grid-cols-1 gap-3 text-sm">
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="text-gray-500 text-xs font-medium mb-1">Condição de Pagamento</div>
-                    <div className="text-gray-800 break-words">{selectedCliente.condicaoPagamento?.condPagamento || '—'}</div>
-                  </div>
-                  <div className="p-3 bg-gray-50 rounded-lg">
-                    <div className="text-gray-500 text-xs font-medium mb-1">Limite de Crédito</div>
-                    <div className="text-gray-800 font-semibold break-words">{formatCurrency(selectedCliente.limiteCredito)}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sistema */}
-              <div>
-                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">Sistema</h4>
-                <div className="grid grid-cols-1 gap-3 text-sm">
-                  {[
-                    { label: 'Usuário', value: selectedCliente.usuario?.usuario },
-                    { label: 'Cadastrado em', value: formatDate(selectedCliente.criado_em) },
-                    { label: 'Atualizado em', value: formatDate(selectedCliente.atualizado_em) },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="text-gray-500 text-xs font-medium mb-1">{label}</div>
-                      <div className="text-gray-800 break-words">{value || '—'}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end px-6 py-6 border-t border-gray-100 bg-gray-50/50 sticky bottom-0">
-              <button
-                onClick={() => setSelectedCliente(null)}
-                className="cursor-pointer px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                Fechar
-              </button>
-            </div>
-          </div>
-        </div>
+        <EntityDetailsModal
+          title={selectedCliente.cliente}
+          subtitle="Detalhes do cliente"
+          onClose={() => setSelectedCliente(null)}
+          onEdit={() => navigate(`/Clientes/editar/${selectedCliente.codCliente}`)}
+          fields={[
+            { label: 'Código', value: `#${selectedCliente.codCliente?.toString().padStart(4, '0')}` },
+            { label: 'Tipo de pessoa', value: selectedCliente.tipoPessoa },
+            { label: 'CPF / CNPJ', value: selectedCliente.cpf_cnpj },
+            { label: 'Telefone', value: selectedCliente.fone },
+            { label: 'E-mail', value: selectedCliente.email, fullWidth: true },
+            { label: 'Endereço', value: selectedCliente.ender, fullWidth: true },
+            { label: 'Número', value: selectedCliente.numero },
+            { label: 'Complemento', value: selectedCliente.complemento },
+            { label: 'Bairro', value: selectedCliente.bairro },
+            { label: 'Cidade', value: selectedCliente.cidade?.cidade },
+            { label: 'Condição de pagamento', value: selectedCliente.condicaoPagamento?.condPagamento },
+            { label: 'Limite de crédito', value: formatCurrency(selectedCliente.limiteCredito) },
+            { label: 'Cadastrado por', value: selectedCliente.usuario?.usuario },
+            { label: 'Cadastrado em', value: formatDate(selectedCliente.criado_em) },
+            { label: 'Atualizado em', value: formatDate(selectedCliente.atualizado_em), fullWidth: true },
+          ]}
+        />
       )}
     </AnimatedPage>
   );

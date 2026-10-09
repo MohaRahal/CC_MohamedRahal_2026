@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Save, Plus, X } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
 import AnimatedPage from '../AnimatedPage';
 import { gruposService } from '../../services/gruposService';
 
@@ -33,7 +33,7 @@ export default function AddGrupo() {
   return (
     <AnimatedPage>
       <div className="min-h-screen bg-[#fafafa] pt-24 pb-12 px-8 text-gray-800 font-sans">
-        <div className="max-w-2xl mx-auto">
+        <div className="w-full max-w-3xl mx-auto">
           <Link to="/Grupos" className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors mb-6">
             <ArrowLeft size={16} /> Voltar para Grupos
           </Link>
